@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+admin.site.site_header = "PDRRMO-ADN Household Database Admin Panel"
+admin.site.site_title = "Household Database Admin Portal"
+admin.site.index_title = "Welcome to Household Database"
+
 urlpatterns = [
     path("admin/", admin.site.urls),
 ]
