@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "library",
 ]
 
 MIDDLEWARE = [
@@ -80,7 +81,7 @@ WSGI_APPLICATION = "household_geodatabase.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.contrib.gis.bb.backends.postgis",
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
         "NAME": env("POSTGRES_DBNAME"),
         "USER": env("POSTGRES_USER"),
         "PASSWORD": env("POSTGRES_PASS"),
