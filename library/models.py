@@ -10,11 +10,11 @@ class Municipalities(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
-    return self.munname
+  def __str__(self):
+        return self.munname
 
   class Meta:
-    verbose_name_plural = "municipalities"
+    verbose_name_plural = "Municipalities"
 
 
 class Barangays(models.Model):
@@ -25,7 +25,7 @@ class Barangays(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.brgyname
 
   class Meta:
@@ -37,7 +37,7 @@ class Buildingroofmaterials(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.description
 
   class Meta:
@@ -49,7 +49,7 @@ class Buildingstatus(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.status
 
   class Meta:
@@ -61,7 +61,7 @@ class Buildingtypes(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.type
 
   class Meta:
@@ -73,7 +73,7 @@ class Buildinguses(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.use
 
   class Meta:
@@ -85,7 +85,7 @@ class Buildingwallmaterials(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.material
 
   class Meta:
@@ -97,7 +97,7 @@ class Disabilities(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.description
 
   class Meta:
@@ -109,7 +109,7 @@ class Farmingtechs(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.technology
 
   class Meta:
@@ -121,7 +121,7 @@ class Genders(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.gender
 
   class Meta:
@@ -134,7 +134,7 @@ class Gradelevels(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.description
 
   class Meta:
@@ -146,8 +146,8 @@ class Evacuationareas(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
-    return self.description
+  def __str__(self):
+    return self.evacuation_area
 
   class Meta:
     verbose_name_plural = "Evacuation areas"
@@ -159,7 +159,7 @@ class Waterlevelsystems(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.description
 
   class Meta:
@@ -171,7 +171,7 @@ class Householdroofmaterials(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.description
 
   class Meta:
@@ -183,7 +183,7 @@ class Householdtenuralstatus(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.description
 
   class Meta:
@@ -195,7 +195,7 @@ class Householdbuildingtypes(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.type
 
   class Meta:
@@ -207,7 +207,7 @@ class Householdwallmaterials(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.description
 
   class Meta:
@@ -219,7 +219,7 @@ class Householdwatertenuralstatus(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.status
 
   class Meta:
@@ -231,7 +231,7 @@ class Livelihoods(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.description
 
   class Meta:
@@ -243,7 +243,7 @@ class Maritalstatus(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.status
 
   class Meta:
@@ -255,7 +255,7 @@ class Monthlyincomes(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.income
 
   class Meta:
@@ -267,7 +267,7 @@ class Nutritionalstatus(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.status
 
   class Meta:
@@ -279,7 +279,7 @@ class Relationshiptoheads(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.relationship
 
   class Meta:
@@ -291,7 +291,7 @@ class Livelihoodtenuralstatus(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.status
 
   class Meta:
@@ -303,7 +303,7 @@ class Trackstrandcourses(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.description
 
   class Meta:
@@ -315,7 +315,7 @@ class Typeofprograms(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.type
 
   class Meta:
