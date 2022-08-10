@@ -2,8 +2,8 @@ from django.utils.translation import gettext as _
 from django.db import models
 from django.contrib.gis.db import models
 from library.models import Municipalities, Barangays, Householdbuildingtypes, \
-  Householdtenuralstatus, Householdroofmaterials, Householdwatertenuralstatus, \
-  Waterlevelsystems, Evacuationareas
+  Householdtenuralstatus, Householdroofmaterials, Buildingwallmaterials, \
+  Householdwatertenuralstatus, Waterlevelsystems, Evacuationareas
 from django.contrib.auth.models import User
 from django import forms
 
@@ -50,12 +50,13 @@ class Households(models.Model):
   image = models.ImageField(upload_to ='uploads/',null=True)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
-  owner = models.ForeignKey(User,on_delete=models.CASCADE)
-  municipality = models.ForeignKey(Municipalities,to_field="psgccode",on_delete=models.CASCADE)
-  barangay = models.ForeignKey(Barangays,to_field="psgccode",on_delete=models.CASCADE,null=True)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
+  municipality = models.ForeignKey(Municipalities,to_field="psgccode",on_delete=models.CASCADE,verbose_name='Municipality')
+  barangay = models.ForeignKey(Barangays,to_field="psgccode",on_delete=models.CASCADE,null=True,verbose_name='Barangay')
   householdbuildingtypes = models.ForeignKey(Householdbuildingtypes,on_delete=models.CASCADE,verbose_name='Building types')
   householdtenuralstatus = models.ForeignKey(Householdtenuralstatus,on_delete=models.CASCADE,verbose_name='Tenural status')
   householdroofmaterials = models.ForeignKey(Householdroofmaterials,on_delete=models.CASCADE,verbose_name='Roof material')
+  householdwallmaterials = models.ForeignKey(Buildingwallmaterials,on_delete=models.CASCADE,verbose_name='Wall material')
   householdwatertenuralstatus = models.ForeignKey(Householdwatertenuralstatus,on_delete=models.CASCADE,verbose_name='Water tenural status')
   waterlevelsystems = models.ForeignKey(Waterlevelsystems,on_delete=models.CASCADE,verbose_name='Level of water system')
   evacuationareas = models.ForeignKey(Evacuationareas,on_delete=models.CASCADE,verbose_name='Nearest evacuation center')
