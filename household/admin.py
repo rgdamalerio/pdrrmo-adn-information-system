@@ -1,6 +1,9 @@
 from django.contrib import admin
-from .models import Households
+from .models import Households, Demographies
 from leaflet.admin import LeafletGeoAdmin
+
+from datetime import date
+import datetime
 
 # Register your models here.
 # Register your models here.
@@ -13,14 +16,31 @@ class HouseholdsAdmin(LeafletGeoAdmin):
             'year_flooded','experience_evacuate','year_evacuate','evacuationareas','access_health_medical_facility',
             'access_telecommuniciation','access_drill_simulation','image','enumerator','editor'
            ]
-  list_display = ("controlnumber","municipality","barangay","purok","respondent",
-    "date_interview","created_at","updated_at","owner")
-  search_fields = ("respondent",)
+  list_display = ('controlnumber','municipality','barangay','purok','respondent',
+    'date_interview','created_at','updated_at','owner')
+  search_fields = ('respondent',)
   list_filter = ('municipality_id','barangay_id','access_electricity', 'access_internet','access_water_supply','potable',
     'floods_occur','experience_evacuate','access_health_medical_facility',
     'access_telecommuniciation','access_drill_simulation')
 
+class DemographiesAdmin(admin.ModelAdmin):
+  list_display = ('lastname','firstname','middlename','birthdate','age','controlnumber_id',
+    'created_at','updated_at','owner')
+  fields = ['controlnumber','lastname','firstname','middlename','extension','nuclear_family','relationshiptohead',
+            'gender','birthdate', 'marital_status', 'ethnicity_by_blood', 'member_ip', 'informal_settler', 'religion',
+            'person_with_special_needs', 'type_of_disability', 'is_ofw', 'residence', 'nutritional_status', 'nutritional_status_recorded',
+            'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
+            'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
+            'dependent_of_philhealth_member', 'owner']
+
+  def age(self,demography):
+    today = date.today()
+    bday = demography.birthdate.strftime("%Y-%m-%d %H:%M:%S")
+    datem = datetime.datetime.strptime(bday,"%Y-%m-%d %H:%M:%S")
+    return today.year - datem.year - ((today.month, today.day) < (datem.month, datem.day))
+
 admin.site.register(Households,HouseholdsAdmin)
+admin.site.register(Demographies,DemographiesAdmin)
 
 # def has_change_permission(self, request, obj=None):
 #         if obj:
