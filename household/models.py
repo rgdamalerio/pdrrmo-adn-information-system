@@ -1,9 +1,12 @@
+from pyexpat import model
 from django.utils.translation import gettext as _
 from django.db import models
 from django.contrib.gis.db import models
 from library.models import Municipalities, Barangays, Householdbuildingtypes, \
   Householdtenuralstatus, Householdroofmaterials, Buildingwallmaterials, \
-  Householdwatertenuralstatus, Waterlevelsystems, Evacuationareas
+  Householdwatertenuralstatus, Waterlevelsystems, Evacuationareas, Relationshiptoheads, \
+  Genders, Maritalstatus, Disabilities, Nutritionalstatus, Gradelevels, Trackstrandcourses, \
+  Monthlyincomes
 from django.contrib.auth.models import User
 from django import forms
 
@@ -69,3 +72,48 @@ class Households(models.Model):
 
   class MyForm(forms.ModelForm):
     year = forms.TypedChoiceField(coerce=int, choices=year_choices, initial=current_year)
+
+
+class Demographies(models.Model):
+  controlnumber = models.ForeignKey(Households,on_delete=models.CASCADE,verbose_name='Housedhold belong')
+  lastname = models.CharField(max_length=50)
+  firstname = models.CharField(max_length=50)
+  middlename = models.CharField(max_length=50,null=True)
+  extension = models.CharField(max_length=15,null=True)
+  nuclear_family = models.ForeignKey('self',on_delete=models.SET_NULL,verbose_name='Nuclear family belongs to',null=True)
+  relationshiptohead =  models.ForeignKey(Relationshiptoheads,on_delete=models.CASCADE,verbose_name='Relationship to head')
+  gender = models.ForeignKey(Genders,on_delete=models.CASCADE,verbose_name='Gender')
+  birthdate = models.DateField()
+  marital_status = models.ForeignKey(Maritalstatus,on_delete=models.CASCADE)
+  ethnicity_by_blood = models.CharField(max_length=150,null=True,verbose_name='Belongs to tribe/enthics')
+  member_ip = models.BooleanField(verbose_name='Member of IP\'s')
+  informal_settler = models.BooleanField()
+  religion = models.CharField(max_length=150)
+  person_with_special_needs = models.BooleanField()
+  type_of_disability = models.ForeignKey(Disabilities,on_delete=models.SET_NULL,null=True,blank=True)
+  is_ofw = models.BooleanField(verbose_name='Is OFW')
+  residence = models.BooleanField()
+  nutritional_status = models.ForeignKey(Nutritionalstatus,on_delete=models.CASCADE)
+  nutritional_status_recorded = models.DateField(null=True,blank=True)
+  currently_attending_school = models.BooleanField(verbose_name='Currently attending in school')
+  current_grade_level_attending = models.ForeignKey(Gradelevels,related_name='current_attending',on_delete=models.SET_NULL,null=True,blank=True)
+  highest_eductional_attainment = models.ForeignKey(Gradelevels,related_name='%(class)s_highest_attending',on_delete=models.SET_NULL,null=True)
+  course_completed_vocational = models.ForeignKey(Trackstrandcourses,on_delete=models.SET_NULL,verbose_name='Track/Strand/Course completed (for senior High school/Vocational/College)',null=True,blank=True)
+  can_read_and_write = models.BooleanField(verbose_name='Can read and write or atleast high school graduate')
+  primary_occupation = models.CharField(max_length=255,null=True,blank=True)
+  monthly_income = models.ForeignKey(Monthlyincomes,on_delete=models.CASCADE)
+  sss_member = models.BooleanField()
+  gsis_member = models.BooleanField()
+  philhealth_member = models.BooleanField()
+  dependent_of_philhealth_member = models.BooleanField()
+  created_at = models.DateField(auto_now_add=True)
+  updated_at = models.DateField(auto_now=True)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
+
+
+  def __str__(self):
+    return self.lastname +" "+ self.firstname +" "+ self.middlename
+
+
+  class Meta:
+    verbose_name_plural = "Demographies"
