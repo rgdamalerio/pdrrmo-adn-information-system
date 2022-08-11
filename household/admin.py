@@ -1,11 +1,10 @@
 from django.contrib import admin
-from .models import Households, Demographies
+from .models import Households, Demographies, Availprograms, Hhlivelihoods
 from leaflet.admin import LeafletGeoAdmin
 
 from datetime import date
 import datetime
 
-# Register your models here.
 # Register your models here.
 class HouseholdsAdmin(LeafletGeoAdmin):
   readonly_fields = ('enumerator','editor',)
@@ -39,8 +38,21 @@ class DemographiesAdmin(admin.ModelAdmin):
     datem = datetime.datetime.strptime(bday,"%Y-%m-%d %H:%M:%S")
     return today.year - datem.year - ((today.month, today.day) < (datem.month, datem.day))
 
+class AvailprogramsAdmin(admin.ModelAdmin):
+  list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','program_implementor','created_at','updated_at','owner')
+
+class HlivelihoodsAdmin(admin.ModelAdmin):
+  list_display = ('controlnumber','products','market_value','area','livelihood_tenural_status','with_insurance','livelihood','created_at','updated_at','owner')
+
+  class Meta:
+    verbose_name_plural = "Household livelihoods"
+
+
 admin.site.register(Households,HouseholdsAdmin)
 admin.site.register(Demographies,DemographiesAdmin)
+admin.site.register(Availprograms,AvailprogramsAdmin)
+admin.site.register(Hhlivelihoods,HlivelihoodsAdmin)
+
 
 # def has_change_permission(self, request, obj=None):
 #         if obj:
