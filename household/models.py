@@ -6,7 +6,7 @@ from library.models import Municipalities, Barangays, Householdbuildingtypes, \
   Householdtenuralstatus, Householdroofmaterials, Buildingwallmaterials, \
   Householdwatertenuralstatus, Waterlevelsystems, Evacuationareas, Relationshiptoheads, \
   Genders, Maritalstatus, Disabilities, Nutritionalstatus, Gradelevels, Trackstrandcourses, \
-  Monthlyincomes
+  Monthlyincomes, Typeofprograms, Livelihoods, Livelihoodtenuralstatus
 from django.contrib.auth.models import User
 from django import forms
 
@@ -117,3 +117,45 @@ class Demographies(models.Model):
 
   class Meta:
     verbose_name_plural = "Demographies"
+
+
+class Availprograms(models.Model):
+  controlnumber = models.ForeignKey(Households,on_delete=models.CASCADE,verbose_name='Housedhold belong')
+  type_of_program = models.ForeignKey(Typeofprograms,on_delete=models.CASCADE)
+  name_of_program = models.CharField(max_length=150)
+  number_of_beneficiaries = models.SmallIntegerField()
+  program_implementor = models.CharField(max_length=150)
+  created_at = models.DateField(auto_now_add=True)
+  updated_at = models.DateField(auto_now=True)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
+
+  def __str__(self):
+    return self.name_of_program
+
+  def save(self, *args, **kwargs):
+    for field_name in ['program_implementor']:
+        val = getattr(self, field_name, False)
+        if val:
+            setattr(self, field_name, val.capitalize())
+    super(Availprograms, self).save(*args, **kwargs)
+
+  class Meta:
+    verbose_name_plural = "Avail Programs"
+
+class Hhlivelihoods(models.Model):
+  controlnumber = models.ForeignKey(Households,on_delete=models.CASCADE,verbose_name='Housedhold belong')
+  livelihood = models.ForeignKey(Livelihoods,on_delete=models.CASCADE)
+  market_value = models.IntegerField()
+  products = models.CharField(max_length=255)
+  area = models.FloatField(null=True,blank=True)
+  livelihood_tenural_status = models.ForeignKey(Livelihoodtenuralstatus,on_delete=models.CASCADE)
+  with_insurance = models.BooleanField()
+  created_at = models.DateField(auto_now_add=True)
+  updated_at = models.DateField(auto_now=True)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
+
+  def __str__(self):
+    return self.livelihood.description
+
+  class Meta:
+    verbose_name_plural = "Livelihoods"
