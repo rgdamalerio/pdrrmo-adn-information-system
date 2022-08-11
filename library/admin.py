@@ -16,76 +16,76 @@ class BarangaysAdmin(admin.ModelAdmin):
   list_display = ("psgccode","brgyname","created_at","updated_at","owner","psgcmun")
 
 class BuildingroofmaterialsAdmin(admin.ModelAdmin):
-  list_display = ("description","created_at","updated_at","owner")
+  list_display = ("id","description","created_at","updated_at","owner")
 
 class BuildingstatusAdmin(admin.ModelAdmin):
-  list_display = ("status","created_at","updated_at","owner")
+  list_display = ("id","status","created_at","updated_at","owner")
 
 class BuildingtypesAdmin(admin.ModelAdmin):
-  list_display = ("type","created_at","updated_at","owner")
+  list_display = ("id","type","created_at","updated_at","owner")
 
 class BuildingusesAdmin(admin.ModelAdmin):
-  list_display = ("use","created_at","updated_at","owner")
+  list_display = ("id","use","created_at","updated_at","owner")
 
 class BuildingwallmaterialsAdmin(admin.ModelAdmin):
-  list_display = ("material","created_at","updated_at","owner")
+  list_display = ("id","material","created_at","updated_at","owner")
 
 class DisabilitiesAdmin(admin.ModelAdmin):
-  list_display = ("description","created_at","updated_at","owner")
+  list_display = ("id","description","created_at","updated_at","owner")
 
 class FarmingtechsAdmin(admin.ModelAdmin):
-  list_display = ("technology","created_at","updated_at","owner")
+  list_display = ("id","technology","created_at","updated_at","owner")
 
 class GendersAdmin(admin.ModelAdmin):
-  list_display = ("gender","created_at","updated_at","owner")
+  list_display = ("id","gender","created_at","updated_at","owner")
 
 class GradelevelsAdmin(admin.ModelAdmin):
   list_display = ("code","description","created_at","updated_at","owner")
 
 class EvacuationareasAdmin(admin.ModelAdmin):
-  list_display = ("evacuation_area","created_at","updated_at","owner")
+  list_display = ("id","evacuation_area","created_at","updated_at","owner")
 
 class WaterlevelsystemsAdmin(admin.ModelAdmin):
-  list_display = ("level","description","created_at","updated_at","owner")
+  list_display = ("id","level","description","created_at","updated_at","owner")
 
 class HouseholdroofmaterialsAdmin(admin.ModelAdmin):
-  list_display = ("description","created_at","updated_at","owner")
+  list_display = ("id","description","created_at","updated_at","owner")
 
 class HouseholdtenuralstatusAdmin(admin.ModelAdmin):
-  list_display = ("description","created_at","updated_at","owner")
+  list_display = ("id","description","created_at","updated_at","owner")
 
 class HouseholdbuildingtypesAdmin(admin.ModelAdmin):
-  list_display = ("type","created_at","updated_at","owner")
+  list_display = ("id","type","created_at","updated_at","owner")
 
 class HouseholdwallmaterialsAdmin(admin.ModelAdmin):
-  list_display = ("description","created_at","updated_at","owner")
+  list_display = ("id","description","created_at","updated_at","owner")
 
 class HouseholdwatertenuralstatusAdmin(admin.ModelAdmin):
-  list_display = ("status","created_at","updated_at","owner")
+  list_display = ("id","status","created_at","updated_at","owner")
 
 class LivelihoodsAdmin(admin.ModelAdmin):
-  list_display = ("description","created_at","updated_at","owner")
+  list_display = ("id","description","created_at","updated_at","owner")
 
 class MaritalstatusAdmin(admin.ModelAdmin):
-  list_display = ("status","created_at","updated_at","owner")
+  list_display = ("id","status","created_at","updated_at","owner")
 
 class MonthlyincomesAdmin(admin.ModelAdmin):
-  list_display = ("income","created_at","updated_at","owner")
+  list_display = ("id","income","created_at","updated_at","owner")
 
 class NutritionalstatusAdmin(admin.ModelAdmin):
-  list_display = ("status","created_at","updated_at","owner")
+  list_display = ("id","status","created_at","updated_at","owner")
 
 class RelationshiptoheadsAdmin(admin.ModelAdmin):
-  list_display = ("relationship","created_at","updated_at","owner")
+  list_display = ("id","relationship","created_at","updated_at","owner")
 
 class LivelihoodtenuralstatusAdmin(admin.ModelAdmin):
-  list_display = ("status","created_at","updated_at","owner")
+  list_display = ("id","status","created_at","updated_at","owner")
 
 class TrackstrandcoursesAdmin(admin.ModelAdmin):
-  list_display = ("description","created_at","updated_at","owner")
+  list_display = ("id","description","created_at","updated_at","owner")
 
 class TypeofprogramsAdmin(admin.ModelAdmin):
-  list_display = ("type","created_at","updated_at","owner")
+  list_display = ("id","type","created_at","updated_at","owner")
 
 admin.site.register(Municipalities,MunicipalitiesAdmin)
 admin.site.register(Barangays,BarangaysAdmin)
