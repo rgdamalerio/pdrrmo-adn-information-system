@@ -21,5 +21,5 @@ admin.site.site_title = "Household Database Admin Portal"
 admin.site.index_title = "Welcome to Household Database"
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("/", admin.site.urls),
 ]
