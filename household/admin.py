@@ -6,6 +6,7 @@ from datetime import date
 import datetime
 
 # Register your models here.
+@admin.register(Households)
 class HouseholdsAdmin(LeafletGeoAdmin):
   readonly_fields = ('enumerator','editor',)
   fields = ['respondent','municipality', 'barangay', 'purok', 'location','householdbuildingtypes',
@@ -22,6 +23,8 @@ class HouseholdsAdmin(LeafletGeoAdmin):
     'floods_occur','experience_evacuate','access_health_medical_facility',
     'access_telecommuniciation','access_drill_simulation')
 
+
+@admin.register(Demographies)
 class DemographiesAdmin(admin.ModelAdmin):
   list_display = ('lastname','firstname','middlename','birthdate','age','controlnumber_id',
     'created_at','updated_at','owner')
@@ -38,20 +41,19 @@ class DemographiesAdmin(admin.ModelAdmin):
     datem = datetime.datetime.strptime(bday,"%Y-%m-%d %H:%M:%S")
     return today.year - datem.year - ((today.month, today.day) < (datem.month, datem.day))
 
+
+@admin.register(Availprograms)
 class AvailprogramsAdmin(admin.ModelAdmin):
   list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','program_implementor','created_at','updated_at','owner')
 
+
+@admin.register(Hhlivelihoods)
 class HlivelihoodsAdmin(admin.ModelAdmin):
   list_display = ('controlnumber','products','market_value','area','livelihood_tenural_status','with_insurance','livelihood','created_at','updated_at','owner')
 
   class Meta:
     verbose_name_plural = "Household livelihoods"
 
-
-admin.site.register(Households,HouseholdsAdmin)
-admin.site.register(Demographies,DemographiesAdmin)
-admin.site.register(Availprograms,AvailprogramsAdmin)
-admin.site.register(Hhlivelihoods,HlivelihoodsAdmin)
 
 
 # def has_change_permission(self, request, obj=None):
