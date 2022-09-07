@@ -34,6 +34,7 @@ class DemographiesAdmin(admin.ModelAdmin):
             'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
+  search_fields = ('lastname',)
 
   def age(self,demography):
     today = date.today()
@@ -45,15 +46,17 @@ class DemographiesAdmin(admin.ModelAdmin):
 @admin.register(Availprograms)
 class AvailprogramsAdmin(admin.ModelAdmin):
   list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','program_implementor','created_at','updated_at','owner')
-
+  search_fields = ('controlnumber',)
 
 @admin.register(Hhlivelihoods)
 class HlivelihoodsAdmin(admin.ModelAdmin):
   list_display = ('controlnumber','products','market_value','area','livelihood_tenural_status','with_insurance','livelihood','created_at','updated_at','owner')
-
+  search_fields = ('controlnumber',)
+  
   class Meta:
     verbose_name_plural = "Household livelihoods"
 
+  
 
 
 # def has_change_permission(self, request, obj=None):
