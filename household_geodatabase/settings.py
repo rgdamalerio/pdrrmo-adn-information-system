@@ -47,8 +47,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.gis",
-    "rest_framework",
-    "rest_framework.authtoken",
+    ## Django Rest API Framework
+    #"rest_framework",
+    #"rest_framework.authtoken",
     "users",
     "leaflet",
     "library",
@@ -82,7 +83,7 @@ ROOT_URLCONF = "household_geodatabase.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ['templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -94,6 +95,8 @@ TEMPLATES = [
         },
     },
 ]
+
+LOGOUT_URL ='logout/'
 
 WSGI_APPLICATION = "household_geodatabase.wsgi.application"
 
@@ -151,7 +154,18 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 
+# Leaflet Configuration
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER' : (8.975755,125.559133),
+    'DEFAULT_ZOOM': 9,
+    'MAX_ZOOM': 20,
+    'MIN_ZOOM': 3,
+    'SCALE' : 'both',
+    'ATTRIBUTION_PREFIX': 'Operation and Warning Division'
+}
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+

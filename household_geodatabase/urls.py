@@ -14,26 +14,33 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-from rest_framework.routers import DefaultRouter
-from users.views import UserViewSet
+from django.urls import path, reverse_lazy
+from django.views.generic.base import RedirectView
+
+## Set this if using django rest framework
+# from django.urls import path, include
+# from rest_framework_simplejwt.views import (
+#     TokenObtainPairView,
+#     TokenRefreshView,
+# )
+# from rest_framework.routers import DefaultRouter
+# from users.views import UserViewSet
 
 admin.site.index_title = "Household Database"
 admin.site.site_title = "Household Database Admin Portal"
 admin.site.site_header = "Household Database Information System"
 
 urlpatterns = [
+    # Redirect home view to admin:index
+    path('', RedirectView.as_view(url=reverse_lazy('admin:index'))),
     path("admin/", admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    ## URL for api rest framework
+    #path('api-auth/', include('rest_framework.urls')),
+    #path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    #path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
-router = DefaultRouter()
-router.register('user',UserViewSet,basename='user')
+#router = DefaultRouter()
+#router.register('user',UserViewSet,basename='user')
 
-urlpatterns += router.urls
+#urlpatterns += router.urls
