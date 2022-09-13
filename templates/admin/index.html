@@ -11,6 +11,7 @@
 <style type="text/css">
     #gis {width: 100%;height: 750px;}
 </style>
+<script type="text/javascript" src="{% static 'dist/leaflet.ajax.js'%}"></script>
 {% endblock %}
 
 {% block coltype %}colMS{% endblock %}
@@ -34,7 +35,16 @@
 {% endblock %}
 {% endif %}
 
-
 {% block content %}
-{% leaflet_map "gis" %}
+<script type="text/javascript">
+    function our_households(map,options){
+        var datasets = new L.GeoJSON.AJAX("{% url 'household'%}",{
+            onEachFeature: function(feature,layer){
+                layer.bindPopup(feature.properties.respondent.toString());
+            }
+        });
+        datasets.addTo(map);
+    }
+</script>
+{% leaflet_map "gis" callback="window.our_households" %}
 {% endblock %}
