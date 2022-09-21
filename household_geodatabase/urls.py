@@ -36,6 +36,7 @@ urlpatterns = [
     path('', RedirectView.as_view(url=reverse_lazy('admin:index'))),
     path("admin/", admin.site.urls),
     path('',include('household.urls')),
+    path('address/',include('library.urls')),
     ## URL for api rest framework
     #path('api-auth/', include('rest_framework.urls')),
     #path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

@@ -3,6 +3,7 @@ from django.contrib.gis.db import models
 from .models import Households, Demographies, Availprograms, Hhlivelihoods
 from leaflet.admin import LeafletGeoAdmin
 from mapwidgets.widgets import GooglePointFieldWidget
+from household.forms import HouseholdForm
 
 from datetime import date
 import datetime
@@ -10,6 +11,7 @@ import datetime
 # Register your models here.
 @admin.register(Households)
 class HouseholdsAdmin(admin.ModelAdmin):
+  form = HouseholdForm
   formfield_overrides = {
       models.PointField: {"widget": GooglePointFieldWidget}
   }
@@ -27,6 +29,12 @@ class HouseholdsAdmin(admin.ModelAdmin):
   list_filter = ('municipality_id','barangay_id','access_electricity', 'access_internet','access_water_supply','potable',
     'floods_occur','experience_evacuate','access_health_medical_facility',
     'access_telecommuniciation','access_drill_simulation')
+
+  class Media:
+      js = (
+          'js/chained-address.js',
+      )
+
 
 
 @admin.register(Demographies)
