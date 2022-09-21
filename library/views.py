@@ -10,5 +10,5 @@ def municipality_list(request):
 
 @login_required
 def barangay_list(request,municipality_id):
-  barangays = Barangays.objects.filter(psgcmun=municipality_id)
+  barangays = Barangays.objects.filter(psgcmun_id=municipality_id)
   return JsonResponse({'data': [{'psgccode': b.psgccode, 'brgyname': b.brgyname} for b in barangays]})
