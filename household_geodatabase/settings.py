@@ -175,7 +175,7 @@ MAP_WIDGETS = {
         ("markerFitZoom", 12),
         ("streetViewControl", True),
     ),
-    "GOOGLE_MAP_API_KEY": "AIzaSyBf-YractMx7CbUvtckSbQ8qUeaUTV7feU"
+    "GOOGLE_MAP_API_KEY": env("GOOGLE_MAP_API_KEY")
 }
 
 # Default primary key field type
