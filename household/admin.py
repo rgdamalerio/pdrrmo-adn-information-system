@@ -1,13 +1,18 @@
 from django.contrib import admin
+from django.contrib.gis.db import models
 from .models import Households, Demographies, Availprograms, Hhlivelihoods
 from leaflet.admin import LeafletGeoAdmin
+from mapwidgets.widgets import GooglePointFieldWidget
 
 from datetime import date
 import datetime
 
 # Register your models here.
 @admin.register(Households)
-class HouseholdsAdmin(LeafletGeoAdmin):
+class HouseholdsAdmin(admin.ModelAdmin):
+  formfield_overrides = {
+      models.PointField: {"widget": GooglePointFieldWidget}
+  }
   readonly_fields = ('enumerator','editor',)
   fields = ['respondent','municipality', 'barangay', 'purok', 'location','householdbuildingtypes',
             'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
@@ -55,8 +60,6 @@ class HlivelihoodsAdmin(admin.ModelAdmin):
   
   class Meta:
     verbose_name_plural = "Household livelihoods"
-
-  
 
 
 # def has_change_permission(self, request, obj=None):

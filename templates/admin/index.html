@@ -25,7 +25,10 @@
 {% block breadcrumbs %}
 <div class="row mb-2">
     <div class="col-sm-4">
-        <h2>{{title}}</h2>
+        <h2>{{title}}</h2> 
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchModal">
+            Advance Search
+          </button>
     </div>
     <div class="col-sm-8">
         <ol class="breadcrumb float-sm-right">
@@ -40,38 +43,65 @@
 {% endif %}
 
 {% block content %}
-<script type="text/javascript">
-    function our_households(map,options){
 
-        var basemaps = {
-            OSM: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+<!-- INCLUDE -->
+{% include 'admin/advance_search.html' %}
+
+<script type="text/javascript">
+
+    var datasets,basemaps,groupedOverlays;
+   
+
+    document.addEventListener("DOMContentLoaded", function() {
+        $( "#advance_search" ).click(function() {
+            
+            // datasets = new L.GeoJSON.AJAX("{% url 'household'%}",{
+            //     onEachFeature: function(feature,layer){
+            //         layer.bindPopup('Hahaha')
+            //     }
+            // });       
+            //our_households();
+        });
+    });
+
+    function our_households(map,options){
+        datasets = new L.GeoJSON.AJAX("{% url 'household'%}",{
+            onEachFeature: function(feature,layer){
+                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+
+                    '<font size="2" face="Courier New" >' +
+                    '<table border=0>'+
+                    '<tbody>' +
+                        '<tr>' +
+                        '<td>1</td>' +
+                        '<td>: Jane Doe</td>' +
+                        '</tr>' +
+                    '</tbody>' +
+                    '</table>' +
+                    '<img width="100%" height="100%" src="{% static "image/sample.jpg" %}">')
+            }
+        });
+        
+        basemaps = {
+            "OSM": L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 18,
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }),
-            GoogleSatellite: L.gridLayer
+            "Google Satellite": L.gridLayer
                         .googleMutant({
                             type: "satellite", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
             }),
-            GoogleRoadmap: L.gridLayer
+            "Google Roadmap": L.gridLayer
                         .googleMutant({
                             type: "roadmap", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
             })
         };
-
-        var datasets = new L.GeoJSON.AJAX("{% url 'household'%}",{
-            onEachFeature: function(feature,layer){
-                layer.bindPopup(feature.properties.respondent.toString());
-            }
-        });
-        
-        var groupedOverlays = {
+        groupedOverlays = {
                 "Databaset Layers": {
                     "Household": datasets,
                 },           
             };
-        //datasets.addTo(map);
 
-        L.control.groupedLayers(basemaps, groupedOverlays).addTo(map);
+       L.control.groupedLayers(basemaps, groupedOverlays).addTo(map);
     }
 </script>
 {% leaflet_map "gis" callback="window.our_households" %}

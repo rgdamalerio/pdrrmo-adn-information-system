@@ -73,6 +73,8 @@ class Households(models.Model):
   class MyForm(forms.ModelForm):
     year = forms.TypedChoiceField(coerce=int, choices=year_choices, initial=current_year)
 
+  # A template for a very customized change view:
+  change_form_template = 'admin/change_form.html'
 
 class Demographies(models.Model):
   controlnumber = models.ForeignKey(Households,on_delete=models.CASCADE,verbose_name='Housedhold belong')

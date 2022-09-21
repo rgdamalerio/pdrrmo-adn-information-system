@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "leaflet",
     "library",
     "household",
+    "mapwidgets",
 ]
 
 REST_FRAMEWORK = {
@@ -165,6 +166,16 @@ LEAFLET_CONFIG = {
     'MIN_ZOOM': 3,
     'SCALE' : 'both',
     'ATTRIBUTION_PREFIX': 'Operation and Warning Division'
+}
+
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 15),
+        ("mapCenterLocation", [8.975755,125.559133]),
+        ("markerFitZoom", 12),
+        ("streetViewControl", True),
+    ),
+    "GOOGLE_MAP_API_KEY": "AIzaSyBf-YractMx7CbUvtckSbQ8qUeaUTV7feU"
 }
 
 # Default primary key field type
