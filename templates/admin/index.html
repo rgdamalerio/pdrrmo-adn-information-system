@@ -9,7 +9,7 @@
 {% leaflet_js %}
 {% leaflet_css %}
 <style type="text/css">
-    #gis {width: 100%;height: 750px;}
+    #map {width: 100%;height: 750px;}
 </style>
 <link rel="stylsheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css'%}">
 <script type="text/javascript" src="{% static 'dist/leaflet.ajax.js'%}"></script>
@@ -49,23 +49,28 @@
 
 <script type="text/javascript">
 
-    var datasets,basemaps,groupedOverlays;
-   
+    window.addEventListener("map:init", function (e) {
+    
+        var detail = e.detail;
+        var basemaps = {
+                        "OSM": L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                    maxZoom: 18,
+                                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        }),
+                        "Google Satellite": L.gridLayer
+                                    .googleMutant({
+                                        type: "satellite", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+                        }),
+                        "Google Roadmap": L.gridLayer
+                                    .googleMutant({
+                                        type: "roadmap", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+                        })
+                    };
+        
+        // Create group for your layers and add it to the map
+        var layerGroup = L.layerGroup(basemaps).addTo(detail.map);
 
-    document.addEventListener("DOMContentLoaded", function() {
-        $( "#advance_search" ).click(function() {
-            
-            // datasets = new L.GeoJSON.AJAX("{% url 'household'%}",{
-            //     onEachFeature: function(feature,layer){
-            //         layer.bindPopup('Hahaha')
-            //     }
-            // });       
-            //our_households();
-        });
-    });
-
-    function our_households(map,options){
-        datasets = new L.GeoJSON.AJAX("{% url 'household'%}",{
+        var datasets = new L.GeoJSON.AJAX("{% url 'household'%}",{
             onEachFeature: function(feature,layer){
                 layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+
                     '<font size="2" face="Courier New" >' +
@@ -80,29 +85,87 @@
                     '<img width="100%" height="100%" src="{% static "image/sample.jpg" %}">')
             }
         });
-        
-        basemaps = {
-            "OSM": L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 18,
-                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }),
-            "Google Satellite": L.gridLayer
-                        .googleMutant({
-                            type: "satellite", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-            }),
-            "Google Roadmap": L.gridLayer
-                        .googleMutant({
-                            type: "roadmap", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-            })
-        };
-        groupedOverlays = {
-                "Databaset Layers": {
-                    "Household": datasets,
-                },           
-            };
 
-       L.control.groupedLayers(basemaps, groupedOverlays).addTo(map);
-    }
+       
+        var groupedOverlays = {
+                        "Databaset Layers": {
+                            "Household": datasets,
+                        },           
+                    };
+
+        layerGroup.addLayer(datasets);
+
+
+
+        $( "#advance_search" ).click(function() {
+            
+            // datasets = new L.GeoJSON.AJAX("{% url 'household'%}",{
+            //     onEachFeature: function(feature,layer){
+            //         layer.bindPopup('Hahaha')
+            //     }
+            // });       
+            //our_households();
+            layerGroup.clearLayers();
+        });
+
+
+    }, false);
+
+    // var datasets,basemaps,groupedOverlays;
+   
+
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     $( "#advance_search" ).click(function() {
+            
+    //         // datasets = new L.GeoJSON.AJAX("{% url 'household'%}",{
+    //         //     onEachFeature: function(feature,layer){
+    //         //         layer.bindPopup('Hahaha')
+    //         //     }
+    //         // });       
+    //         //our_households();
+    //     });
+    // });
+
+    // function our_households(map,options){
+        
+    //     datasets = new L.GeoJSON.AJAX("{% url 'household'%}",{
+    //         onEachFeature: function(feature,layer){
+    //             layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+
+    //                 '<font size="2" face="Courier New" >' +
+    //                 '<table border=0>'+
+    //                 '<tbody>' +
+    //                     '<tr>' +
+    //                     '<td>1</td>' +
+    //                     '<td>: Jane Doe</td>' +
+    //                     '</tr>' +
+    //                 '</tbody>' +
+    //                 '</table>' +
+    //                 '<img width="100%" height="100%" src="{% static "image/sample.jpg" %}">')
+    //         }
+    //     });
+        
+    //     basemaps = {
+    //         "OSM": L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //                     maxZoom: 18,
+    //                     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    //         }),
+    //         "Google Satellite": L.gridLayer
+    //                     .googleMutant({
+    //                         type: "satellite", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+    //         }),
+    //         "Google Roadmap": L.gridLayer
+    //                     .googleMutant({
+    //                         type: "roadmap", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+    //         })
+    //     };
+    //     groupedOverlays = {
+    //             "Databaset Layers": {
+    //                 "Household": datasets,
+    //             },           
+    //         };
+
+    //    L.control.groupedLayers(basemaps, groupedOverlays).addTo(map);
+    // }
 </script>
-{% leaflet_map "gis" callback="window.our_households" %}
+{% leaflet_map "map" %}
 {% endblock %}
