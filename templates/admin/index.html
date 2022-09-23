@@ -75,6 +75,7 @@
             }
         });
 
+ 
         var household_data = L.layerGroup([households]);
 
         var OSM =  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -101,28 +102,45 @@
 
         $( "#advance_search" ).click(function() {
 
-            //Clear old layer
-            household_data.clearLayers();
+            
+            /* Get from elements values */
+            var values = $('#advance_search_form').serialize();
 
-            //Ajax call to request layer base on filter parameter
-            var households = new L.GeoJSON.AJAX("{% url 'household'%}",{
-                pointToLayer: function(feature, latlng) {
-                    var greenIcon = L.icon({
-                        iconUrl: '{% static "image/icons8-green-circle-48.png"%}',
+            $.ajax({
+                type: "get",
+                url: "{% url 'household'%}",
+                data: values ,
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                        //Clear old layer
+                        household_data.clearLayers();
 
-                        iconSize:     [16, 16],
-                        iconAnchor:   [0,0], // point of the icon which will correspond to marker's location
-                    });
-                    return L.marker(latlng, {icon: greenIcon});
+                       //Load The GeoJSON layer using Leaflet GeoJSON method 
+                        var households = new L.GeoJSON(response,{
+                            pointToLayer: function(feature, latlng) {
+                                var greenIcon = L.icon({
+                                    iconUrl: '{% static "image/icons8-green-circle-48.png"%}',
+
+                                    iconSize:     [16, 16],
+                                    iconAnchor:   [0,0], // point of the icon which will correspond to marker's location
+                                });
+                                return L.marker(latlng, {icon: greenIcon});
+                            },
+                            onEachFeature: function(feature,layer){
+                                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+
+                                    'bag-ong gi dugang')
+                            }
+                        });
+                        //fit Bounds
+                        detail.map.fitBounds(households.getBounds());   
+       
+                        // update layer group with the new point Layer
+                        household_data.addLayer(households);
+
                 },
-                onEachFeature: function(feature,layer){
-                    layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+
-                        'bag-ong gi dugang')
-                }
             });
 
-            // update layer group with the new point Layer
-            household_data.addLayer(households);
+            
         });
     
     }, false);

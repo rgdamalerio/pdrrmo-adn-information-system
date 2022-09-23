@@ -36,7 +36,7 @@
             waterlevelsystems = models.ForeignKey(Waterlevelsystems,on_delete=models.CASCADE,verbose_name='Level of water system')
             evacuationareas = models.ForeignKey(Evacuationareas,on_delete=models.CASCADE,verbose_name='Nearest evacuation center') -->
 
-        <form>
+        <form id="advance_search_form">
           <div class="form-group">
             <label for="controlnumber">Control number</label>
             <input type="text" class="form-control" name="controlnumber" id="controlnumber">
@@ -85,7 +85,7 @@
       </div> 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" id="advance_search" class="btn btn-primary">Search</button>
+        <button type="button" id="advance_search" data-dismiss="modal" class="btn btn-primary">Search</button>
       </div>
     </div>
   </div>
