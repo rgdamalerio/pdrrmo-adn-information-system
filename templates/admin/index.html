@@ -107,8 +107,9 @@
             var values = $('#advance_search_form').serialize();
 
             $.ajax({
-                type: "get",
+                type: "post",
                 url: "{% url 'household'%}",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
                 data: values ,
                 contentType: 'application/json; charset=utf-8',
                 success: function (response) {

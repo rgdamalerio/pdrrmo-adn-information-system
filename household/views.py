@@ -4,8 +4,9 @@ from django.core.serializers import serialize
 from django.http import HttpResponse
 from household.models import Households
 from django.core.exceptions import PermissionDenied, BadRequest
+from django.views.decorators.http import require_http_methods
 
-# Create your views here.
+@require_http_methods(["POST"])
 def household_datasets(request):
   if request.user.is_authenticated:
     # Do something for authenticated users.
@@ -14,14 +15,3 @@ def household_datasets(request):
   else:
     # Do something for anonymous users.
     raise PermissionDenied()
-
-def search_households(request):
-  if request.method == 'POST':
-    if request.user.is_authenticated:
-      # Do something for authenticated users.
-      pass
-    else:
-      # Do something for anonymous users.
-      raise PermissionDenied()
-  else:
-      raise BadRequest() 
