@@ -61,21 +61,12 @@
                 return L.marker(latlng, {icon: greenIcon});
             },
             onEachFeature: function(feature,layer){
-                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+
-                    '<font size="2" face="Courier New" >' +
-                    '<table border=0>'+
-                    '<tbody>' +
-                        '<tr>' +
-                        '<td>1</td>' +
-                        '<td>: Jane Doe</td>' +
-                        '</tr>' +
-                    '</tbody>' +
-                    '</table>' +
-                    '<img width="100%" height="100%" src="{% static "image/sample.jpg" %}">')
+                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+                        
+                                '<a href="household/households/'+feature.properties.pk+'/change">View household information</a>');
             }
         });
 
- 
+        
         var household_data = L.layerGroup([households]);
 
         var OSM =  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -86,8 +77,13 @@
                         .googleMutant({
                             type: "satellite", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
                     });   
-                    
+                      
         household_data.addTo(detail.map);
+
+
+        households.on('data:loaded', function() {
+            detail.map.fitBounds(households.getBounds());
+        });
 
         var baseMaps = {
             "OpenStreetMap": OSM,
@@ -100,9 +96,7 @@
 
         var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(detail.map);
 
-        $( "#advance_search" ).click(function() {
-
-            
+        $( "#advance_search" ).click(function() {          
             /* Get from elements values */
             var values = $('#advance_search_form').serialize();
 
@@ -128,8 +122,9 @@
                                 return L.marker(latlng, {icon: greenIcon});
                             },
                             onEachFeature: function(feature,layer){
-                                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+
-                                    'bag-ong gi dugang')
+                                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+                        
+                                '<a href="household/households/'+feature.properties.pk+'/change">View household information</a>');
+
                             }
                         });
                         //fit Bounds
@@ -143,6 +138,46 @@
 
             
         });
+
+        function  _onload(){
+            var values = $('#advance_search_form').serialize();
+
+            $.ajax({
+                type: "post",
+                url: "{% url 'household'%}",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                data: values ,
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                        //Clear old layer
+                        household_data.clearLayers();
+
+                       //Load The GeoJSON layer using Leaflet GeoJSON method 
+                        var households = new L.GeoJSON(response,{
+                            pointToLayer: function(feature, latlng) {
+                                var greenIcon = L.icon({
+                                    iconUrl: '{% static "image/icons8-green-circle-48.png"%}',
+
+                                    iconSize:     [16, 16],
+                                    iconAnchor:   [0,0], // point of the icon which will correspond to marker's location
+                                });
+                                return L.marker(latlng, {icon: greenIcon});
+                            },
+                            onEachFeature: function(feature,layer){
+                                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+                        
+                                '<a href="household/households/'+feature.properties.pk+'/change">View household information</a>');
+
+                            }
+                        });
+                        //fit Bounds
+                        detail.map.fitBounds(households.getBounds());   
+       
+                        // update layer group with the new point Layer
+                        household_data.addLayer(households);
+
+                },
+            });
+        }
     
     }, false);
 </script>

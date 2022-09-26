@@ -4,17 +4,20 @@ from .models import Households, Demographies, Availprograms, Hhlivelihoods
 from leaflet.admin import LeafletGeoAdmin
 from mapwidgets.widgets import GooglePointFieldWidget
 from household.forms import HouseholdForm
+from django.urls import reverse
+from django.utils.safestring import mark_safe    
 
 from datetime import date
 import datetime
 
 # Register your models here.
 @admin.register(Households)
-class HouseholdsAdmin(admin.ModelAdmin):
-  form = HouseholdForm
-  formfield_overrides = {
-      models.PointField: {"widget": GooglePointFieldWidget}
-  }
+class HouseholdsAdmin(LeafletGeoAdmin):
+# class HouseholdsAdmin(admin.ModelAdmin):
+#   form = HouseholdForm
+#   formfield_overrides = {
+#       models.PointField: {"widget": GooglePointFieldWidget}
+#   }
   readonly_fields = ('enumerator','editor',)
   fields = ['respondent','municipality', 'barangay', 'purok', 'location','householdbuildingtypes',
             'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
@@ -34,7 +37,7 @@ class HouseholdsAdmin(admin.ModelAdmin):
       js = (
           'js/chained-address.js',
       )
-
+    
 
 
 @admin.register(Demographies)
