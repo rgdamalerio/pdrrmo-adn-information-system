@@ -6,6 +6,17 @@ from leaflet.admin import LeafletGeoAdmin
 from datetime import date
 import datetime
 
+# /Related model with inline view in household model
+class DemographiesInline(admin.StackedInline):
+  model = Demographies
+  readonly_fields = ['owner','created_at','updated_at',]
+
+class AvailprogramsInline(admin.StackedInline):
+  model = Availprograms
+
+class LivelihoodsInline(admin.StackedInline):
+  model = Hhlivelihoods
+
 # Register your models here.
 @admin.register(Households)
 class HouseholdsAdmin(LeafletGeoAdmin):
@@ -23,7 +34,11 @@ class HouseholdsAdmin(LeafletGeoAdmin):
   list_filter = ('municipality_id','barangay_id','access_electricity', 'access_internet','access_water_supply','potable',
     'floods_occur','experience_evacuate','access_health_medical_facility',
     'access_telecommuniciation','access_drill_simulation')
-
+  inlines = [
+    DemographiesInline,
+    AvailprogramsInline,
+    LivelihoodsInline
+  ]
   class Media:
       js = (
           'js/chained-address.js',
@@ -41,6 +56,7 @@ class DemographiesAdmin(admin.ModelAdmin):
             'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
+  readonly_fields = ['owner','created_at','updated_at',]
   search_fields = ('lastname',)
 
   def age(self,demography):
