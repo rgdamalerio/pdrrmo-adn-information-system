@@ -59,8 +59,9 @@
                 return L.marker(latlng, {icon: greenIcon});
             },
             onEachFeature: function(feature,layer){
-                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+                        
-                                '<a href="household/households/'+feature.properties.pk+'/change">View household information</a>');
+                var url_mask = "{% url 'admin:household_households_change' object_id='12345' %}".replace(/12345/, feature.properties.pk.toString());
+                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+  
+                                '<a href="'+url_mask+'">View household information</a>');              
             }
         });
 
@@ -132,9 +133,9 @@
                                 return L.marker(latlng, {icon: greenIcon});
                             },
                             onEachFeature: function(feature,layer){
+                                var url_mask = "{% url 'admin:household_households_change' object_id='12345' %}".replace(/12345/, feature.properties.pk.toString());
                                 layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+                        
-                                '<a href="household/households/'+feature.properties.pk+'/change">View household information</a>');
-
+                                                '<a href="'+url_mask+'">View household information</a>');
                             }
                         });
                         //fit Bounds
@@ -147,47 +148,7 @@
             });
 
             
-        });
-
-        function  _onload(){
-            var values = $('#advance_search_form').serialize();
-
-            $.ajax({
-                type: "post",
-                url: "{% url 'household'%}",
-                headers: {'X-CSRFToken': '{{ csrf_token }}'},
-                data: values ,
-                contentType: 'application/json; charset=utf-8',
-                success: function (response) {
-                        //Clear old layer
-                        household_data.clearLayers();
-
-                       //Load The GeoJSON layer using Leaflet GeoJSON method 
-                        var households = new L.GeoJSON(response,{
-                            pointToLayer: function(feature, latlng) {
-                                var greenIcon = L.icon({
-                                    iconUrl: '{% static "image/icons8-green-circle-48.png"%}',
-
-                                    iconSize:     [16, 16],
-                                    iconAnchor:   [0,0], // point of the icon which will correspond to marker's location
-                                });
-                                return L.marker(latlng, {icon: greenIcon});
-                            },
-                            onEachFeature: function(feature,layer){
-                                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+                        
-                                '<a href="household/households/'+feature.properties.pk+'/change">View household information</a>');
-
-                            }
-                        });
-                        //fit Bounds
-                        detail.map.fitBounds(households.getBounds());   
-       
-                        // update layer group with the new point Layer
-                        household_data.addLayer(households);
-
-                },
-            });
-        }
+        });     
     
     }, false);
 </script>
