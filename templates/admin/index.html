@@ -14,8 +14,6 @@
 <link rel="stylsheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css'%}">
 <script type="text/javascript" src="{% static 'dist/leaflet.ajax.js'%}"></script>
 <script type="text/javascript" src="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.js'%}"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2MmppHGfdrSzVXgDSPWVmOUVH-rwkI6M" async defer></script>
-<script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
 {% endblock %}
 
 {% block coltype %}colMS{% endblock %}
@@ -73,10 +71,11 @@
                     maxZoom: 18,
                     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     });
-        var Google_Satellite = L.gridLayer
-                        .googleMutant({
-                            type: "satellite", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-                    });   
+                    
+        var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        });
+
                       
         household_data.addTo(detail.map);
 
@@ -86,8 +85,8 @@
         });
 
         var baseMaps = {
-            "OpenStreetMap": OSM,
-            "Google Satellite": Google_Satellite
+            "Esri WorldImagery": Esri_WorldImagery,
+            "OSM":OSM
         };
 
         var overlayMaps = {
