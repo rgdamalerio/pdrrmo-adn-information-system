@@ -76,6 +76,12 @@
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         });
 
+        var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        });
+
                       
         household_data.addTo(detail.map);
 
@@ -86,14 +92,15 @@
 
         var baseMaps = {
             "Esri WorldImagery": Esri_WorldImagery,
-            "OSM":OSM
+            "CartoDB Voyager":CartoDB_Voyager,
+            "Open StreetMap":OSM,
         };
 
         var overlayMaps = {
             "Households": household_data
         };
 
-        var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(detail.map);
+        var layerControl = L.control.layers(overlayMaps).addTo(detail.map);
 
         $( "#advance_search" ).click(function() {          
             /* Get from elements values */
