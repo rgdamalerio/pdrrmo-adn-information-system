@@ -1,11 +1,7 @@
 from django.contrib import admin
-from django.contrib.gis.db import models
 from .models import Households, Demographies, Availprograms, Hhlivelihoods
 from leaflet.admin import LeafletGeoAdmin
-from mapwidgets.widgets import GooglePointFieldWidget
-from household.forms import HouseholdForm
-from django.urls import reverse
-from django.utils.safestring import mark_safe    
+
 
 from datetime import date
 import datetime
@@ -13,11 +9,6 @@ import datetime
 # Register your models here.
 @admin.register(Households)
 class HouseholdsAdmin(LeafletGeoAdmin):
-# class HouseholdsAdmin(admin.ModelAdmin):
-#   form = HouseholdForm
-#   formfield_overrides = {
-#       models.PointField: {"widget": GooglePointFieldWidget}
-#   }
   readonly_fields = ('enumerator','editor',)
   fields = ['respondent','municipality', 'barangay', 'purok', 'location','householdbuildingtypes',
             'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
