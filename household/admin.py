@@ -9,13 +9,25 @@ import datetime
 # /Related model with inline view in household model
 class DemographiesInline(admin.StackedInline):
   model = Demographies
-  readonly_fields = ['owner','created_at','updated_at',]
+  extra = 0
+  readonly_fields = ['owner','created_at','updated_at','age',]
+
+
+  def age(self,demography):
+    today = date.today()
+    bday = demography.birthdate.strftime("%Y-%m-%d %H:%M:%S")
+    datem = datetime.datetime.strptime(bday,"%Y-%m-%d %H:%M:%S")
+    return today.year - datem.year - ((today.month, today.day) < (datem.month, datem.day))
 
 class AvailprogramsInline(admin.StackedInline):
   model = Availprograms
+  extra = 0
+  readonly_fields = ['owner','created_at','updated_at',]
 
 class LivelihoodsInline(admin.StackedInline):
   model = Hhlivelihoods
+  extra = 0
+  readonly_fields = ['owner','created_at','updated_at',]
 
 # Register your models here.
 @admin.register(Households)
@@ -56,7 +68,7 @@ class DemographiesAdmin(admin.ModelAdmin):
             'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
-  readonly_fields = ['owner','created_at','updated_at',]
+  readonly_fields = ['owner','created_at','updated_at','age',]
   search_fields = ('lastname',)
 
   def age(self,demography):
