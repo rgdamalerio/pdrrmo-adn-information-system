@@ -67,7 +67,22 @@
         
         var household_data = L.layerGroup([households]);
 
-                  
+        var OSM =  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 18,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    });
+                    
+        var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        });
+
+        var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        });
+
+                      
         household_data.addTo(detail.map);
 
 
@@ -75,11 +90,21 @@
             detail.map.fitBounds(households.getBounds());
         });
 
-        var overlayMaps = {
-            "Households": household_data
+        var baseMaps = {
+            "Esri WorldImagery": Esri_WorldImagery,
+            "CartoDB Voyager":CartoDB_Voyager,
+            "Open StreetMap":OSM,
         };
 
-        var layerControl = L.control.layers(overlayMaps).addTo(detail.map);
+        var overlayMaps = {
+            "Households": household_data,
+            //"Evacuation Center": evacuation_center
+        };
+
+        // temporary solution for hiding layers control generate in global setting found in LEAFLET_CONFIG item
+        $('.leaflet-control').hide();
+
+        var layerControl = L.control.layers(baseMaps,overlayMaps).addTo(detail.map);
 
         $( "#advance_search" ).click(function() {          
             /* Get from elements values */
