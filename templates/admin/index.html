@@ -53,8 +53,10 @@
                 var greenIcon = L.icon({
                     iconUrl: '{% static "image/icons8-green-circle-48.png"%}',
 
-                    iconSize:     [16, 16],
-                    iconAnchor:   [0,0], // point of the icon which will correspond to marker's location
+                    iconSize:[16, 16],
+                    iconAnchor:[-3,9], // point of the icon which will correspond to marker's location
+                    popupAnchor:[0,0],
+                    tooltipAnchor:[0,0]
                 });
                 return L.marker(latlng, {icon: greenIcon});
             },
@@ -128,7 +130,9 @@
                                     iconUrl: '{% static "image/icons8-green-circle-48.png"%}',
 
                                     iconSize:     [16, 16],
-                                    iconAnchor:   [0,0], // point of the icon which will correspond to marker's location
+                                    iconAnchor:   [-3,9], // point of the icon which will correspond to marker's location
+                                    popupAnchor: [0,0],
+                                    tooltipAnchor: [0,0]
                                 });
                                 return L.marker(latlng, {icon: greenIcon});
                             },
