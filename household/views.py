@@ -6,12 +6,23 @@ from household.models import Households
 from django.core.exceptions import PermissionDenied, BadRequest
 from django.views.decorators.http import require_http_methods
 
-@require_http_methods(["POST", "GET"])
+@require_http_methods(["GET"])
 def household_datasets(request):
+  
   if request.user.is_authenticated:
     # Do something for authenticated users.
-    households = serialize('geojson',Households.objects.all())
+    print(request.GET)
+    filter_params = {}
+    if request.GET.get('controlnumber'):
+      filter_params['controlnumber'] = request.GET.get('controlnumber')
+    elif request.GET.get('purok'):
+      filter_params['purok'] = request.GET.get('purok')
+    else:
+      pass
+
+    households = serialize('geojson',Households.objects.filter(**filter_params))
     return HttpResponse(households,content_type='json')
+   
   else:
     # Do something for anonymous users.
     raise PermissionDenied()
