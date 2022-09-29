@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Households, Demographies, Availprograms, Hhlivelihoods
 from leaflet.admin import LeafletGeoAdmin
+from household.forms import HouseholdForm
 
 
 from datetime import date
@@ -32,6 +33,7 @@ class LivelihoodsInline(admin.StackedInline):
 # Register your models here.
 @admin.register(Households)
 class HouseholdsAdmin(LeafletGeoAdmin):
+  form = HouseholdForm
   settings_overrides = {
     'TILES': [('Esri_WorldImagery', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
           'attribution': 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
