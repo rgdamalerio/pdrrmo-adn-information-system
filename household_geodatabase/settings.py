@@ -161,7 +161,7 @@ STATICFILES_DIRS = [
 # Leaflet Configuration
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER' : (8.975755,125.559133),
-    'DEFAULT_ZOOM': 9,
+    'DEFAULT_ZOOM': 11,
     'MAX_ZOOM': 20,
     'MIN_ZOOM': 3,
     'SCALE' : 'both',

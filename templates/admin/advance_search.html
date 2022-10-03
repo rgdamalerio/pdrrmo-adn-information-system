@@ -8,7 +8,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body"> 
+      <div class="modal-body" id="household_advance_search_form"> 
 
         <!-- access_electricity = models.BooleanField(_('Access to electricity'))
             access_internet = models.BooleanField(_('Access to internet'))
@@ -36,7 +36,7 @@
             waterlevelsystems = models.ForeignKey(Waterlevelsystems,on_delete=models.CASCADE,verbose_name='Level of water system')
             evacuationareas = models.ForeignKey(Evacuationareas,on_delete=models.CASCADE,verbose_name='Nearest evacuation center') -->
 
-        <form id="advance_search_form">
+        <!-- <form id="advance_search_form">
           <div class="form-group">
             <label for="controlnumber">Control number</label>
             <input type="text" class="form-control" name="controlnumber" id="controlnumber">
@@ -81,7 +81,7 @@
             <label for="access_electricity">Number Storey</label>
             <input type="text" class="form-control" name="access_electricity" id="access_electricity">
           </div>
-        </form>
+        </form> -->
       </div> 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -91,3 +91,26 @@
   </div>
 </div>
 
+<script type="text/javascript">
+  window.onload = function() {
+   if (window.jQuery) {
+         $.ajax({                       // initialize an AJAX request
+          url: "{% url 'household_search_form'%}",
+          headers: {'X-CSRFToken': '{{ csrf_token }}'},
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+                $("#household_advance_search_form").html(data);  // replace the contents of the city input with the data that came from the server
+                /*
+
+                let html_data = '<option value="">---------</option>';
+                data.forEach(function (city) {
+                    html_data += `<option value="${city.id}">${city.name}</option>`
+                });
+                console.log(html_data);
+                $("#id_city").html(html_data);
+
+                */
+            }
+        });
+   }
+  }
+</script>
