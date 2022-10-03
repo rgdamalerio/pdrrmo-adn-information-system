@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.gis",
+    "django.contrib.gis", # Read https://django.fun/en/qa/344350/ for error in GDAL version
     ## Django Rest API Framework
     #"rest_framework",
     #"rest_framework.authtoken",
