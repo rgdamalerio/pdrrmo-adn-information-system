@@ -45,10 +45,19 @@ class HouseholdSearchForm(forms.ModelForm):
         model = Households
         fields = ['controlnumber', 'purok','respondent','municipality','barangay',
             'date_interview','enumerator','editor','year_construct','estimated_cost',
-            'number_bedrooms','number_storey','access_electricity']
+            'number_bedrooms','number_storey','access_electricity',
+            'access_internet','medical_treatment','access_water_supply',
+            'potable','potable','floods_occur','year_flooded','experience_evacuate',
+            'year_evacuate','access_health_medical_facility','access_telecommuniciation',
+            'access_drill_simulation','householdbuildingtypes','householdtenuralstatus',
+            'householdroofmaterials','householdwallmaterials','householdwatertenuralstatus',
+            'waterlevelsystems','evacuationareas']
 
     def __init__(self, *args, **kwargs):
         super(HouseholdSearchForm, self).__init__(*args, **kwargs)
+
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
 
         # when there is instance key, select the default value
         # Municipality always loaded for initial data, because Municipality is on the first level 
@@ -72,8 +81,21 @@ class HouseholdSearchForm(forms.ModelForm):
         self.fields['municipality'].widget = forms.Select(
             attrs={
                 'id': 'id_municipality',
-                'onchange': 'getBarangay(this.value)',
-                'style': 'width:200px'
+                'onchange': 'getBarangay_custom_form(this.value)',
+                'class': 'form-control'
             },
             choices=municipality_list,
         )
+
+        # Override the form, add onchange attribute to call the ajax function
+        self.fields['controlnumber'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control'
+            },
+        )
+
+    class Media:
+        js = (
+            'js/chained-address.js',
+        )
+    

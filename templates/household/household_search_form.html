@@ -1,4 +1,13 @@
-<form method="post" id="householdSearcForm" >
+{% block extrahead %}
+  {{ form.media }}
+{% endblock %}
+
+<form method="post" id="advance_search_form" >
   {% csrf_token %}
-  {{ form.as_p }}
+  {% for field in form %}
+      <div class="form-group">
+          {{ field.errors }}
+          {{ field.label_tag }}: {{ field }}
+      </div>
+  {% endfor %}
 </form>
