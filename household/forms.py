@@ -81,7 +81,7 @@ class HouseholdSearchForm(forms.ModelForm):
         self.fields['municipality'].widget = forms.Select(
             attrs={
                 'id': 'id_municipality',
-                'onchange': 'getBarangay_custom_form(this.value)',
+                'onchange': 'getBarangay(this.value)',
                 'class': 'form-control'
             },
             choices=municipality_list,
@@ -96,6 +96,6 @@ class HouseholdSearchForm(forms.ModelForm):
 
     class Media:
         js = (
-            'js/chained-address.js',
+            'js/chained-address-advance-search.js',
         )
     
