@@ -1,3 +1,4 @@
+from email.policy import default
 from django import forms
 from household.models import Households
 from library.models import Municipalities, Barangays
@@ -44,20 +45,22 @@ class HouseholdSearchForm(forms.ModelForm):
     class Meta:
         model = Households
         fields = ['controlnumber', 'purok','respondent','municipality','barangay',
-            'date_interview','enumerator','editor','year_construct','estimated_cost',
+            'householdbuildingtypes','householdtenuralstatus','householdroofmaterials',
+            'householdwallmaterials','householdwatertenuralstatus','waterlevelsystems','evacuationareas',
+            'enumerator','editor','year_construct','estimated_cost',
             'number_bedrooms','number_storey','access_electricity',
             'access_internet','medical_treatment','access_water_supply',
-            'potable','potable','floods_occur','year_flooded','experience_evacuate',
+            'potable','floods_occur','year_flooded','experience_evacuate',
             'year_evacuate','access_health_medical_facility','access_telecommuniciation',
-            'access_drill_simulation','householdbuildingtypes','householdtenuralstatus',
-            'householdroofmaterials','householdwallmaterials','householdwatertenuralstatus',
-            'waterlevelsystems','evacuationareas']
+            'access_drill_simulation']
+ 
 
     def __init__(self, *args, **kwargs):
         super(HouseholdSearchForm, self).__init__(*args, **kwargs)
 
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
+
 
         # when there is instance key, select the default value
         # Municipality always loaded for initial data, because Municipality is on the first level 
@@ -93,6 +96,17 @@ class HouseholdSearchForm(forms.ModelForm):
                 'class': 'form-control'
             },
         )
+
+        # Multiple select box for boolean field
+        self.fields['access_electricity'].widget = forms.CheckboxSelectMultiple(attrs={"unchecked":""},choices=[(True, 'Yes'),(False, 'No')])
+        self.fields['access_internet'].widget = forms.CheckboxSelectMultiple(attrs={"unchecked":""},choices=[(True, 'Yes'),(False, 'No')])
+        self.fields['access_water_supply'].widget = forms.CheckboxSelectMultiple(attrs={"unchecked":""},choices=[(True, 'Yes'),(False, 'No')])
+        self.fields['potable'].widget = forms.CheckboxSelectMultiple(attrs={"unchecked":""},choices=[(True, 'Yes'),(False, 'No')])
+        self.fields['floods_occur'].widget = forms.CheckboxSelectMultiple(attrs={"unchecked":""},choices=[(True, 'Yes'),(False, 'No')])
+        self.fields['experience_evacuate'].widget = forms.CheckboxSelectMultiple(attrs={"unchecked":""},choices=[(True, 'Yes'),(False, 'No')])
+        self.fields['access_health_medical_facility'].widget = forms.CheckboxSelectMultiple(attrs={"unchecked":""},choices=[(True, 'Yes'),(False, 'No')])
+        self.fields['access_telecommuniciation'].widget = forms.CheckboxSelectMultiple(attrs={"unchecked":""},choices=[(True, 'Yes'),(False, 'No')]) 
+        self.fields['access_drill_simulation'].widget = forms.CheckboxSelectMultiple(attrs={"unchecked":""},choices=[(True, 'Yes'),(False, 'No')])
 
     class Media:
         js = (
