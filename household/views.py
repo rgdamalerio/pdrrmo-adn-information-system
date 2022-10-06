@@ -145,10 +145,8 @@ def household_datasets(request):
     if access_drill_simulation:
           qs = qs.filter(access_drill_simulation__in=access_drill_simulation)
 
-          
-    print(qs)
 
-    households = serialize('geojson',qs)
+    households = serialize('geojson',qs,use_natural_foreign_keys=True)
     return HttpResponse(households,content_type='json')
    
   else:

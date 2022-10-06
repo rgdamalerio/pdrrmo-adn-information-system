@@ -91,6 +91,11 @@
                                             '<table class="table table-borderless table-sm">'+
                                             '<tbody>'+
                                                 '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Household ID</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span><a href="'+url_mask+'">'+feature.properties.pk+'</a></span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">RESPONDENT</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
                                                     '<td><span>'+feature.properties.respondent+'</span></td>'+                                            
@@ -331,8 +336,202 @@
                             },
                             onEachFeature: function(feature,layer){
                                 var url_mask = "{% url 'admin:household_households_change' object_id='12345' %}".replace(/12345/, feature.properties.pk.toString());
-                                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+                        
-                                                '<a href="'+url_mask+'">View household information</a>');
+                                layer.bindPopup('<div class="p-1">'+
+                                    '<div class="card card-primary card-outline card-outline-tabs">'+
+                                        '<div class="card-header p-0 border-bottom-0">'+
+                                            '<ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">'+
+                                                '<li class="nav-item">'+
+                                                '<a class="nav-link active" id="custom-tabs-four-household-information-tab" data-toggle="pill" href="#custom-tabs-four-household-information" role="tab" aria-controls="custom-tabs-four-household-information" aria-selected="true">Household information</a>'+
+                                                '</li>'+
+                                                '<li class="nav-item">'+
+                                                '<a class="nav-link" id="custom-tabs-four-demography-tab" data-toggle="pill" href="#custom-tabs-four-demography" role="tab" aria-controls="custom-tabs-four-demography" aria-selected="false">Demography</a>'+
+                                                '</li>'+
+                                                '<li class="nav-item">'+
+                                                '<a class="nav-link" id="custom-tabs-four-availed-programs-tab" data-toggle="pill" href="#custom-tabs-four-availed-programs" role="tab" aria-controls="custom-tabs-four-availed-programs" aria-selected="false">Availed programs</a>'+
+                                                '</li>'+
+                                                '<li class="nav-item">'+
+                                                '<a class="nav-link" id="custom-tabs-four-livelihood-tab" data-toggle="pill" href="#custom-tabs-four-livelihood" role="tab" aria-controls="custom-tabs-four-livelihood" aria-selected="false">Livelihood</a>'+
+                                                '</li>'+
+                                            '</ul>'+
+                                        '</div>'+
+                                    '</div>'+
+                                    '<div class="card-body">'+
+                                    '<div class="tab-content" id="custom-tabs-four-tabContent">'+
+                                        '<div class="tab-pane fade show active" id="custom-tabs-four-household-information" role="tabpanel" aria-labelledby="custom-tabs-four-household-information-tab">'+
+                                            '<!-- Household Information -->'+
+                                            '<table class="table table-borderless table-sm">'+
+                                            '<tbody>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Household ID</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span><a href="'+url_mask+'">'+feature.properties.pk+'</a></span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">RESPONDENT</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.respondent+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Municipality</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.municipality+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Barangay</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.barangay+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Purok</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.purok+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Type of building</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.householdbuildingtypes+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Tenural status</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.householdtenuralstatus+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Roof material</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.householdroofmaterials+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Wall material</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.householdwallmaterials+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Water tenural status</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.householdwatertenuralstatus+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Level of water system</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.waterlevelsystems+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Nearest evacuation center</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.evacuationareas+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Building/House construct</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.year_construct+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Estimated cost</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.estimated_cost+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Number of bedrooms</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.number_bedrooms+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Number of storey</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.number_storey+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to electricity</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.access_electricity+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to internet</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.access_internet+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Medical treatment</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.medical_treatment+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to water supply</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.access_water_supply+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Water safe to drink</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.potable+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Flood occur in the area</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.floods_occur+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Year flooded</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.year_flooded+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Experience evacuation during calamity</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.experience_evacuate+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Year evacuated</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.year_evacuate+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to health and medical facility</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.access_health_medical_facility+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to telecommunication</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.access_telecommuniciation+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to drill and simulation</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.access_drill_simulation+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Enumerator</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.enumerator+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Editor</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+feature.properties.editor+'</span></td>'+                                            
+                                                '</tr>'+
+                                            '</tbody>'+
+                                            '</table>'+                          
+                                        '</div>'+ 
+                                        '<div class="tab-pane fade" id="custom-tabs-four-demography" role="tabpanel" aria-labelledby="custom-tabs-four-demography-tab">'+
+                                            '<!-- Foldable list of demography component -->  '+    
+                                                        
+                                        '</div>'+
+                                        '<div class="tab-pane fade" id="custom-tabs-four-availed-programs" role="tabpanel" aria-labelledby="custom-tabs-four-availed-programs-tab">'+
+                                            '<!-- Foldable list of availed programs -->'+
+                                        
+                                        '</div>'+
+                                        '<div class="tab-pane fade" id="custom-tabs-four-livelihood" role="tabpanel" aria-labelledby="custom-tabs-four-livelihood-tab">'+
+                                                                             
+                                        '</div>'+
+                                    '</div>'+
+                                    '</div>'+
+                                '</div>',{
+                                    maxWidth: 560,
+                                    maxHeight: 460,
+
+                                }); 
                             }
                         });
                         //fit Bounds

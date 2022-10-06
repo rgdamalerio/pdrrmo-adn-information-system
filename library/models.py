@@ -2,6 +2,10 @@ from tabnanny import verbose
 from django.db import models
 from django.contrib.auth.models import User
 
+class MunicipalitiesManager(models.Manager):
+    def get_by_natural_key(self, munname):
+        return self.get(municipality_name=munname)
+
 # Create your models here.
 class Municipalities(models.Model):
   psgccode = models.CharField(max_length=255,primary_key=True)
@@ -10,12 +14,20 @@ class Municipalities(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  objects = MunicipalitiesManager()
+
   def __str__(self):
         return self.munname
+  
+  def natural_key(self):
+        return (self.munname)
 
   class Meta:
     verbose_name_plural = "Municipalities"
 
+class BarangaysManager(models.Manager):
+    def get_by_natural_key(self, brgyname):
+        return self.get(barangay_name=brgyname)
 
 class Barangays(models.Model):
   psgcmun = models.ForeignKey(Municipalities,on_delete=models.CASCADE)
@@ -25,11 +37,20 @@ class Barangays(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  objects = BarangaysManager()
+
   def __str__(self):
     return self.brgyname
 
+  def natural_key(self):
+    return (self.brgyname)
+
   class Meta:
     verbose_name_plural = "Barangays"
+
+class BuildingroofmaterialsManager(models.Manager):
+    def get_by_natural_key(self, description):
+        return self.get(Buildingroofmaterials_description=description)
 
 class Buildingroofmaterials(models.Model):
   description = models.TextField(unique=True)
@@ -37,8 +58,13 @@ class Buildingroofmaterials(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  objects = BuildingroofmaterialsManager()
+
   def __str__(self):
     return self.description
+
+  def natural_key(self):
+    return (self.description)
 
   class Meta:
     verbose_name_plural = "Building roof materials"
@@ -82,14 +108,23 @@ class Buildinguses(models.Model):
     verbose_name_plural = "Building uses"
     ordering = ['pk']
 
+class BuildingwallmaterialsManager(models.Manager):
+    def get_by_natural_key(self, material):
+        return self.get(Buildingwallmaterials_material=material)
+
 class Buildingwallmaterials(models.Model):
   material = models.TextField(unique=True)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  objects = BuildingwallmaterialsManager()
+
   def __str__(self):
     return self.material
+
+  def natural_key(self):
+    return (self.material)
 
   class Meta:
     verbose_name_plural = "Building wall materials"
@@ -148,18 +183,31 @@ class Gradelevels(models.Model):
     verbose_name_plural = "Grade levels"
     ordering = ['pk']
 
+class EvacuationareasManager(models.Manager):
+    def get_by_natural_key(self, evacuation_area):
+        return self.get(Evacuationareas_evacuation_area=evacuation_area)
+
 class Evacuationareas(models.Model):
   evacuation_area = models.CharField(max_length=255,unique=True)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  objects = EvacuationareasManager()
+
   def __str__(self):
     return self.evacuation_area
+
+  def natural_key(self):
+    return (self.evacuation_area)
 
   class Meta:
     verbose_name_plural = "Evacuation areas"
     ordering = ['pk']
+
+class WaterlevelsystemsManager(models.Manager):
+    def get_by_natural_key(self, description):
+        return self.get(Waterlevelsystems_description=description)
 
 class Waterlevelsystems(models.Model):
   level = models.CharField(max_length=50,unique=True)
@@ -168,12 +216,22 @@ class Waterlevelsystems(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  objects = WaterlevelsystemsManager()
+
   def __str__(self):
     return self.description
+
+  def natural_key(self):
+    return (self.description)
 
   class Meta:
     verbose_name_plural = "Water level systems"
     ordering = ['pk']
+
+class HouseholdroofmaterialsManager(models.Manager):
+    def get_by_natural_key(self, description):
+        return self.get(Householdroofmaterials_description=description)
+
 
 class Householdroofmaterials(models.Model):
   description = models.TextField(unique=True)
@@ -181,12 +239,21 @@ class Householdroofmaterials(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  objects = HouseholdroofmaterialsManager()
+
   def __str__(self):
     return self.description
+
+  def natural_key(self):
+    return (self.description)
 
   class Meta:
     verbose_name_plural = "Household roof materials"
     ordering = ['pk']
+
+class HouseholdtenuralstatusManager(models.Manager):
+    def get_by_natural_key(self, description):
+        return self.get(Householdtenuralstatus_description=description)
 
 class Householdtenuralstatus(models.Model):
   description = models.TextField(unique=True)
@@ -194,12 +261,21 @@ class Householdtenuralstatus(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  objects = HouseholdtenuralstatusManager()
+
   def __str__(self):
     return self.description
+
+  def natural_key(self):
+    return (self.description)
 
   class Meta:
     verbose_name_plural = "Household tenural status"
     ordering = ['pk']
+
+class HouseholdbuildingtypesManager(models.Manager):
+    def get_by_natural_key(self, type):
+        return self.get(Householdbuildingtypes_type=type)
 
 class Householdbuildingtypes(models.Model):
   type = models.TextField(unique=True)
@@ -207,8 +283,13 @@ class Householdbuildingtypes(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  objects = HouseholdbuildingtypesManager()
+
   def __str__(self):
     return self.type
+
+  def natural_key(self):
+    return (self.type)
 
   class Meta:
     verbose_name_plural = "Household building types"
@@ -227,14 +308,23 @@ class Householdwallmaterials(models.Model):
     verbose_name_plural = "Household wall materials"
     ordering = ['pk']
 
+class HouseholdwatertenuralstatusManager(models.Manager):
+    def get_by_natural_key(self, status):
+        return self.get(Householdwatertenuralstatus_description=status)
+
 class Householdwatertenuralstatus(models.Model):
   status = models.CharField(max_length=50,unique=True)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  objects = HouseholdwatertenuralstatusManager()
+
   def __str__(self):
     return self.status
+
+  def natural_key(self):
+    return (self.status)
 
   class Meta:
     verbose_name_plural = "Household water tenural status"
