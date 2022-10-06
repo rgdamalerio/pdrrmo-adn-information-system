@@ -67,6 +67,9 @@ class Households(models.Model):
   def __str__(self):
     return self.respondent
 
+  def munname(self):
+    return self.municipality.munname
+
   class Meta:
     verbose_name_plural = "Households"
 

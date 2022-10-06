@@ -146,6 +146,8 @@ def household_datasets(request):
           qs = qs.filter(access_drill_simulation__in=access_drill_simulation)
 
           
+    print(qs)
+
     households = serialize('geojson',qs)
     return HttpResponse(households,content_type='json')
    
