@@ -8,80 +8,8 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body"> 
+      <div class="modal-body" id="household_advance_search_form"> 
 
-        <!-- access_electricity = models.BooleanField(_('Access to electricity'))
-            access_internet = models.BooleanField(_('Access to internet'))
-            medical_treatment = models.TextField(null=True)
-            access_water_supply = models.BooleanField(_('Access to water supply'))
-            potable = models.BooleanField(_('Safe to drink'))
-            floods_occur = models.BooleanField(_('Flood occur in your area'))
-            year_flooded = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],default=current_year(),null=True)
-            experience_evacuate = models.BooleanField(_('Experience evacuation during calamity'))
-            year_evacuate = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],default=current_year(),null=True)
-            access_health_medical_facility = models.BooleanField(_('Access to health and medical facility'))
-            access_telecommuniciation = models.BooleanField(_('Access to telecommunication'))
-            access_drill_simulation = models.BooleanField(_('Access/Join drill and simulation'))
-            image = models.ImageField(upload_to ='uploads/',null=True)
-            created_at = models.DateField(auto_now_add=True)
-            updated_at = models.DateField(auto_now=True)
-            owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
-            municipality = models.ForeignKey(Municipalities,to_field="psgccode",on_delete=models.CASCADE,verbose_name='Municipality')
-            barangay = models.ForeignKey(Barangays,to_field="psgccode",on_delete=models.CASCADE,null=True,verbose_name='Barangay')
-            householdbuildingtypes = models.ForeignKey(Householdbuildingtypes,on_delete=models.CASCADE,verbose_name='Building types')
-            householdtenuralstatus = models.ForeignKey(Householdtenuralstatus,on_delete=models.CASCADE,verbose_name='Tenural status')
-            householdroofmaterials = models.ForeignKey(Householdroofmaterials,on_delete=models.CASCADE,verbose_name='Roof material')
-            householdwallmaterials = models.ForeignKey(Buildingwallmaterials,on_delete=models.CASCADE,verbose_name='Wall material')
-            householdwatertenuralstatus = models.ForeignKey(Householdwatertenuralstatus,on_delete=models.CASCADE,verbose_name='Water tenural status')
-            waterlevelsystems = models.ForeignKey(Waterlevelsystems,on_delete=models.CASCADE,verbose_name='Level of water system')
-            evacuationareas = models.ForeignKey(Evacuationareas,on_delete=models.CASCADE,verbose_name='Nearest evacuation center') -->
-
-        <form id="advance_search_form">
-          <div class="form-group">
-            <label for="controlnumber">Control number</label>
-            <input type="text" class="form-control" name="controlnumber" id="controlnumber">
-          </div>
-          <div class="form-group">
-            <label for="purok">Purok</label>
-            <input type="text" class="form-control" name="purok" id="purok">
-          </div>
-          <div class="form-group">
-            <label for="respondent">Respondent</label>
-            <input type="text" class="form-control" name="respondent" id="respondent">
-          </div>
-          <div class="form-group">
-            <label for="date_interview">Date Interview</label>
-            <input type="text" class="form-control" name="date_interview" id="date_interview">
-          </div>
-          <div class="form-group">
-            <label for="enumerator">Enumerator</label>
-            <input type="text" class="form-control" name="enumerator" id="enumerator">
-          </div>
-          <div class="form-group">
-            <label for="editor">Editor</label>
-            <input type="text" class="form-control" name="editor" id="editor">
-          </div>        
-          <div class="form-group">
-            <label for="year_construct">Year Construct</label>
-            <input type="text" class="form-control" name="year_construct" id="year_construct">
-          </div>
-          <div class="form-group">
-            <label for="estimated_cost">Estimated Cost</label>
-            <input type="text" class="form-control" name="estimated_cost" id="estimated_cost">
-          </div>
-          <div class="form-group">
-            <label for="number_bedrooms">Number Bedrooms</label>
-            <input type="text" class="form-control" name="number_bedrooms" id="number_bedrooms">
-          </div>
-          <div class="form-group">
-            <label for="number_storey">Number Storey</label>
-            <input type="text" class="form-control" name="number_storey" id="number_storey">
-          </div>
-          <div class="form-group">
-            <label for="access_electricity">Number Storey</label>
-            <input type="text" class="form-control" name="access_electricity" id="access_electricity">
-          </div>
-        </form>
       </div> 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -91,3 +19,16 @@
   </div>
 </div>
 
+<script type="text/javascript">
+  window.onload = function() {
+   if (window.jQuery) {
+         $.ajax({                       // initialize an AJAX request
+          url: "{% url 'household_search_form'%}",
+          headers: {'X-CSRFToken': '{{ csrf_token }}'},
+            success: function (data) {   // `ModelForm` is the return
+                $("#household_advance_search_form").html(data);  // replace the contents of the div element in modal body, it is hidden first
+            }
+        });
+   }
+  }
+</script>

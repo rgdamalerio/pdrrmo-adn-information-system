@@ -1,4 +1,4 @@
-"""household_geodatabase URL Configuration
+"""core URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -27,9 +27,9 @@ from django.views.generic.base import RedirectView
 # from rest_framework.routers import DefaultRouter
 # from users.views import UserViewSet
 
-admin.site.index_title = "Household Database"
-admin.site.site_title = "Household Database Admin Portal"
-admin.site.site_header = "Household Database Information System"
+admin.site.index_title = "PDRRMO-ADN"
+admin.site.site_title = "PDRRMO Agusan-Norte Admin Portal"
+admin.site.site_header = "PDRRMO-ADN Information System"
 
 urlpatterns = [
     # Redirect home view to admin:index
