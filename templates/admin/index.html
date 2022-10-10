@@ -173,32 +173,32 @@
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to electricity</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_electricity+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_electricity ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to internet</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_internet+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_internet ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Medical treatment</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.medical_treatment+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.medical_treatment == null ? 'Nothing' : `${feature.properties.medical_treatment}`}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to water supply</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_water_supply+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_water_supply ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Water safe to drink</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.potable+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.potable ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Flood occur in the area</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.floods_occur+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.floods_occur ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Year flooded</span></td>'+
@@ -208,7 +208,7 @@
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Experience evacuation during calamity</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.experience_evacuate+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.experience_evacuate ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Year evacuated</span></td>'+
@@ -218,17 +218,17 @@
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to health and medical facility</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_health_medical_facility+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_health_medical_facility ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to telecommunication</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_telecommuniciation+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_telecommuniciation ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to drill and simulation</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_drill_simulation+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_drill_simulation ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Enumerator</span></td>'+
@@ -364,7 +364,7 @@
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Household ID</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.pk+'<a href="'+url_mask+'"> : Click here for mor info.</a></span></td>'+                                          
+                                                    '<td><span>'+feature.properties.pk+'<a href="'+url_mask+'"> : Click here for mor info.</a></span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">RESPONDENT</span></td>'+
@@ -444,32 +444,32 @@
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to electricity</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_electricity+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_electricity ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to internet</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_internet+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_internet ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Medical treatment</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.medical_treatment+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.medical_treatment == null ? 'Nothing' : `${feature.properties.medical_treatment}`}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to water supply</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_water_supply+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_water_supply ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Water safe to drink</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.potable+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.potable ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Flood occur in the area</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.floods_occur+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.floods_occur ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Year flooded</span></td>'+
@@ -479,7 +479,7 @@
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Experience evacuation during calamity</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.experience_evacuate+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.experience_evacuate ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Year evacuated</span></td>'+
@@ -489,17 +489,17 @@
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to health and medical facility</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_health_medical_facility+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_health_medical_facility ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to telecommunication</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_telecommuniciation+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_telecommuniciation ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Access to drill and simulation</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+feature.properties.access_drill_simulation+'</span></td>'+                                            
+                                                    '<td><span>'+`${feature.properties.access_drill_simulation ? 'Yes' : 'No'}`+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Enumerator</span></td>'+
