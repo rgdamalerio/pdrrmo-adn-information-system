@@ -5,6 +5,7 @@ from .models import Households
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_http_methods
 from .forms import HouseholdSearchForm
+from django.db import connection
 
 def is_valid_queryparam(param):
     return param != '' and param is not None
@@ -146,9 +147,22 @@ def household_datasets(request):
           qs = qs.filter(access_drill_simulation__in=access_drill_simulation)
 
 
-    households = serialize('geojson',qs,use_natural_foreign_keys=True)
+    # households = serialize('geojson',qs,use_natural_foreign_keys=True)
+    households = serialize('geojson',qs,use_natural_foreign_keys=True,fields=('pk','location','latitude','longitude'))
     return HttpResponse(households,content_type='json')
    
+  else:
+    # Do something for anonymous users.
+    raise PermissionDenied()
+
+#AJAX
+@require_http_methods(["GET"])
+def household_info(request):
+  if request.user.is_authenticated:
+    # Do something for authenticated users.
+    households = serialize('geojson',Households.objects.filter(pk=[request.GET.get('pk')]).values(),use_natural_foreign_keys=True)
+    print(connection.queries)
+    return HttpResponse(households,content_type='json')
   else:
     # Do something for anonymous users.
     raise PermissionDenied()
