@@ -46,7 +46,7 @@ class Households(models.Model):
   floods_occur = models.BooleanField(_('Flood occur in your area'))
   year_flooded = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True)
   experience_evacuate = models.BooleanField(_('Experience evacuation during calamity'))
-  year_evacuate = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True)
+  year_evacuate = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True,blank=True)
   access_health_medical_facility = models.BooleanField(_('Access to health and medical facility'))
   access_telecommuniciation = models.BooleanField(_('Access to telecommunication'))
   access_drill_simulation = models.BooleanField(_('Access/Join drill and simulation'))

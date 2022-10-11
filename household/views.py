@@ -160,8 +160,9 @@ def household_datasets(request):
 def household_info(request):
   if request.user.is_authenticated:
     # Do something for authenticated users.
-    households = serialize('geojson',Households.objects.filter(pk=[request.GET.get('pk')]).values(),use_natural_foreign_keys=True)
-    print(connection.queries)
+    qs = Households.objects.get(pk=request.GET.get('pk'))
+    households = serialize('geojson',[qs],use_natural_foreign_keys=True)
+    
     return HttpResponse(households,content_type='json')
   else:
     # Do something for anonymous users.
