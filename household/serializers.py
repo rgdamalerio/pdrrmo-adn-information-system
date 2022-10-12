@@ -1,5 +1,16 @@
 from rest_framework import serializers
-from .models import Households
+from .models import Households, Demographies
+
+class DemographySerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = Demographies
+    fields = ['controlnumber','lastname','firstname','middlename','extension','nuclear_family','relationshiptohead',
+            'gender','birthdate', 'marital_status', 'ethnicity_by_blood', 'member_ip', 'informal_settler', 'religion',
+            'person_with_special_needs', 'type_of_disability', 'is_ofw', 'residence', 'nutritional_status', 'nutritional_status_recorded',
+            'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
+            'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
+            'dependent_of_philhealth_member', 'owner']
 
 class HouseholdSerializer(serializers.ModelSerializer):
 
@@ -14,6 +25,8 @@ class HouseholdSerializer(serializers.ModelSerializer):
   waterlevelsystems = serializers.StringRelatedField()
   evacuationareas = serializers.StringRelatedField()
   evacuationareas = serializers.StringRelatedField()
+
+  demographies_set = DemographySerializer(many=True, read_only=True)
 
 
   class Meta:
