@@ -3,6 +3,8 @@ from .models import Households
 
 class HouseholdSerializer(serializers.ModelSerializer):
 
+  municipality = serializers.StringRelatedField()
+  barangay = serializers.StringRelatedField()
   householdbuildingtypes = serializers.StringRelatedField()
   householdtenuralstatus = serializers.StringRelatedField()
   householdroofmaterials = serializers.StringRelatedField()
@@ -21,5 +23,5 @@ class HouseholdSerializer(serializers.ModelSerializer):
             'access_electricity', 'householdroofmaterials','householdwallmaterials','medical_treatment',
             'access_water_supply','potable','householdwatertenuralstatus','waterlevelsystems','floods_occur',
             'year_flooded','experience_evacuate','year_evacuate','evacuationareas','access_health_medical_facility',
-            'access_telecommuniciation','access_drill_simulation','image','enumerator','editor']
+            'access_telecommuniciation','access_drill_simulation','image','enumerator','editor','demographies_set']
     # fields = '__all__'
