@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis", # Read https://django.fun/en/qa/344350/ for error in GDAL version
     ## Django Rest API Framework
-    #"rest_framework",
+    "rest_framework",
     #"rest_framework.authtoken",
     "users",
     "leaflet",
@@ -61,11 +61,8 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # Commented this out to prevent error from AssertionError when calling household_info api
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly' 
     ]
 }
 

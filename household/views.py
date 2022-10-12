@@ -5,7 +5,9 @@ from .models import Households
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_http_methods
 from .forms import HouseholdSearchForm
-from django.db import connection
+from .serializers import HouseholdSerializer
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 def is_valid_queryparam(param):
     return param != '' and param is not None
@@ -157,13 +159,14 @@ def household_datasets(request):
 
 #AJAX
 @require_http_methods(["GET"])
+@api_view(['GET'])
 def household_info(request):
   if request.user.is_authenticated:
-    # Do something for authenticated users.
+    # # Do something for authenticated users.
+
     qs = Households.objects.get(pk=request.GET.get('pk'))
-    households = serialize('geojson',[qs],use_natural_foreign_keys=True)
-    
-    return HttpResponse(households,content_type='json')
+    serialize = HouseholdSerializer([qs],many=True)
+    return Response(serialize.data)
   else:
     # Do something for anonymous users.
     raise PermissionDenied()
