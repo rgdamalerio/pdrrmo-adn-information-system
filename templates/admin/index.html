@@ -297,7 +297,7 @@
                                         '</div>'+ 
                                         '<div class="tab-pane fade" id="custom-tabs-four-demography" role="tabpanel" aria-labelledby="custom-tabs-four-demography-tab">'+
                                             '<!-- Foldable list of demography component -->  '+    
-                                                        
+                                            '{% include "./includes/demography.html" with demographies="'+response[0].demographies_set+'" %}'+                                                 
                                         '</div>'+
                                         '<div class="tab-pane fade" id="custom-tabs-four-availed-programs" role="tabpanel" aria-labelledby="custom-tabs-four-availed-programs-tab">'+
                                             '<!-- Foldable list of availed programs -->'+
