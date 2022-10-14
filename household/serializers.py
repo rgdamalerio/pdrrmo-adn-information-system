@@ -5,7 +5,7 @@ class DemographySerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Demographies
-    fields = ['controlnumber','lastname','firstname','middlename','extension','nuclear_family','relationshiptohead',
+    fields = ['id','controlnumber','lastname','firstname','middlename','extension','nuclear_family','relationshiptohead',
             'gender','birthdate', 'marital_status', 'ethnicity_by_blood', 'member_ip', 'informal_settler', 'religion',
             'person_with_special_needs', 'type_of_disability', 'is_ofw', 'residence', 'nutritional_status', 'nutritional_status_recorded',
             'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
