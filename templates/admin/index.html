@@ -116,37 +116,13 @@
                 success: function (response) { 
                     var url_mask = "{% url 'admin:household_households_change' object_id='12345' %}".replace(/12345/, response[0].controlnumber.toString());
 
-                    function getMaritalStatus(vMaritalstatus){
-                        if(vMaritalstatus == 1)
-                            return 'Single';
-                        else if(vMaritalstatus == 2)
-                            return 'Married';
-                        else if(vMaritalstatus == 3)
-                            return 'Widowed';
-                        else if(vMaritalstatus == 4)
-                            return 'Divorced';
-                    }
 
                     function printDemographies(vDemographies){
+                        
                         var str = "";
                         str += '<div id="myGroup">'; 
-                        // str +=   '<ol v-if="demographies.length === 0" class="list-unstyled">';
-                        // str +=       '<li>';
-                        // str +=            '<p> No Member of the family</p>';
-                        // str +=       '</li>';  
-                        // str +=   '</ol>';
-                        // str +=      '<ol>';
-                        //              
-                        //             <a style="text-transform: capitalize" data-toggle="collapse" :href="'#demography-' + demography.id" aria-expanded="false" aria-controls="collapseExample">
-                        //                 {{demography.surname}} {{demography.firstname}} {{demography.middlename}}
-                        //             </a>
-                        //             <div class="collapse" :id="'demography-' + demography.id" data-parent="#myGroup">
-                        //                 <demography-form-component :demography="demography" :submit="'Update'"></demography-form-component>
-                        //             </div>
-                        //             </li>    
-                        //         </ol>  
-                         
                         for(var i=0; i<vDemographies.length; i++) {
+                            var url_mask_demography = "{% url 'admin:household_demographies_change' object_id='change_id' %}".replace(/change_id/, vDemographies[i].id.toString());
                             str += '<li>';
                                 str += '<a style="text-transform: capitalize" data-toggle="collapse" href="#demography-'+i+' "aria-expanded="false" aria-controls="collapseExample">';
                                     str += vDemographies[i].lastname +' '+ vDemographies[i].firstname +' '+ vDemographies[i].middlename;
@@ -154,7 +130,12 @@
                                 str += '</br>';
                                 str += '<div class="collapse" id="demography-'+ i +'" data-parent="#myGroup">';
                                     str += '<table class="table table-borderless table-sm" style="margin-left:12px; margin-top:5px;">'
-                                        str += '<tbody>';
+                                        str += '<tbody>'; 
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Link for more info:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span><a href="'+url_mask_demography+'"> : Click here.</a></td>';                                        
+                                            str += '</tr>';
                                             str += '<tr>';    
                                             str +=    '<td style="width: 25%"><span class="font-weight-bold">Lastname:</span></td>';
                                             str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
@@ -183,12 +164,12 @@
                                             str += '<tr>';
                                             str +=    '<td style="width: 25%"><span class="font-weight-bold">Relationship to head:</span></td>';
                                             str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].nuclear_family+'</span></td>';                                        
+                                            str +=    '<td><span>'+vDemographies[i].relationshiptohead+'</span></td>';                                        
                                             str += '</tr>';
                                             str += '<tr>';
                                             str +=    '<td style="width: 25%"><span class="font-weight-bold">Gender:</span></td>';
                                             str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].gender == '1' ? 'Male' : 'Female'}`+'</span></td>';                                        
+                                            str +=    '<td><span>'+vDemographies[i].gender+'</span></td>';                                        
                                             str += '</tr>';
                                             str += '<tr>';
                                             str +=    '<td style="width: 25%"><span class="font-weight-bold">Birthdate::</span></td>';
@@ -198,7 +179,7 @@
                                             str += '<tr>';
                                             str +=    '<td style="width: 25%"><span class="font-weight-bold">Marital status:</span></td>';
                                             str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+getMaritalStatus(vDemographies[i].marital_status)+'</span></td>';                                        
+                                            str +=    '<td><span>'+vDemographies[i].marital_status+'</span></td>';                                        
                                             str += '</tr>';
                                             str += '<tr>';
                                             str +=    '<td style="width: 25%"><span class="font-weight-bold">Member of IP\'s</span></td>';
@@ -300,6 +281,103 @@
                                             str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
                                             str +=    '<td><span>'+`${vDemographies[i].dependent_of_philhealth_member ? 'Yes' : 'No'}`+'</span></td>';                                     
                                             str += '</tr>';
+                                        str += '</tbody>';
+                                    str += '</table>';                        
+                                str += '</div>';
+                            str += '</li>';
+                        }
+                        str += '</div> ';
+
+                        return str;
+                    }
+
+                    function printAvailedprograms(vAvailprograms){
+                        
+                        var str = "";
+                        str += '<div id="myGroup">'; 
+                        for(var i=0; i<vAvailprograms.length; i++) {
+                            var url_mask_availprograms = "{% url 'admin:household_availprograms_change' object_id='change_id' %}".replace(/change_id/, vAvailprograms[i].id.toString());
+                            str += '<li>';
+                                str += '<a style="text-transform: capitalize" data-toggle="collapse" href="#availedprogram-'+i+' "aria-expanded="false" aria-controls="collapseExample">';
+                                    str += vAvailprograms[i].type_of_program;
+                                str += '</a>';
+                                str += '</br>';
+                                str += '<div class="collapse" id="availedprogram-'+ i +'" data-parent="#myGroup">';
+                                    str += '<table class="table table-borderless table-sm" style="margin-left:12px; margin-top:5px;">'
+                                        str += '<tbody>';
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Link for more info:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span><a href="'+url_mask_availprograms+'"> : Click here.</a></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Name of program:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vAvailprograms[i].name_of_program+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Number of beneficiaries:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vAvailprograms[i].number_of_beneficiaries+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Program implementor:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vAvailprograms[i].program_implementor+'</span></td>';                                        
+                                            str += '</tr>';                                        
+                                        str += '</tbody>';
+                                    str += '</table>';    
+                                str += '</div>';
+                            str += '</li>';
+                        }
+                        str += '</div> ';
+
+                        return str;
+                    }
+
+                    function printLivelihoodprograms(vLivelhoods){
+                        var str = "";
+                        str += '<div id="myGroup">'; 
+                        for(var i=0; i<vLivelhoods.length; i++) {
+                            var url_mask_livelihoods = "{% url 'admin:household_hhlivelihoods_change' object_id='change_id' %}".replace(/change_id/, vLivelhoods[i].id.toString());
+                            str += '<li>';
+                                str += '<a style="text-transform: capitalize" data-toggle="collapse" href="#livelihood-'+i+' "aria-expanded="false" aria-controls="collapseExample">';
+                                    str += vLivelhoods[i].livelihood;
+                                str += '</a>';
+                                str += '</br>';
+                                str += '<div class="collapse" id="livelihood-'+ i +'" data-parent="#myGroup">';
+                                    str += '<table class="table table-borderless table-sm" style="margin-left:12px; margin-top:5px;">'
+                                        str += '<tbody>';
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Link for more info:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span><a href="'+url_mask_livelihoods+'"> : Click here.</a></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Market value:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vLivelhoods[i].market_value+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Products:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vLivelhoods[i].products+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Area:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vLivelhoods[i].area+'</span></td>';                                        
+                                            str += '</tr>'; 
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Livelihood tenural status:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vLivelhoods[i].livelihood_tenural_status+'</span></td>';                                        
+                                            str += '</tr>';   
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">With insurance:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vLivelhoods[0].with_insurance ? 'Yes' : 'No'}`+'</span></td>';                                        
+                                            str += '</tr>';                                        
                                         str += '</tbody>';
                                     str += '</table>';    
                                 str += '</div>';
@@ -496,10 +574,11 @@
                                         '</div>'+
                                         '<div class="tab-pane fade" id="custom-tabs-four-availed-programs" role="tabpanel" aria-labelledby="custom-tabs-four-availed-programs-tab">'+
                                             '<!-- Foldable list of availed programs -->'+
-                                        
+                                            printAvailedprograms(response[0].availprograms_set)+
                                         '</div>'+
                                         '<div class="tab-pane fade" id="custom-tabs-four-livelihood" role="tabpanel" aria-labelledby="custom-tabs-four-livelihood-tab">'+
-                                                                             
+                                            '<!-- Foldable list of livelihood -->'+    
+                                            printLivelihoodprograms(response[0].hhlivelihoods_set)+                             
                                         '</div>'+
                                     '</div>'+
                                     '</div>'+
