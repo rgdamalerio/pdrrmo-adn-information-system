@@ -114,7 +114,7 @@
                 data: {'pk': e.layer.feature.properties.pk} ,
                 contentType: 'application/json; charset=utf-8',
                 success: function (response) { 
-                    var url_mask = "{% url 'admin:household_households_change' object_id='12345' %}".replace(/12345/, response[0].controlnumber.toString());
+                    var url_mask = "{% url 'admin:household_households_change' object_id='change_id' %}".replace(/change_id/, response[0].controlnumber.toString());
 
 
                     function printDemographies(vDemographies){
