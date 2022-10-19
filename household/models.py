@@ -46,7 +46,7 @@ class Households(models.Model):
   floods_occur = models.BooleanField(_('Flood occur in your area'))
   year_flooded = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True)
   experience_evacuate = models.BooleanField(_('Experience evacuation during calamity'))
-  year_evacuate = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True)
+  year_evacuate = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True,blank=True)
   access_health_medical_facility = models.BooleanField(_('Access to health and medical facility'))
   access_telecommuniciation = models.BooleanField(_('Access to telecommunication'))
   access_drill_simulation = models.BooleanField(_('Access/Join drill and simulation'))
@@ -54,18 +54,21 @@ class Households(models.Model):
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
-  municipality = models.ForeignKey(Municipalities,to_field="psgccode",on_delete=models.CASCADE,verbose_name='Municipality')
-  barangay = models.ForeignKey(Barangays,to_field="psgccode",on_delete=models.CASCADE,null=True,verbose_name='Barangay')
-  householdbuildingtypes = models.ForeignKey(Householdbuildingtypes,on_delete=models.CASCADE,verbose_name='Building types')
-  householdtenuralstatus = models.ForeignKey(Householdtenuralstatus,on_delete=models.CASCADE,verbose_name='Tenural status')
-  householdroofmaterials = models.ForeignKey(Householdroofmaterials,on_delete=models.CASCADE,verbose_name='Roof material')
-  householdwallmaterials = models.ForeignKey(Buildingwallmaterials,on_delete=models.CASCADE,verbose_name='Wall material')
-  householdwatertenuralstatus = models.ForeignKey(Householdwatertenuralstatus,on_delete=models.CASCADE,verbose_name='Water tenural status')
-  waterlevelsystems = models.ForeignKey(Waterlevelsystems,on_delete=models.CASCADE,verbose_name='Level of water system')
-  evacuationareas = models.ForeignKey(Evacuationareas,on_delete=models.CASCADE,verbose_name='Nearest evacuation center')
+  municipality = models.ForeignKey(Municipalities,to_field="psgccode",null=True,on_delete=models.SET_NULL,verbose_name='Municipality')
+  barangay = models.ForeignKey(Barangays,to_field="psgccode",on_delete=models.SET_NULL,null=True,verbose_name='Barangay')
+  householdbuildingtypes = models.ForeignKey(Householdbuildingtypes,null=True,on_delete=models.SET_NULL,verbose_name='Building types')
+  householdtenuralstatus = models.ForeignKey(Householdtenuralstatus,null=True,on_delete=models.SET_NULL,verbose_name='Tenural status')
+  householdroofmaterials = models.ForeignKey(Householdroofmaterials,null=True,on_delete=models.SET_NULL,verbose_name='Roof material')
+  householdwallmaterials = models.ForeignKey(Buildingwallmaterials,null=True,on_delete=models.SET_NULL,verbose_name='Wall material')
+  householdwatertenuralstatus = models.ForeignKey(Householdwatertenuralstatus,null=True,on_delete=models.SET_NULL,verbose_name='Water tenural status')
+  waterlevelsystems = models.ForeignKey(Waterlevelsystems,null=True,on_delete=models.SET_NULL,verbose_name='Level of water system')
+  evacuationareas = models.ForeignKey(Evacuationareas,null=True,on_delete=models.SET_NULL,verbose_name='Nearest evacuation center')
 
   def __str__(self):
     return self.respondent
+
+  def munname(self):
+    return self.municipality.munname
 
   class Meta:
     verbose_name_plural = "Households"
@@ -74,16 +77,16 @@ class Households(models.Model):
     year = forms.TypedChoiceField(coerce=int, choices=year_choices, initial=current_year)
 
 class Demographies(models.Model):
-  controlnumber = models.ForeignKey(Households,on_delete=models.CASCADE,verbose_name='Housedhold belong')
+  controlnumber = models.ForeignKey(Households,null=True,on_delete=models.SET_NULL,verbose_name='Housedhold belong')
   lastname = models.CharField(max_length=50)
   firstname = models.CharField(max_length=50)
   middlename = models.CharField(max_length=50,null=True)
   extension = models.CharField(max_length=15,null=True,blank=True)
   nuclear_family = models.ForeignKey('self',on_delete=models.SET_NULL,verbose_name='Nuclear family belongs to',null=True,blank=True)
-  relationshiptohead =  models.ForeignKey(Relationshiptoheads,on_delete=models.CASCADE,verbose_name='Relationship to head')
-  gender = models.ForeignKey(Genders,on_delete=models.CASCADE,verbose_name='Gender')
+  relationshiptohead =  models.ForeignKey(Relationshiptoheads,null=True,on_delete=models.SET_NULL,verbose_name='Relationship to head')
+  gender = models.ForeignKey(Genders,null=True,on_delete=models.SET_NULL,verbose_name='Gender')
   birthdate = models.DateField()
-  marital_status = models.ForeignKey(Maritalstatus,on_delete=models.CASCADE)
+  marital_status = models.ForeignKey(Maritalstatus,null=True,on_delete=models.SET_NULL)
   ethnicity_by_blood = models.CharField(max_length=150,null=True,blank=True,verbose_name='Belongs to tribe/enthics')
   member_ip = models.BooleanField(verbose_name='Member of IP\'s')
   informal_settler = models.BooleanField()
@@ -92,7 +95,7 @@ class Demographies(models.Model):
   type_of_disability = models.ForeignKey(Disabilities,on_delete=models.SET_NULL,null=True,blank=True)
   is_ofw = models.BooleanField(verbose_name='Is OFW')
   residence = models.BooleanField()
-  nutritional_status = models.ForeignKey(Nutritionalstatus,on_delete=models.CASCADE)
+  nutritional_status = models.ForeignKey(Nutritionalstatus,null=True,on_delete=models.SET_NULL)
   nutritional_status_recorded = models.DateField(null=True,blank=True)
   currently_attending_school = models.BooleanField(verbose_name='Currently attending in school')
   current_grade_level_attending = models.ForeignKey(Gradelevels,related_name='current_attending',on_delete=models.SET_NULL,null=True,blank=True)
@@ -100,7 +103,7 @@ class Demographies(models.Model):
   course_completed_vocational = models.ForeignKey(Trackstrandcourses,on_delete=models.SET_NULL,verbose_name='Track/Strand/Course completed (for senior High school/Vocational/College)',null=True,blank=True)
   can_read_and_write = models.BooleanField(verbose_name='Can read and write or atleast high school graduate')
   primary_occupation = models.CharField(max_length=255,null=True,blank=True)
-  monthly_income = models.ForeignKey(Monthlyincomes,on_delete=models.CASCADE)
+  monthly_income = models.ForeignKey(Monthlyincomes,null=True,on_delete=models.SET_NULL)
   sss_member = models.BooleanField()
   gsis_member = models.BooleanField()
   philhealth_member = models.BooleanField()
@@ -119,8 +122,8 @@ class Demographies(models.Model):
 
 
 class Availprograms(models.Model):
-  controlnumber = models.ForeignKey(Households,on_delete=models.CASCADE,verbose_name='Housedhold belong')
-  type_of_program = models.ForeignKey(Typeofprograms,on_delete=models.CASCADE)
+  controlnumber = models.ForeignKey(Households,null=True,on_delete=models.SET_NULL,verbose_name='Housedhold belong')
+  type_of_program = models.ForeignKey(Typeofprograms,null=True,on_delete=models.SET_NULL)
   name_of_program = models.CharField(max_length=150)
   number_of_beneficiaries = models.SmallIntegerField()
   program_implementor = models.CharField(max_length=150)
@@ -142,12 +145,12 @@ class Availprograms(models.Model):
     verbose_name_plural = "Avail Programs"
 
 class Hhlivelihoods(models.Model):
-  controlnumber = models.ForeignKey(Households,on_delete=models.CASCADE,verbose_name='Housedhold belong')
-  livelihood = models.ForeignKey(Livelihoods,on_delete=models.CASCADE)
+  controlnumber = models.ForeignKey(Households,null=True,on_delete=models.SET_NULL,verbose_name='Housedhold belong')
+  livelihood = models.ForeignKey(Livelihoods,null=True,on_delete=models.SET_NULL)
   market_value = models.IntegerField()
   products = models.CharField(max_length=255)
   area = models.FloatField(null=True,blank=True)
-  livelihood_tenural_status = models.ForeignKey(Livelihoodtenuralstatus,on_delete=models.CASCADE)
+  livelihood_tenural_status = models.ForeignKey(Livelihoodtenuralstatus,null=True,on_delete=models.SET_NULL)
   with_insurance = models.BooleanField()
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)

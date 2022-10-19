@@ -10,6 +10,40 @@
 {% leaflet_css %}
 <style type="text/css">
     #map {width: 100%;height: 750px;}
+    .leaflet-popup-content {width: 560px! important;}
+    /* https://gis.stackexchange.com/questions/327097/how-to-add-top-and-bottom-margins-to-leaflet-popup-with-scroll */
+    .custom-popup {
+        border-radius: 2px;
+        font-family: 'Molengo', sans-serif;
+        font-size: 12px;
+        line-height: 10px;
+        height: 10 px ;
+        max-height: 460px;
+    }
+
+    .custom-popup, .leaflet-popup-tip {
+        background: #e7e7e7;
+        border: none;
+        box-shadow: none;
+    }
+
+    .leaflet-popup-content-wrapper {
+        background: #e7e7e7;
+        border-radius: 2px;
+    }
+
+    .leaflet-popup {
+        position: absolute;
+        text-align: center;
+    }
+
+    .leaflet-popup-content {
+        margin-right: 2px;
+        padding-right: 12px;
+        min-width: 100 px !important;
+        max-height: 460px;
+        overflow: auto;
+    }
 </style>
 <link rel="stylsheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css'%}">
 <script type="text/javascript" src="{% static 'leaflet_dist/leaflet.ajax.js'%}"></script>
@@ -47,6 +81,7 @@
 
 <script type="text/javascript">
     window.addEventListener("map:init", function (e) {
+
         var detail = e.detail;
         var households = new L.GeoJSON.AJAX("{% url 'household'%}",{
             pointToLayer: function(feature, latlng) {
@@ -61,11 +96,503 @@
                 return L.marker(latlng, {icon: greenIcon});
             },
             onEachFeature: function(feature,layer){
-                var url_mask = "{% url 'admin:household_households_change' object_id='12345' %}".replace(/12345/, feature.properties.pk.toString());
-                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+  
-                                '<a href="'+url_mask+'">View household information</a>');              
+                households.on({
+                    click:whenClicked
+                });            
             }
         });
+
+        function whenClicked(e) {
+            // e = event
+            // console.log(e.layer.feature.properties.latitude);
+            // You can make your ajax call declaration here
+            //$.ajax(...     
+            $.ajax({
+                type: "get",
+                url: "{% url 'householdinfo'%}",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                data: {'pk': e.layer.feature.properties.pk} ,
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) { 
+                    var url_mask = "{% url 'admin:household_households_change' object_id='change_id' %}".replace(/change_id/, response[0].controlnumber.toString());
+
+
+                    function printDemographies(vDemographies){
+                        
+                        var str = "";
+                        str += '<div id="myGroup">'; 
+                        for(var i=0; i<vDemographies.length; i++) {
+                            var url_mask_demography = "{% url 'admin:household_demographies_change' object_id='change_id' %}".replace(/change_id/, vDemographies[i].id.toString());
+                            str += '<li>';
+                                str += '<a style="text-transform: capitalize" data-toggle="collapse" href="#demography-'+i+' "aria-expanded="false" aria-controls="collapseExample">';
+                                    str += vDemographies[i].lastname +' '+ vDemographies[i].firstname +' '+ vDemographies[i].middlename;
+                                str += '</a>';
+                                str += '</br>';
+                                str += '<div class="collapse" id="demography-'+ i +'" data-parent="#myGroup">';
+                                    str += '<table class="table table-borderless table-sm" style="margin-left:12px; margin-top:5px;">'
+                                        str += '<tbody>'; 
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Link for more info:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span><a href="'+url_mask_demography+'"> : Click here.</a></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Lastname:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].lastname+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Firstname:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].firstname+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Middlename:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].middlename+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Extension:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].extension+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Nuclear family belongs to:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].nuclear_family+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Relationship to head:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].relationshiptohead+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Gender:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].gender+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Birthdate::</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].birthdate+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Marital status:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].marital_status+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Member of IP\'s</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].member_ip ? 'Yes' : 'No'}`+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Informal settler:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].informal_settler ? 'Yes' : 'No'}`+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Religion:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].religion+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Person with special needs:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].person_with_special_needs ? 'Yes' : 'No'}`+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Type of disability:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].type_of_disability+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Is OFW:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].is_ofw ? 'Yes' : 'No'}`+'</span></td>';                                     
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Residence:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].residence ? 'Yes' : 'No'}`+'</span></td>';                                     
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Nutritional status:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].nutritional_status+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Nutritional status recorded:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].nutritional_status_recorded+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Currently attending in school:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].currently_attending_school ? 'Yes' : 'No'}`+'</span></td>';                                     
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Current grade level attending:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].current_grade_level_attending+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Highest eductional attainment:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].highest_eductional_attainment+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Track/Strand/Course completed (for senior High school/Vocational/College):</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].course_completed_vocational+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Can read and write or atleast high school graduate:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].can_read_and_write ? 'Yes' : 'No'}`+'</span></td>';                                     
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Primary occupation:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].primary_occupation +'</span></td>';                                     
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Monthly income:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vDemographies[i].monthly_income +'</span></td>';                                     
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Sss member:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].sss_member ? 'Yes' : 'No'}`+'</span></td>';                                     
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Gsis member:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].gsis_member ? 'Yes' : 'No'}`+'</span></td>';                                     
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Philhealth member:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].philhealth_member ? 'Yes' : 'No'}`+'</span></td>';                                     
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Dependent of philhealth member:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vDemographies[i].dependent_of_philhealth_member ? 'Yes' : 'No'}`+'</span></td>';                                     
+                                            str += '</tr>';
+                                        str += '</tbody>';
+                                    str += '</table>';                        
+                                str += '</div>';
+                            str += '</li>';
+                        }
+                        str += '</div> ';
+
+                        return str;
+                    }
+
+                    function printAvailedprograms(vAvailprograms){
+                        
+                        var str = "";
+                        str += '<div id="myGroup">'; 
+                        for(var i=0; i<vAvailprograms.length; i++) {
+                            var url_mask_availprograms = "{% url 'admin:household_availprograms_change' object_id='change_id' %}".replace(/change_id/, vAvailprograms[i].id.toString());
+                            str += '<li>';
+                                str += '<a style="text-transform: capitalize" data-toggle="collapse" href="#availedprogram-'+i+' "aria-expanded="false" aria-controls="collapseExample">';
+                                    str += vAvailprograms[i].type_of_program;
+                                str += '</a>';
+                                str += '</br>';
+                                str += '<div class="collapse" id="availedprogram-'+ i +'" data-parent="#myGroup">';
+                                    str += '<table class="table table-borderless table-sm" style="margin-left:12px; margin-top:5px;">'
+                                        str += '<tbody>';
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Link for more info:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span><a href="'+url_mask_availprograms+'"> : Click here.</a></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Name of program:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vAvailprograms[i].name_of_program+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Number of beneficiaries:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vAvailprograms[i].number_of_beneficiaries+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Program implementor:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vAvailprograms[i].program_implementor+'</span></td>';                                        
+                                            str += '</tr>';                                        
+                                        str += '</tbody>';
+                                    str += '</table>';    
+                                str += '</div>';
+                            str += '</li>';
+                        }
+                        str += '</div> ';
+
+                        return str;
+                    }
+
+                    function printLivelihoodprograms(vLivelhoods){
+                        var str = "";
+                        str += '<div id="myGroup">'; 
+                        for(var i=0; i<vLivelhoods.length; i++) {
+                            var url_mask_livelihoods = "{% url 'admin:household_hhlivelihoods_change' object_id='change_id' %}".replace(/change_id/, vLivelhoods[i].id.toString());
+                            str += '<li>';
+                                str += '<a style="text-transform: capitalize" data-toggle="collapse" href="#livelihood-'+i+' "aria-expanded="false" aria-controls="collapseExample">';
+                                    str += vLivelhoods[i].livelihood;
+                                str += '</a>';
+                                str += '</br>';
+                                str += '<div class="collapse" id="livelihood-'+ i +'" data-parent="#myGroup">';
+                                    str += '<table class="table table-borderless table-sm" style="margin-left:12px; margin-top:5px;">'
+                                        str += '<tbody>';
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Link for more info:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span><a href="'+url_mask_livelihoods+'"> : Click here.</a></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Market value:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vLivelhoods[i].market_value+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Products:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vLivelhoods[i].products+'</span></td>';                                        
+                                            str += '</tr>';
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Area:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vLivelhoods[i].area+'</span></td>';                                        
+                                            str += '</tr>'; 
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Livelihood tenural status:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+vLivelhoods[i].livelihood_tenural_status+'</span></td>';                                        
+                                            str += '</tr>';   
+                                            str += '<tr>';
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">With insurance:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span>'+`${vLivelhoods[0].with_insurance ? 'Yes' : 'No'}`+'</span></td>';                                        
+                                            str += '</tr>';                                        
+                                        str += '</tbody>';
+                                    str += '</table>';    
+                                str += '</div>';
+                            str += '</li>';
+                        }
+                        str += '</div> ';
+
+                        return str;
+                    }
+
+                    L.popup()
+                    .setLatLng(L.latLng(response[0].latitude, response[0].longitude))
+                    .setContent('<div class="p-1">'+
+                                    '<div class="card card-primary card-outline card-outline-tabs">'+
+                                        '<div class="card-header p-0 border-bottom-0">'+
+                                            '<ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">'+
+                                                '<li class="nav-item">'+
+                                                '<a class="nav-link active" id="custom-tabs-four-household-information-tab" data-toggle="pill" href="#custom-tabs-four-household-information" role="tab" aria-controls="custom-tabs-four-household-information" aria-selected="true">Household information</a>'+
+                                                '</li>'+
+                                                '<li class="nav-item">'+
+                                                '<a class="nav-link" id="custom-tabs-four-demography-tab" data-toggle="pill" href="#custom-tabs-four-demography" role="tab" aria-controls="custom-tabs-four-demography" aria-selected="false">Demography</a>'+
+                                                '</li>'+
+                                                '<li class="nav-item">'+
+                                                '<a class="nav-link" id="custom-tabs-four-availed-programs-tab" data-toggle="pill" href="#custom-tabs-four-availed-programs" role="tab" aria-controls="custom-tabs-four-availed-programs" aria-selected="false">Availed programs</a>'+
+                                                '</li>'+
+                                                '<li class="nav-item">'+
+                                                '<a class="nav-link" id="custom-tabs-four-livelihood-tab" data-toggle="pill" href="#custom-tabs-four-livelihood" role="tab" aria-controls="custom-tabs-four-livelihood" aria-selected="false">Livelihood</a>'+
+                                                '</li>'+
+                                            '</ul>'+
+                                        '</div>'+
+                                    '</div>'+
+                                    '<div class="card-body">'+
+                                    '<div class="tab-content" id="custom-tabs-four-tabContent">'+
+                                        '<div class="tab-pane fade show active" id="custom-tabs-four-household-information" role="tabpanel" aria-labelledby="custom-tabs-four-household-information-tab">'+
+                                            '<!-- Household Information -->'+
+                                            '<table class="table table-borderless table-sm">'+
+                                            '<tbody>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Household ID</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].controlnumber+'<a href="'+url_mask+'"> : Click here for mor info.</a></span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">RESPONDENT</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].respondent+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Municipality</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].municipality+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Barangay</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].barangay+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Purok</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].purok+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Type of building</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].householdbuildingtypes+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Tenural status</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].householdtenuralstatus+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Roof material</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].householdroofmaterials+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Wall material</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].householdwallmaterials+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Water tenural status</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].householdwatertenuralstatus+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Level of water system</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].waterlevelsystems+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Nearest evacuation center</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].evacuationareas+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Building/House construct</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].year_construct+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Estimated cost</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].estimated_cost+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Number of bedrooms</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].number_bedrooms+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Number of storey</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].number_storey+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to electricity</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+`${response[0].access_electricity ? 'Yes' : 'No'}`+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to internet</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+`${response[0].access_internet ? 'Yes' : 'No'}`+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Medical treatment</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+`${response[0].medical_treatment == null ? 'Nothing' : `${response[0].medical_treatment}`}`+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to water supply</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+`${response[0].access_water_supply ? 'Yes' : 'No'}`+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Water safe to drink</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+`${response[0].potable ? 'Yes' : 'No'}`+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Flood occur in the area</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+`${response[0].floods_occur ? 'Yes' : 'No'}`+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Year flooded</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].year_flooded+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Experience evacuation during calamity</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+`${response[0].experience_evacuate ? 'Yes' : 'No'}`+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Year evacuated</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].year_evacuate+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to health and medical facility</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+`${response[0].access_health_medical_facility ? 'Yes' : 'No'}`+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to telecommunication</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+`${response[0].access_telecommuniciation ? 'Yes' : 'No'}`+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Access to drill and simulation</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+`${response[0].access_drill_simulation ? 'Yes' : 'No'}`+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Enumerator</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].enumerator+'</span></td>'+                                            
+                                                '</tr>'+
+                                                '<tr>'+                                         
+                                                    '<td style="width: 25%"><span class="font-weight-bold">Editor</span></td>'+
+                                                    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
+                                                    '<td><span>'+response[0].editor+'</span></td>'+                                            
+                                                '</tr>'+
+                                            '</tbody>'+
+                                            '</table>'+                          
+                                        '</div>'+ 
+                                        '<div class="tab-pane fade" id="custom-tabs-four-demography" role="tabpanel" aria-labelledby="custom-tabs-four-demography-tab">'+
+                                            '<!-- Foldable list of demography component -->  '+    
+                                            printDemographies(response[0].demographies_set)+                                                 
+                                        '</div>'+
+                                        '<div class="tab-pane fade" id="custom-tabs-four-availed-programs" role="tabpanel" aria-labelledby="custom-tabs-four-availed-programs-tab">'+
+                                            '<!-- Foldable list of availed programs -->'+
+                                            printAvailedprograms(response[0].availprograms_set)+
+                                        '</div>'+
+                                        '<div class="tab-pane fade" id="custom-tabs-four-livelihood" role="tabpanel" aria-labelledby="custom-tabs-four-livelihood-tab">'+
+                                            '<!-- Foldable list of livelihood -->'+    
+                                            printLivelihoodprograms(response[0].hhlivelihoods_set)+                             
+                                        '</div>'+
+                                    '</div>'+
+                                    '</div>'+
+                                '</div>',{
+                                    maxWidth: 560,
+                                    maxHeight: 460,
+
+                                })
+                    .openOn(detail.map);
+
+                },
+            });
+
+        }
 
         
         var household_data = L.layerGroup([households]);
@@ -104,10 +631,6 @@
             "Households": household_data,
             //"Evacuation Center": evacuation_center
         };
-
-        // temporary solution for hiding layers control generate in global setting found in LEAFLET_CONFIG item
-        //$('.leaflet-control').hide();
-
         var layerControl = L.control.layers(baseMaps,overlayMaps).addTo(detail.map);
 
         $( "#advance_search" ).click(function() {          
@@ -129,7 +652,6 @@
                             pointToLayer: function(feature, latlng) {
                                 var greenIcon = L.icon({
                                     iconUrl: '{% static "image/icons8-green-circle-48.png"%}',
-
                                     iconSize:     [16, 16],
                                     iconAnchor:   [-3,9], // point of the icon which will correspond to marker's location
                                     popupAnchor: [0,0],
@@ -137,11 +659,8 @@
                                 });
                                 return L.marker(latlng, {icon: greenIcon});
                             },
-                            onEachFeature: function(feature,layer){
-                                var url_mask = "{% url 'admin:household_households_change' object_id='12345' %}".replace(/12345/, feature.properties.pk.toString());
-                                layer.bindPopup('<h5>'+feature.properties.respondent.toString()+'<h5>'+                        
-                                                '<a href="'+url_mask+'">View household information</a>');
-                            }
+                        }).on('click',function(e){
+                            whenClicked(e)
                         });
                         //fit Bounds
                         if(households.getBounds().isValid())
