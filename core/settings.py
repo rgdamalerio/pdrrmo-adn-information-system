@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     "library",
     "household",
     "mapwidgets",
+    "aggregate.apps.AggregateConfig",
+    #"reports.apps.ReportsConfig",
 ]
 
 REST_FRAMEWORK = {

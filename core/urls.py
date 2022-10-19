@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import include
+from django.urls import include, path
 from django.contrib import admin
 from django.urls import path, reverse_lazy
 from django.views.generic.base import RedirectView
@@ -37,6 +37,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('',include('household.urls')),
     path('address/',include('library.urls')),
+    path('aggregate/',include("aggregate.urls")),
+    #path('reports/',include('reports.urls')),
     ## URL for api rest framework
     #path('api-auth/', include('rest_framework.urls')),
     #path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
