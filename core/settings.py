@@ -98,6 +98,8 @@ TEMPLATES = [
 
 LOGOUT_URL ='logout/'
 
+LOGOUT_REDIRECT_URL = 'login/'
+
 WSGI_APPLICATION = "core.wsgi.application"
 
 
@@ -150,12 +152,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = "/static/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+
+#STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 # Leaflet Configuration
 LEAFLET_CONFIG = {
