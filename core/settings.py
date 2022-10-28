@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "mapwidgets",
     "aggregate.apps.AggregateConfig",
     #"reports.apps.ReportsConfig",
+    #"aggregate",
 ]
 
 REST_FRAMEWORK = {
@@ -83,7 +84,8 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ['templates'],
+        #"DIRS": ['templates'],
+        "DIRS": [os.path.join(BASE_DIR,'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

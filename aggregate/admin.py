@@ -7,6 +7,17 @@ from .models import Familiesandpopulation, Barangays
 # Register your models here.
 #@admin.register(Familiesandpopulation)
 class FamiliesandpopulationAdmin(admin.ModelAdmin):
+  
+  # @admin.action(description='Generate PDF file')
+  # def generatePDF(modeladmin, request, queryset):
+  #       url ='templates/admin/aggregate/?pks=' + ','.join(str([q.pk for q in queryset]))
+  # actions = [generatePDF]
+  
+  # @admin.action(description='Generate PDF file')
+  # def export_pdf(modeladmin, request, queryset):
+  #       url ='export_pdf' 
+  # actions = [export_pdf]
+  
   list_display = (
       "municipality",
       "barangay",
@@ -45,3 +56,13 @@ admin.site.register(Familiesandpopulation,FamiliesandpopulationAdmin)
 #       )
   
 #admin.site.register(Sampletable,SampletableAdmin)
+
+
+# class PersonAdmin(admin.ModelAdmin):
+#     @admin.action(description='Generate PDF file')
+#     def generatePDF(modeladmin, request, queryset):
+#         url ='templates/admin/aggregate/?pks=' + ','.join(str([q.pk for q in queryset]))
+       
+#     actions = [generatePDF]
+
+# admin.site.register(Person, PersonAdmin)
