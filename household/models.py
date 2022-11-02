@@ -25,6 +25,11 @@ def year_choices():
 
 # Create your models here.
 class Households(models.Model):
+
+  def getBarangay(self):
+    brgycode = self.barangay
+    return brgycode
+
   controlnumber = models.TextField(primary_key=True)
   purok = models.CharField(max_length=25,null=True)
   longitude = models.CharField(max_length=50,null=True)
@@ -50,7 +55,7 @@ class Households(models.Model):
   access_health_medical_facility = models.BooleanField(_('Access to health and medical facility'))
   access_telecommuniciation = models.BooleanField(_('Access to telecommunication'))
   access_drill_simulation = models.BooleanField(_('Access/Join drill and simulation'))
-  image = models.ImageField(upload_to ='uploads/',null=True)
+  image = models.ImageField(upload_to ='uploads/'+ str(getBarangay) + '/',null=True)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
@@ -64,6 +69,7 @@ class Households(models.Model):
   waterlevelsystems = models.ForeignKey(Waterlevelsystems,null=True,on_delete=models.SET_NULL,verbose_name='Level of water system')
   evacuationareas = models.ForeignKey(Evacuationareas,null=True,on_delete=models.SET_NULL,verbose_name='Nearest evacuation center')
 
+  
   def __str__(self):
     return self.respondent
 
