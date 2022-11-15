@@ -120,7 +120,7 @@ class Demographies(models.Model):
 
 
   def __str__(self):
-    return self.lastname +" "+ self.firstname +" "+ self.middlename
+    return str(self.lastname) +" "+ str(self.firstname) +" "+ str(self.middlename)
 
 
   class Meta:
