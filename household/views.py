@@ -182,3 +182,53 @@ def household_search_form(request):
   else:
     # Do something for anonymous users.
     raise PermissionDenied()
+
+#AJAX
+@require_http_methods(['POST'])
+def chart_view(request):
+  if request.user.is_authenticated:
+    # Do something for authenticated users.   
+
+    qs = Households.objects.all()
+
+    data = request.POST
+
+    #print(data.get('controlnumber'))
+    controlnumber_icontains_query = data.get('controlnumber')
+    # purok_icontains_query = request.GET.get('purok')
+    # respondent_icontains_query = request.GET.get('respondent')
+    # enumerator_icontains_query = request.GET.get('enumerator')
+    # municipality_exact = request.GET.get('municipality')
+    # barangay_exact = request.GET.get('barangay')
+    # enumerator_icontains_query = request.GET.get('enumerator')
+    # editor_icontains_query = request.GET.get('editor')
+    # year_construct_exact_query = request.GET.get('year_construct')
+    # estimated_cost_exact_query = request.GET.get('estimated_cost')
+    # number_bedrooms_exact_query = request.GET.get('number_bedrooms')
+    # number_storey_exact_query = request.GET.get('number_storey')
+    # access_electricity = request.GET.getlist('access_electricity')
+    # access_internet = request.GET.getlist('access_internet')
+    # medical_treatment_icontains_query = request.GET.get('medical_treatment')
+    # access_water_supply = request.GET.getlist('access_water_supply')
+    # potable = request.GET.getlist('potable')
+    # floods_occur = request.GET.getlist('floods_occur')
+    # year_flooded_exact = request.GET.get('year_flooded')
+    # experience_evacuate = request.GET.getlist('experience_evacuate')
+    # year_evacuate_exact = request.GET.get('year_evacuate')
+    # access_health_medical_facility = request.GET.getlist('access_health_medical_facility')
+    # access_telecommuniciation = request.GET.getlist('access_telecommuniciation')
+    # access_drill_simulation = request.GET.getlist('access_drill_simulation')
+    # householdbuildingtypes_exact = request.GET.get('householdbuildingtypes')
+    # householdtenuralstatus_exact = request.GET.get('householdtenuralstatus')
+    # householdroofmaterials_exact = request.GET.get('householdroofmaterials')
+    # householdwallmaterials_exact = request.GET.get('householdwallmaterials')
+    # householdwatertenuralstatus_exact = request.GET.get('householdwatertenuralstatus')
+    # waterlevelsystems_exact = request.GET.get('waterlevelsystems')
+    # evacuationareas_exact = request.GET.get('evacuationareas')
+
+    return render(request,'household/chart_view_content.html')
+  else:
+    # Do something for anonymous users.
+    raise PermissionDenied()
+
+

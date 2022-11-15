@@ -60,7 +60,11 @@
         <!-- <h2>{{title}}</h2>  -->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchModal">
             Advance Search
-          </button>
+        </button>
+        <button type="button" class="btn btn-info" id="btnChart">
+            <i class="fas fa-chart-bar"></i> Chart
+        </button>
+
     </div>
     <div class="col-sm-8">
         <ol class="breadcrumb float-sm-right">
@@ -78,6 +82,7 @@
 
 <!-- INCLUDE -->
 {% include 'admin/advance_search.html' %}
+{% include 'admin/chart_view.html' %}
 
 <script type="text/javascript">
     window.addEventListener("map:init", function (e) {
@@ -674,6 +679,26 @@
 
             
         });     
+
+       
+        $( "#btnChart" ).click(function() {
+            $('#graphsModal').modal('toggle');
+            var values = $('#advance_search_form').serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'household_chart'%}",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                data: values ,
+                success: function (response) {
+
+                    $("#chart_view").html(response);
+
+                },
+            });
+
+            
+        });
     
     }, false);
 </script>
