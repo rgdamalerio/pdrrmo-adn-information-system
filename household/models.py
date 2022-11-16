@@ -120,8 +120,7 @@ class Demographies(models.Model):
 
 
   def __str__(self):
-    return str(self.lastname) +" "+ str(self.firstname) +" "+ str(self.middlename)
-
+    return self.lastname
 
   class Meta:
     verbose_name_plural = "Demographies"
