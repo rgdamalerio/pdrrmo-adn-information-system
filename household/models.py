@@ -55,7 +55,7 @@ class Households(models.Model):
   access_health_medical_facility = models.BooleanField(_('Access to health and medical facility'))
   access_telecommuniciation = models.BooleanField(_('Access to telecommunication'))
   access_drill_simulation = models.BooleanField(_('Access/Join drill and simulation'))
-  image = models.ImageField(upload_to ='uploads/'+ str(getBarangay) + '/',null=True)
+  image = models.ImageField(upload_to ='uploads/',null=True)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
