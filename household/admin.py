@@ -60,11 +60,11 @@ class HouseholdsAdmin(LeafletGeoAdmin):
   list_filter = ('municipality_id','barangay_id','access_electricity', 'access_internet','access_water_supply','potable',
     'floods_occur','experience_evacuate','access_health_medical_facility',
     'access_telecommuniciation','access_drill_simulation')
-  inlines = [
+  '''inlines = [
     DemographiesInline,
     AvailprogramsInline,
     LivelihoodsInline
-  ]
+  ]'''
   class Media:
       js = (
           'js/chained-address.js',
