@@ -6,6 +6,11 @@ from household.forms import HouseholdForm
 
 from datetime import date
 import datetime
+from django.urls import reverse
+from django.utils.http import urlencode
+from django.utils.html import format_html
+
+
 
 # /Related model with inline view in household model
 class DemographiesInline(admin.StackedInline):
@@ -43,7 +48,7 @@ class HouseholdsAdmin(LeafletGeoAdmin):
         ('Drak Map', 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
             'subdomains': 'abcd',
-            'maxZoom': 19
+            'maxZoom': 10
         })],
   }
   readonly_fields = ('enumerator','editor',)
@@ -55,16 +60,29 @@ class HouseholdsAdmin(LeafletGeoAdmin):
             'access_telecommuniciation','access_drill_simulation','image','enumerator','editor'
            ]
   list_display = ('controlnumber','municipality','barangay','purok','respondent',
-    'date_interview','created_at','updated_at','owner')
+    'date_interview','created_at','updated_at','owner','views_demographies_link',)
+  
+  def views_demographies_link(self, obj):
+    count = obj.demographies_set.count()
+    link = (
+      reverse("admin:household_demographies_changelist")  + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+
+    return format_html('<a href="{}">{} Member(s)</a>', link, count)
+  views_demographies_link.short_description = "No. of Family Members"
+
   search_fields = ('respondent',)
   list_filter = ('municipality_id','barangay_id','access_electricity', 'access_internet','access_water_supply','potable',
     'floods_occur','experience_evacuate','access_health_medical_facility',
     'access_telecommuniciation','access_drill_simulation')
-  '''inlines = [
-    DemographiesInline,
-    AvailprogramsInline,
-    LivelihoodsInline
-  ]'''
+  inlines = [
+    #DemographiesInline,
+    #AvailprogramsInline,
+    #LivelihoodsInline
+  ]
+
+ 
+
   class Media:
       js = (
           'js/chained-address.js',
@@ -83,6 +101,7 @@ class DemographiesAdmin(admin.ModelAdmin):
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
   readonly_fields = ['owner','created_at','updated_at','age',]
+  list_filter = ('controlnumber_id',)
   search_fields = ('lastname',)
 
   def age(self,demography):
