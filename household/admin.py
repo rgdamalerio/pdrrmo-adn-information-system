@@ -12,6 +12,7 @@ from django.utils.html import format_html
 
 
 
+
 # /Related model with inline view in household model
 class DemographiesInline(admin.StackedInline):
   model = Demographies
@@ -60,16 +61,74 @@ class HouseholdsAdmin(LeafletGeoAdmin):
             'access_telecommuniciation','access_drill_simulation','image','enumerator','editor'
            ]
   list_display = ('controlnumber','municipality','barangay','purok','respondent',
-    'date_interview','created_at','updated_at','owner','views_demographies_link',)
+    'date_interview','created_at','updated_at','owner','views_demographies_link','views_availprograms_link','views_hhlivelihoods_link')
   
   def views_demographies_link(self, obj):
-    count = obj.demographies_set.count()
-    link = (
+    count_demographies = obj.demographies_set.count()
+    changelist_link = (
       reverse("admin:household_demographies_changelist")  + "?" + urlencode({"controlnumber": obj.controlnumber})
     )
+    add_link = (
+      reverse("admin:household_demographies_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
 
-    return format_html('<a href="{}">{} Member(s)</a>', link, count)
-  views_demographies_link.short_description = "No. of Family Members"
+    if count_demographies > 1:
+      return format_html('<a href="{}">{} Members | <a href="{}">Add</a>', changelist_link, count_demographies, add_link)
+    
+    elif count_demographies == 1:
+      return format_html('<a href="{}">{} Member | <a href="{}">Add</a>', changelist_link, count_demographies, add_link)
+    
+    else:
+        return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+  views_demographies_link.short_description = "Family Members"
+
+
+  def views_availprograms_link(self, obj):
+    count_availprograms = obj.availprograms_set.count()
+
+    changelist_link = (
+      reverse("admin:household_availprograms_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+
+    add_link = (
+      reverse("admin:household_availprograms_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+    
+    if count_availprograms > 1:
+      return format_html('<a href="{}">{} Programs | <a href="{}">Add</a>', changelist_link, count_availprograms,add_link)
+  
+    
+    elif count_availprograms == 1:
+      return format_html('<a href="{}">{} Program | <a href="{}">Add</a>', changelist_link, count_availprograms,add_link) 
+    
+    else:
+      return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+
+
+  views_availprograms_link.short_description = "Availed Programs"
+
+  def views_hhlivelihoods_link(self, obj):
+    count_hhlivelihoods = obj.hhlivelihoods_set.count()
+
+    changelist_link = (
+      reverse("admin:household_hhlivelihoods_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+
+    add_link = (
+      reverse("admin:household_hhlivelihoods_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+    
+    if count_hhlivelihoods > 1:
+      return format_html('<a href="{}">{} Livelihoods | <a href="{}">Add</a>', changelist_link, count_hhlivelihoods, add_link)
+    
+    elif count_hhlivelihoods == 1:
+      return format_html('<a href="{}">{} Livelihood | <a href="{}">Add</a>', changelist_link, count_hhlivelihoods, add_link)
+    
+    else:
+      return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+
+  views_hhlivelihoods_link.short_description = "Livelihoods"
+
 
   search_fields = ('respondent',)
   list_filter = ('municipality_id','barangay_id','access_electricity', 'access_internet','access_water_supply','potable',
@@ -101,9 +160,12 @@ class DemographiesAdmin(admin.ModelAdmin):
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
   readonly_fields = ['owner','created_at','updated_at','age',]
-  list_filter = ('controlnumber_id',)
+  #list_filter = ('controlnumber_id',)
   search_fields = ('lastname',)
 
+  '''def has_add_permission(self, request):
+        return False'''
+  
   def age(self,demography):
     today = date.today()
     bday = demography.birthdate.strftime("%Y-%m-%d %H:%M:%S")
