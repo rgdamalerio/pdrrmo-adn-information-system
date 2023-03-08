@@ -65,36 +65,44 @@ class HouseholdsAdmin(LeafletGeoAdmin):
   
   def views_demographies_link(self, obj):
     count_demographies = obj.demographies_set.count()
-    link = (
+    changelist_link = (
       reverse("admin:household_demographies_changelist")  + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+    add_link = (
+      reverse("admin:household_demographies_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
     )
 
     if count_demographies > 1:
-      return format_html('<a href="{}">{} Members</a>', link, count_demographies)
+      return format_html('<a href="{}">{} Members | <a href="{}">Add</a>', changelist_link, count_demographies, add_link)
     
     elif count_demographies == 1:
-      return format_html('<a href="{}">{} Member</a>', link, count_demographies)
+      return format_html('<a href="{}">{} Member | <a href="{}">Add</a>', changelist_link, count_demographies, add_link)
     
     else:
-        return format_html('<a href="{}"> None</a>', link)
+        return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
   views_demographies_link.short_description = "Family Members"
 
 
   def views_availprograms_link(self, obj):
     count_availprograms = obj.availprograms_set.count()
 
-    link = (
+    changelist_link = (
       reverse("admin:household_availprograms_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+
+    add_link = (
+      reverse("admin:household_availprograms_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
     )
     
     if count_availprograms > 1:
-      return format_html('<a href="{}">{} Programs</a>', link, count_availprograms)
+      return format_html('<a href="{}">{} Programs | <a href="{}">Add</a>', changelist_link, count_availprograms,add_link)
+  
     
     elif count_availprograms == 1:
-      return format_html('<a href="{}">{} Program</a>', link, count_availprograms)
+      return format_html('<a href="{}">{} Program | <a href="{}">Add</a>', changelist_link, count_availprograms,add_link) 
     
     else:
-      return format_html('<a href="{}"> None</a>', link)
+      return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
 
 
   views_availprograms_link.short_description = "Availed Programs"
@@ -102,18 +110,22 @@ class HouseholdsAdmin(LeafletGeoAdmin):
   def views_hhlivelihoods_link(self, obj):
     count_hhlivelihoods = obj.hhlivelihoods_set.count()
 
-    link = (
+    changelist_link = (
       reverse("admin:household_hhlivelihoods_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+
+    add_link = (
+      reverse("admin:household_hhlivelihoods_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
     )
     
     if count_hhlivelihoods > 1:
-      return format_html('<a href="{}">{} Livelihoods</a>', link, count_hhlivelihoods)
+      return format_html('<a href="{}">{} Livelihoods | <a href="{}">Add</a>', changelist_link, count_hhlivelihoods, add_link)
     
     elif count_hhlivelihoods == 1:
-      return format_html('<a href="{}">{} Livelihood</a>', link, count_hhlivelihoods)
+      return format_html('<a href="{}">{} Livelihood | <a href="{}">Add</a>', changelist_link, count_hhlivelihoods, add_link)
     
     else:
-      return format_html('<a href="{}"> None</a>', link)
+      return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
 
   views_hhlivelihoods_link.short_description = "Livelihoods"
 

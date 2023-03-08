@@ -127,6 +127,7 @@ class Demographies(models.Model):
 
 
 class Availprograms(models.Model):
+ 
   controlnumber = models.ForeignKey(Households,null=True,on_delete=models.SET_NULL,verbose_name='Housedhold belong')
   type_of_program = models.ForeignKey(Typeofprograms,null=True,on_delete=models.SET_NULL)
   name_of_program = models.CharField(max_length=150)
