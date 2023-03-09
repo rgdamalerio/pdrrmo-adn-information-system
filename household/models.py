@@ -6,7 +6,7 @@ from library.models import Municipalities, Barangays, Householdbuildingtypes, \
   Householdtenuralstatus, Householdroofmaterials, Buildingwallmaterials, \
   Householdwatertenuralstatus, Waterlevelsystems, Evacuationareas, Relationshiptoheads, \
   Genders, Maritalstatus, Disabilities, Nutritionalstatus, Gradelevels, Trackstrandcourses, \
-  Monthlyincomes, Typeofprograms, Livelihoods, Livelihoodtenuralstatus
+  Monthlyincomes, Typeofprograms, Livelihoods, Livelihoodtenuralstatus, Purok
 from django.contrib.auth.models import User
 from django import forms
 
@@ -32,6 +32,7 @@ class Households(models.Model):
 
   controlnumber = models.TextField(primary_key=True)
   purok = models.CharField(max_length=25,null=True)
+  purok_id = models.ForeignKey(Purok, null=True, on_delete=models.CASCADE, verbose_name="Purok")
   longitude = models.CharField(max_length=50,null=True)
   latitude = models.CharField(max_length=50,null=True)
   location = models.PointField(srid=4326)
