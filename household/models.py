@@ -49,7 +49,7 @@ class Households(models.Model):
   access_water_supply = models.BooleanField(_('Access to water supply'))
   potable = models.BooleanField(_('Safe to drink'))
   floods_occur = models.BooleanField(_('Flood occur in your area'))
-  year_flooded = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True)
+  year_flooded = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True,blank=True)
   experience_evacuate = models.BooleanField(_('Experience evacuation during calamity'))
   year_evacuate = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True,blank=True)
   access_health_medical_facility = models.BooleanField(_('Access to health and medical facility'))
