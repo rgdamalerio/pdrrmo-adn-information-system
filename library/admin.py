@@ -5,7 +5,7 @@ from .models import Municipalities,Barangays,Buildingroofmaterials, \
   Waterlevelsystems, Householdroofmaterials, Householdtenuralstatus, \
   Householdbuildingtypes, Householdwallmaterials, Householdwatertenuralstatus, \
   Livelihoods, Maritalstatus, Monthlyincomes, Nutritionalstatus, Relationshiptoheads, \
-  Livelihoodtenuralstatus, Trackstrandcourses, Typeofprograms
+  Livelihoodtenuralstatus, Trackstrandcourses, Typeofprograms, Purok
 
 
 # Register your models here.
@@ -87,6 +87,9 @@ class TrackstrandcoursesAdmin(admin.ModelAdmin):
 class TypeofprogramsAdmin(admin.ModelAdmin):
   list_display = ("id","type","created_at","updated_at","owner")
 
+class PurokAdmin(admin.ModelAdmin):
+  list_display = ("purok_id","psgccode_brgy","purok_name")
+
 admin.site.register(Municipalities,MunicipalitiesAdmin)
 admin.site.register(Barangays,BarangaysAdmin)
 admin.site.register(Buildingroofmaterials,BuildingroofmaterialsAdmin)
@@ -113,3 +116,4 @@ admin.site.register(Relationshiptoheads,RelationshiptoheadsAdmin)
 admin.site.register(Livelihoodtenuralstatus,LivelihoodtenuralstatusAdmin)
 admin.site.register(Trackstrandcourses,TrackstrandcoursesAdmin)
 admin.site.register(Typeofprograms,TypeofprogramsAdmin)
+admin.site.register(Purok, PurokAdmin)

@@ -48,6 +48,17 @@ class Barangays(models.Model):
   class Meta:
     verbose_name_plural = "Barangays"
 
+class Purok(models.Model):
+  purok_id = models.AutoField(primary_key=True)
+  purok_name = models.CharField(max_length=255, verbose_name="Purok")
+  psgccode_brgy = models.ForeignKey(Barangays, null=True, on_delete=models.CASCADE, verbose_name="Barangay")
+
+  def __str__(self):
+    return self.purok_name
+  
+  class Meta:
+    verbose_name_plural = "Purok"
+
 class BuildingroofmaterialsManager(models.Manager):
     def get_by_natural_key(self, description):
         return self.get(Buildingroofmaterials_description=description)
