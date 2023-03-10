@@ -1,6 +1,8 @@
 from django.contrib import admin
+from django.contrib.gis.db import models
 from .models import Households, Demographies, Availprograms, Hhlivelihoods
 from leaflet.admin import LeafletGeoAdmin
+from mapwidgets.widgets import GooglePointFieldWidget, MapboxPointFieldWidget
 from household.forms import HouseholdForm
 
 
@@ -38,19 +40,10 @@ class LivelihoodsInline(admin.StackedInline):
 
 # Register your models here.
 @admin.register(Households)
-class HouseholdsAdmin(LeafletGeoAdmin):
+class HouseholdsAdmin(admin.ModelAdmin):
   form = HouseholdForm
-  settings_overrides = {
-    'TILES': [('Esri_WorldImagery', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          'attribution': 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-        }),('OpenStreetMap', 'http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-          'attribution': '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-        }),
-        ('Drak Map', 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            'subdomains': 'abcd',
-            'maxZoom': 10
-        })],
+  formfield_overrides = {
+      models.PointField: {"widget": GooglePointFieldWidget}
   }
   readonly_fields = ('enumerator','editor',)
   fields = ['respondent','municipality', 'barangay', 'purok', 'location','householdbuildingtypes',
