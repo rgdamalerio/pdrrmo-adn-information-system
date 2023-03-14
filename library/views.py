@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from library.models import Municipalities, Barangays
+from library.models import Municipalities, Barangays, Purok
 
 @login_required
 def municipality_list(request):
@@ -9,6 +9,12 @@ def municipality_list(request):
 
 
 @login_required
-def barangay_list(request,municipality_id):
+def barangay_list(request, municipality_id):
   barangays = Barangays.objects.filter(psgcmun_id=municipality_id)
   return JsonResponse({'data': [{'psgccode': b.psgccode, 'brgyname': b.brgyname} for b in barangays]})
+
+
+@login_required
+def purok_list(request, barangay_id):
+  puroks = Purok.objects.filter(psgccode_brgy=barangay_id)
+  return JsonResponse({'data': [{'purok_id': p.purok_id, 'purok_name': p.purok_name} for p in puroks]})

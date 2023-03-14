@@ -41,6 +41,15 @@ class HouseholdForm(forms.ModelForm):
             choices=municipality_list,
         )
 
+        self.fields['barangay'].widget = forms.Select(
+            attrs={
+                'id': 'id_barangay',
+                'onchange': 'getPurok(this.value)',
+                'style': 'width:200px'
+            },
+            choices=barangay_init_form,
+        )
+
 class HouseholdSearchForm(forms.ModelForm):
     class Meta:
         model = Households

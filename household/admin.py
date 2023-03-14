@@ -46,14 +46,14 @@ class HouseholdsAdmin(admin.ModelAdmin):
       models.PointField: {"widget": GooglePointFieldWidget}
   }
   readonly_fields = ('enumerator','editor',)
-  fields = ['respondent','municipality', 'barangay', 'purok', 'location','householdbuildingtypes',
+  fields = ['respondent','municipality', 'barangay', 'purok_id', 'location','householdbuildingtypes',
             'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
             'access_electricity', 'householdroofmaterials','householdwallmaterials','medical_treatment',
             'access_water_supply','potable','householdwatertenuralstatus','waterlevelsystems','floods_occur',
             'year_flooded','experience_evacuate','year_evacuate','evacuationareas','access_health_medical_facility',
             'access_telecommuniciation','access_drill_simulation','image','enumerator','editor'
            ]
-  list_display = ('controlnumber','municipality','barangay','purok','respondent',
+  list_display = ('controlnumber','municipality','barangay','purok_id','respondent',
     'date_interview','created_at','updated_at','owner','views_demographies_link','views_availprograms_link','views_hhlivelihoods_link')
   
   def views_demographies_link(self, obj):
@@ -67,10 +67,8 @@ class HouseholdsAdmin(admin.ModelAdmin):
 
     if count_demographies > 1:
       return format_html('<a href="{}">{} Members | <a href="{}">Add</a>', changelist_link, count_demographies, add_link)
-    
     elif count_demographies == 1:
       return format_html('<a href="{}">{} Member | <a href="{}">Add</a>', changelist_link, count_demographies, add_link)
-    
     else:
         return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
   views_demographies_link.short_description = "Family Members"
@@ -82,21 +80,15 @@ class HouseholdsAdmin(admin.ModelAdmin):
     changelist_link = (
       reverse("admin:household_availprograms_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
     )
-
     add_link = (
       reverse("admin:household_availprograms_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
     )
-    
     if count_availprograms > 1:
       return format_html('<a href="{}">{} Programs | <a href="{}">Add</a>', changelist_link, count_availprograms,add_link)
-  
-    
     elif count_availprograms == 1:
       return format_html('<a href="{}">{} Program | <a href="{}">Add</a>', changelist_link, count_availprograms,add_link) 
-    
     else:
       return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
-
 
   views_availprograms_link.short_description = "Availed Programs"
 
@@ -106,22 +98,18 @@ class HouseholdsAdmin(admin.ModelAdmin):
     changelist_link = (
       reverse("admin:household_hhlivelihoods_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
     )
-
     add_link = (
       reverse("admin:household_hhlivelihoods_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
     )
     
     if count_hhlivelihoods > 1:
       return format_html('<a href="{}">{} Livelihoods | <a href="{}">Add</a>', changelist_link, count_hhlivelihoods, add_link)
-    
     elif count_hhlivelihoods == 1:
       return format_html('<a href="{}">{} Livelihood | <a href="{}">Add</a>', changelist_link, count_hhlivelihoods, add_link)
-    
     else:
       return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
 
   views_hhlivelihoods_link.short_description = "Livelihoods"
-
 
   search_fields = ('respondent',)
   list_filter = ('municipality_id','barangay_id','access_electricity', 'access_internet','access_water_supply','potable',
