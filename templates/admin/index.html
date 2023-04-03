@@ -641,7 +641,7 @@
         $( "#advance_search" ).click(function() {          
             /* Get from elements values */
             var values = $('#advance_search_form').serialize();
-
+          
             $.ajax({
                 type: "get",
                 url: "{% url 'household'%}",
