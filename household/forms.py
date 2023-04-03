@@ -8,7 +8,7 @@ class HouseholdForm(forms.ModelForm):
     class Meta:
         model = Households
 
-        fields = ['municipality', 'barangay', 'purok_id']
+        fields = ['municipality', 'barangay']
 
     def __init__(self, *args, **kwargs):
         super(HouseholdForm, self).__init__(*args, **kwargs)
@@ -58,12 +58,12 @@ class HouseholdForm(forms.ModelForm):
             choices=barangay_init_form,
         )
 
-        self.fields['purok_id'].widget = forms.Select(
+        ''''self.fields['purok_id'].widget = forms.Select(
            attrs={
            'style': 'width:200px'
            },
             choices=purok_init_form,
-        )
+        )'''
 
 
 class HouseholdSearchForm(forms.ModelForm):

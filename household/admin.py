@@ -46,14 +46,14 @@ class HouseholdsAdmin(admin.ModelAdmin):
       models.PointField: {"widget": GooglePointFieldWidget}
   }
   readonly_fields = ('enumerator','editor',)
-  fields = ['respondent','municipality', 'barangay', 'purok_id', 'location','householdbuildingtypes',
+  fields = ['respondent','municipality', 'barangay','location','householdbuildingtypes',
             'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
             'access_electricity', 'householdroofmaterials','householdwallmaterials','medical_treatment',
             'access_water_supply','potable','householdwatertenuralstatus','waterlevelsystems','floods_occur',
             'year_flooded','experience_evacuate','year_evacuate','evacuationareas','access_health_medical_facility',
             'access_telecommuniciation','access_drill_simulation','image','enumerator','editor'
            ]
-  list_display = ('controlnumber','municipality','barangay','purok_id','respondent',
+  list_display = ('controlnumber','municipality','barangay','respondent',
     'date_interview','created_at','updated_at','owner','views_demographies_link','views_availprograms_link','views_hhlivelihoods_link')
   
   def views_demographies_link(self, obj):
