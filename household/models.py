@@ -32,7 +32,6 @@ class Households(models.Model):
 
   controlnumber = models.TextField(primary_key=True)
   purok = models.CharField(max_length=25,null=True)
-  purok_id = models.ForeignKey(Purok, to_field='purok_id', null=True, on_delete=models.SET_NULL, verbose_name="Purok")
   longitude = models.CharField(max_length=50,null=True)
   latitude = models.CharField(max_length=50,null=True)
   location = models.PointField(srid=4326)
@@ -77,9 +76,6 @@ class Households(models.Model):
   def munname(self):
     return self.municipality.munname
   
-  def purok_name(self):
-    return self.purok_id.purok_name
-
   class Meta:
     verbose_name_plural = "Households"
 
