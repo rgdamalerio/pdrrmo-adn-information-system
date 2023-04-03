@@ -665,10 +665,10 @@
             layer.bringToFront();
         }
 
-   //     function resetHighlight(e) {
-   //         Caraga.resetStyle(e.target);
-   //         info.update();
-   //     }
+        function resetHighlight(e) {
+            Caraga.resetStyle(e.target);
+          //  info.update();
+       }
 
         function zoomToFeature(e) {
                 mymap.fitBounds(e.target.getBounds());
@@ -677,7 +677,7 @@
             function onEachFeature(feature, layer) {
                 layer.on({
                     mouseover: highlightFeature,
-                  //  mouseout: resetHighlight,
+                    mouseout: resetHighlight,
                     click: zoomToFeature
                 });
                 layer.on({ click: zoomToFeature });
