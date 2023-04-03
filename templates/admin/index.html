@@ -68,8 +68,6 @@
     }
 </style>
 <link rel="stylsheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css'%}">
-<link rel="stylsheet" type="text/css" href="{% static 'css/MarkerCluster.css'%}">
-<link rel="stylsheet" type="text/css" href="{% static 'css/MarkerCluster.Default.css'%}">
 <script type="text/javascript" src="{% static 'js/leaflet.markercluster-src.js'%}"></script>
 {% comment %} <script type="text/javascript" src="{% static 'js/MarkerCluster.js'%}"></script> {% endcomment %}
 <script type="text/javascript" src="{% static 'leaflet_dist/leaflet.ajax.js'%}"></script>
@@ -665,10 +663,10 @@
             layer.bringToFront();
         }
 
-   //     function resetHighlight(e) {
-   //         Caraga.resetStyle(e.target);
-   //         info.update();
-   //     }
+        function resetHighlight(e) {
+            Caraga.resetStyle(e.target);
+            info.update();
+        }
 
         function zoomToFeature(e) {
                 mymap.fitBounds(e.target.getBounds());
@@ -677,7 +675,7 @@
             function onEachFeature(feature, layer) {
                 layer.on({
                     mouseover: highlightFeature,
-                  //  mouseout: resetHighlight,
+                    mouseout: resetHighlight,
                     click: zoomToFeature
                 });
                 layer.on({ click: zoomToFeature });
@@ -706,7 +704,7 @@
         
         //Cluster Markers
         var markers = L.markerClusterGroup({
-            maxClusterRadius: 50
+            maxClusterRadius: 10
         });
       
         markers.addLayer(households);
@@ -715,7 +713,9 @@
         var Caraga = L.geoJson(caraga, {
             style:style,
             onEachFeature:onEachFeature
-        });
+        }).addTo(mymap);
+
+        
         
         //BaseMaps
         var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -732,6 +732,12 @@
             subdomains: 'abcd',
             maxZoom: 20
         });
+
+        var CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        });
                       
 
         households.on('data:loaded', function() {
@@ -743,10 +749,12 @@
             "Esri WorldImagery": Esri_WorldImagery,
             "CartoDB Voyager":CartoDB_Voyager,
             "Open StreetMap":OSM,
+            "CartoDB_DarkMatter": CartoDB_DarkMatter
         };
 
         var groupedOverlays = {
             "Overlays": {
+                "Households": markers,
                 "Caraga": Caraga
             }
             //"Evacuation Center": evacuation_center
@@ -765,7 +773,7 @@
                 contentType: 'application/json; charset=utf-8',
                 success: function (response) {
                         //Clear old layer
-                        households.clearLayers();
+                        markers.clearLayers();
 
                        //Load The GeoJSON layer using Leaflet GeoJSON method 
                         var households = new L.GeoJSON(response,{
@@ -787,7 +795,7 @@
                             mymap.fitBounds(households.getBounds());   
        
                         // update layer group with the new point Layer
-                        household_data.addLayer(households);
+                        markers.addLayer(households);
 
                 },
             });
