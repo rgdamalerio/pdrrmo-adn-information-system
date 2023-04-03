@@ -1,11 +1,19 @@
 from django.contrib import admin
+from django.contrib.gis.db import models
 from .models import Households, Demographies, Availprograms, Hhlivelihoods
 from leaflet.admin import LeafletGeoAdmin
+from mapwidgets.widgets import GooglePointFieldWidget, MapboxPointFieldWidget
 from household.forms import HouseholdForm
 
 
 from datetime import date
 import datetime
+from django.urls import reverse
+from django.utils.http import urlencode
+from django.utils.html import format_html
+
+
+
 
 # /Related model with inline view in household model
 class DemographiesInline(admin.StackedInline):
@@ -32,39 +40,89 @@ class LivelihoodsInline(admin.StackedInline):
 
 # Register your models here.
 @admin.register(Households)
-class HouseholdsAdmin(LeafletGeoAdmin):
+class HouseholdsAdmin(admin.ModelAdmin):
   form = HouseholdForm
-  settings_overrides = {
-    'TILES': [('Esri_WorldImagery', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          'attribution': 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-        }),('OpenStreetMap', 'http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-          'attribution': '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-        }),
-        ('Drak Map', 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            'subdomains': 'abcd',
-            'maxZoom': 19
-        })],
+  formfield_overrides = {
+      models.PointField: {"widget": GooglePointFieldWidget}
   }
   readonly_fields = ('enumerator','editor',)
-  fields = ['respondent','municipality', 'barangay', 'purok', 'location','householdbuildingtypes',
+  fields = ['respondent','municipality', 'barangay','location','householdbuildingtypes',
             'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
             'access_electricity', 'householdroofmaterials','householdwallmaterials','medical_treatment',
             'access_water_supply','potable','householdwatertenuralstatus','waterlevelsystems','floods_occur',
             'year_flooded','experience_evacuate','year_evacuate','evacuationareas','access_health_medical_facility',
             'access_telecommuniciation','access_drill_simulation','image','enumerator','editor'
            ]
-  list_display = ('controlnumber','municipality','barangay','purok','respondent',
-    'date_interview','created_at','updated_at','owner')
+  list_display = ('controlnumber','municipality','barangay','respondent',
+    'date_interview','created_at','updated_at','owner','views_demographies_link','views_availprograms_link','views_hhlivelihoods_link')
+  
+  def views_demographies_link(self, obj):
+    count_demographies = obj.demographies_set.count()
+    changelist_link = (
+      reverse("admin:household_demographies_changelist")  + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+    add_link = (
+      reverse("admin:household_demographies_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+
+    if count_demographies > 1:
+      return format_html('<a href="{}">{} Members | <a href="{}">Add</a>', changelist_link, count_demographies, add_link)
+    elif count_demographies == 1:
+      return format_html('<a href="{}">{} Member | <a href="{}">Add</a>', changelist_link, count_demographies, add_link)
+    else:
+        return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+  views_demographies_link.short_description = "Family Members"
+
+
+  def views_availprograms_link(self, obj):
+    count_availprograms = obj.availprograms_set.count()
+
+    changelist_link = (
+      reverse("admin:household_availprograms_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+    add_link = (
+      reverse("admin:household_availprograms_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+    if count_availprograms > 1:
+      return format_html('<a href="{}">{} Programs | <a href="{}">Add</a>', changelist_link, count_availprograms,add_link)
+    elif count_availprograms == 1:
+      return format_html('<a href="{}">{} Program | <a href="{}">Add</a>', changelist_link, count_availprograms,add_link) 
+    else:
+      return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+
+  views_availprograms_link.short_description = "Availed Programs"
+
+  def views_hhlivelihoods_link(self, obj):
+    count_hhlivelihoods = obj.hhlivelihoods_set.count()
+
+    changelist_link = (
+      reverse("admin:household_hhlivelihoods_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+    add_link = (
+      reverse("admin:household_hhlivelihoods_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
+    )
+    
+    if count_hhlivelihoods > 1:
+      return format_html('<a href="{}">{} Livelihoods | <a href="{}">Add</a>', changelist_link, count_hhlivelihoods, add_link)
+    elif count_hhlivelihoods == 1:
+      return format_html('<a href="{}">{} Livelihood | <a href="{}">Add</a>', changelist_link, count_hhlivelihoods, add_link)
+    else:
+      return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+
+  views_hhlivelihoods_link.short_description = "Livelihoods"
+
   search_fields = ('respondent',)
   list_filter = ('municipality_id','barangay_id','access_electricity', 'access_internet','access_water_supply','potable',
     'floods_occur','experience_evacuate','access_health_medical_facility',
     'access_telecommuniciation','access_drill_simulation')
   inlines = [
-    DemographiesInline,
-    AvailprogramsInline,
-    LivelihoodsInline
+    #DemographiesInline,
+    #AvailprogramsInline,
+    #LivelihoodsInline
   ]
+
+ 
+
   class Media:
       js = (
           'js/chained-address.js',
@@ -83,8 +141,12 @@ class DemographiesAdmin(admin.ModelAdmin):
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
   readonly_fields = ['owner','created_at','updated_at','age',]
+  #list_filter = ('controlnumber_id',)
   search_fields = ('lastname',)
 
+  '''def has_add_permission(self, request):
+        return False'''
+  
   def age(self,demography):
     today = date.today()
     bday = demography.birthdate.strftime("%Y-%m-%d %H:%M:%S")

@@ -1,7 +1,7 @@
 from email.policy import default
 from django import forms
 from household.models import Households
-from library.models import Municipalities, Barangays
+from library.models import Municipalities, Barangays, Purok
 from library.views import municipality_list
 
 class HouseholdForm(forms.ModelForm):
@@ -23,13 +23,21 @@ class HouseholdForm(forms.ModelForm):
 
         # Barangay is on the child level, it will be loaded when user click the parent level
         try:
-          self.initial['barangays'] = kwargs['instance'].barangays.psgccode
-          barangay_init_form = [(i.psgccode, i.brgyname) for i in Barangays.objects.filter(
-                municipality=kwargs['instance'].municipality
-            )]
+            self.initial['barangays'] = kwargs['instance'].barangays.psgccode
+            barangay_init_form = [(b.psgccode, b.brgyname) for b in Barangays.objects.filter(
+                    municipality=kwargs['instance'].municipality
+                )]
         except:
             barangay_init_form = [('', '---------')]
-
+        
+        try:
+            self.initial['purok'] = kwargs['instance'].purok.purok_id
+            purok_init_form = [(p.purok_id, p.purok_name) for p in Purok.objects.filter(
+                    barangay=kwargs['instance'].barangay
+                )]
+        except:
+            purok_init_form = [('', '---------')]
+ 
         
         # Override the form, add onchange attribute to call the ajax function
         self.fields['municipality'].widget = forms.Select(
@@ -40,6 +48,23 @@ class HouseholdForm(forms.ModelForm):
             },
             choices=municipality_list,
         )
+
+        self.fields['barangay'].widget = forms.Select(
+            attrs={
+                'id': 'id_barangay',
+                'onchange': 'getPurok(this.value)',
+                'style': 'width:200px'
+            },
+            choices=barangay_init_form,
+        )
+
+        ''''self.fields['purok_id'].widget = forms.Select(
+           attrs={
+           'style': 'width:200px'
+           },
+            choices=purok_init_form,
+        )'''
+
 
 class HouseholdSearchForm(forms.ModelForm):
     class Meta:

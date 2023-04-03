@@ -44,10 +44,37 @@
         max-height: 460px;
         overflow: auto;
     }
+    .legend {
+        line-height: 18px;
+        color: #555;
+    }
+    .legend i {
+        width: 18px;
+        height: 18px;
+        float: left;
+        margin-right: 8px;
+        opacity: 0.7;
+    }
+    .details {
+        padding: 8px 10px;
+        background: white;
+        background: rgba(255,255,255,0.8);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 5px;
+    }
+    .details h4 {
+        margin: 0 0 5px;
+        color: #777;
+    }
 </style>
 <link rel="stylsheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css'%}">
+<link rel="stylsheet" type="text/css" href="{% static 'css/MarkerCluster.css'%}">
+<link rel="stylsheet" type="text/css" href="{% static 'css/MarkerCluster.Default.css'%}">
+<script type="text/javascript" src="{% static 'js/leaflet.markercluster-src.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/MarkerCluster.js'%}"></script>
 <script type="text/javascript" src="{% static 'leaflet_dist/leaflet.ajax.js'%}"></script>
 <script type="text/javascript" src="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/caraga.js' %}"></script>
 {% endblock %}
 
 {% block coltype %}colMS{% endblock %}
@@ -84,10 +111,12 @@
 {% include 'admin/advance_search.html' %}
 {% include 'admin/chart_view.html' %}
 
+
 <script type="text/javascript">
     window.addEventListener("map:init", function (e) {
 
-        var detail = e.detail;
+        mymap = event.detail.map;
+        
         var households = new L.GeoJSON.AJAX("{% url 'household'%}",{
             pointToLayer: function(feature, latlng) {
                 var greenIcon = L.icon({
@@ -98,7 +127,7 @@
                     popupAnchor:[0,0],
                     tooltipAnchor:[0,0]
                 });
-                return L.marker(latlng, {icon: greenIcon});
+                return L.marker(latlng, {icon: greenIcon}).addTo(markers);
             },
             onEachFeature: function(feature,layer){
                 households.on({
@@ -592,19 +621,106 @@
                                     maxHeight: 460,
 
                                 })
-                    .openOn(detail.map);
+                    .openOn(mymap);
 
                 },
             });
-
         }
 
+        function caragaColor(d) {
+            return  d === 'Dinagat Island' ? "#19A7CE":
+                    d === 'Surigao del Norte' ? "#94c248":
+                    d === 'Surigao City' ? "#94c248":
+                    d === 'Surigao del Sur' ? "#F7DB6A":
+                    d === 'Butuan City' ? "#285430":
+                    d === 'Dinagat Island' ? "#00a4e4":
+                    d === 'Agusan del Norte' ? "#285430":
+                    d === 'Agusan del Sur' ? "#DC8449":
+                    d === 'Lake Mainit' ? " #00000000":
+                    "#ff7f00";
+        }
+
+        function style(feature) {
+            return {
+                opacity: 1,
+                fillOpacity: 1,
+                radius: 6,
+                fillColor: caragaColor(feature.properties.Province),
+                color: "#fff",
+                dashArray: '3'
+
+            };
+        }
+
+        function highlightFeature(e) {
+            var layer = e.target;
+
+            layer.setStyle({
+                weight: 4,
+                color: '#212121',
+                dashArray: '3',
+                fillOpacity: 0.5
+            });
+
+            layer.bringToFront();
+        }
+
+        function resetHighlight(e) {
+            Caraga.resetStyle(e.target);
+            info.update();
+        }
+
+        function zoomToFeature(e) {
+                mymap.fitBounds(e.target.getBounds());
+            }
+
+            function onEachFeature(feature, layer) {
+                layer.on({
+                    mouseover: highlightFeature,
+                    mouseout: resetHighlight,
+                    click: zoomToFeature
+                });
+                layer.on({ click: zoomToFeature });
+
+            }
+
+        var legend = L.control({position: 'bottomright'});
+        legend.onAdd = function (mymap) {
+
+            var div = L.DomUtil.create('div', 'details legend');
+            labels = ['<strong>Categories</strong>'],
+            categories = ['Dinagat Island' ,'Surigao del Norte','Surigao City','Surigao del Sur','Butuan City','Agusan del Norte','Agusan del Sur'];
+
+            for (var i = 0; i < categories.length; i++) {
+
+                    div.innerHTML += 
+                    labels.push(
+                        '<i class="circle" style="background:' + caragaColor(categories[i]) + '"></i> ' +
+                    (categories[i] ? categories[i] : '+'));
+
+                }
+                div.innerHTML = labels.join('<br>');
+            return div;
+            };
+        legend.addTo(mymap);
         
-        var household_data = L.layerGroup([households]);
-              
+        //Cluster Markers
+        var markers = L.markerClusterGroup({
+            maxClusterRadius: 1
+        });
+      
+        markers.addLayer(households);
+        mymap.addLayer(markers);
+        
+        var Caraga = L.geoJson(caraga, {
+            style:style,
+            onEachFeature:onEachFeature
+        }).addTo(mymap);
+        
+        //BaseMaps
         var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-        }).addTo(detail.map);
+        }).addTo(mymap);
 
         var OSM =  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 18,
@@ -616,14 +732,11 @@
             subdomains: 'abcd',
             maxZoom: 20
         });
-
                       
-        household_data.addTo(detail.map);
-
 
         households.on('data:loaded', function() {
             if(households.getBounds().isValid())
-                detail.map.fitBounds(households.getBounds());
+                mymap.fitBounds(households.getBounds());
         });
 
         var baseMaps = {
@@ -632,11 +745,13 @@
             "Open StreetMap":OSM,
         };
 
-        var overlayMaps = {
-            "Households": household_data,
+        var groupedOverlays = {
+            "Overlays": {
+                "Caraga": Caraga
+            }
             //"Evacuation Center": evacuation_center
         };
-        var layerControl = L.control.layers(baseMaps,overlayMaps).addTo(detail.map);
+        L.control.groupedLayers(baseMaps, groupedOverlays).addTo(mymap);
 
         $( "#advance_search" ).click(function() {          
             /* Get from elements values */
@@ -650,7 +765,7 @@
                 contentType: 'application/json; charset=utf-8',
                 success: function (response) {
                         //Clear old layer
-                        household_data.clearLayers();
+                        households.clearLayers();
 
                        //Load The GeoJSON layer using Leaflet GeoJSON method 
                         var households = new L.GeoJSON(response,{
@@ -669,7 +784,7 @@
                         });
                         //fit Bounds
                         if(households.getBounds().isValid())
-                            detail.map.fitBounds(households.getBounds());   
+                            mymap.fitBounds(households.getBounds());   
        
                         // update layer group with the new point Layer
                         household_data.addLayer(households);
