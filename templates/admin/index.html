@@ -71,7 +71,7 @@
 <link rel="stylsheet" type="text/css" href="{% static 'css/MarkerCluster.css'%}">
 <link rel="stylsheet" type="text/css" href="{% static 'css/MarkerCluster.Default.css'%}">
 <script type="text/javascript" src="{% static 'js/leaflet.markercluster-src.js'%}"></script>
-<script type="text/javascript" src="{% static 'js/MarkerCluster.js'%}"></script>
+{% comment %} <script type="text/javascript" src="{% static 'js/MarkerCluster.js'%}"></script> {% endcomment %}
 <script type="text/javascript" src="{% static 'leaflet_dist/leaflet.ajax.js'%}"></script>
 <script type="text/javascript" src="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.js'%}"></script>
 <script type="text/javascript" src="{% static 'js/caraga.js' %}"></script>
@@ -665,10 +665,10 @@
             layer.bringToFront();
         }
 
-        function resetHighlight(e) {
-            Caraga.resetStyle(e.target);
-            info.update();
-        }
+   //     function resetHighlight(e) {
+   //         Caraga.resetStyle(e.target);
+   //         info.update();
+   //     }
 
         function zoomToFeature(e) {
                 mymap.fitBounds(e.target.getBounds());
@@ -677,7 +677,7 @@
             function onEachFeature(feature, layer) {
                 layer.on({
                     mouseover: highlightFeature,
-                    mouseout: resetHighlight,
+                  //  mouseout: resetHighlight,
                     click: zoomToFeature
                 });
                 layer.on({ click: zoomToFeature });
@@ -706,7 +706,7 @@
         
         //Cluster Markers
         var markers = L.markerClusterGroup({
-            maxClusterRadius: 1
+            maxClusterRadius: 50
         });
       
         markers.addLayer(households);
@@ -715,7 +715,7 @@
         var Caraga = L.geoJson(caraga, {
             style:style,
             onEachFeature:onEachFeature
-        }).addTo(mymap);
+        });
         
         //BaseMaps
         var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
