@@ -55,6 +55,7 @@
 <script type="text/javascript" src="{% static 'js/caraga.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/major_rivers.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/landslide.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/barangay.js' %}"></script>
 {% endblock %}
 
 {% block coltype %}colMS{% endblock %}
@@ -452,7 +453,7 @@
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Purok</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+response[0].purok+'</span></td>'+                                            
+                                                    '<td><span>'+response[0].purok_fk+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Type of building</span></td>'+
@@ -695,7 +696,7 @@
             spiderfyOnMaxZoom: false, // Disable spiderfy on max zoom
             showCoverageOnHover: false, // Disable showing coverage on hover
             //zoomToBoundsOnClick: true, // Enable zoom to bounds on click
-            disableClusteringAtZoom: 18// Set the max zoom level to disable clustering
+            disableClusteringAtZoom: 16// Set the max zoom level to disable clustering
         });
       
         markers.addLayer(households);
@@ -705,12 +706,13 @@
         var Caraga = L.geoJson(caraga, {
             style:style,
             onEachFeature:onEachFeature
-        }).addTo(mymap);
+        });
 
         var Major_Rivers = L.geoJson(major_rivers)
         var Landslide = L.geoJson(landslide)
+        var Barangay = L.geoJson(barangay)
 
-      
+
         //BaseMaps
         var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
@@ -750,8 +752,10 @@
             "Overlays": {
                 "Households": markers,
                 "Caraga": Caraga,
+                "Barangay": Barangay,
                 "Major Rivers": Major_Rivers,
                 "Landslide": Landslide
+    
             }
             //"Evacuation Center": evacuation_center
         };

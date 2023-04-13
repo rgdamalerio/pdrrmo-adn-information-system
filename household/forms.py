@@ -2,13 +2,13 @@ from email.policy import default
 from django import forms
 from household.models import Households
 from library.models import Municipalities, Barangays, Purok
-from library.views import municipality_list
+from library.views import municipality_list, barangay_list, purok_list
 
 class HouseholdForm(forms.ModelForm):
     class Meta:
         model = Households
 
-        fields = ['municipality', 'barangay']
+        fields = ['municipality','barangay','purok_fk']
 
     def __init__(self, *args, **kwargs):
         super(HouseholdForm, self).__init__(*args, **kwargs)
@@ -31,7 +31,7 @@ class HouseholdForm(forms.ModelForm):
             barangay_init_form = [('', '---------')]
         
         try:
-            self.initial['purok'] = kwargs['instance'].purok.purok_id
+            self.initial['purok_fk'] = kwargs['instance'].purok_fk.purok_id
             purok_init_form = [(p.purok_id, p.purok_name) for p in Purok.objects.filter(
                     barangay=kwargs['instance'].barangay
                 )]
@@ -58,18 +58,20 @@ class HouseholdForm(forms.ModelForm):
             choices=barangay_init_form,
         )
 
-        ''''self.fields['purok_id'].widget = forms.Select(
+        self.fields['purok_fk'].widget = forms.Select(
            attrs={
-           'style': 'width:200px'
+                'id': 'id_purok_id',
+                'style': 'width:200px',
+            
            },
             choices=purok_init_form,
-        )'''
+        )
 
 
 class HouseholdSearchForm(forms.ModelForm):
     class Meta:
         model = Households
-        fields = ['controlnumber', 'purok','respondent','municipality','barangay',
+        fields = ['controlnumber','respondent','municipality','barangay','purok_fk',
             'householdbuildingtypes','householdtenuralstatus','householdroofmaterials',
             'householdwallmaterials','householdwatertenuralstatus','waterlevelsystems','evacuationareas',
             'enumerator','editor','year_construct','estimated_cost',
@@ -104,6 +106,14 @@ class HouseholdSearchForm(forms.ModelForm):
         except:
             barangay_init_form = [('', '---------')]
 
+        try:
+            self.initial['purok_fk'] = kwargs['instance'].purok_fk.purok_id
+            purok_init_form = [(p.purok_id, p.purok_name) for p in Purok.objects.filter(
+                    barangay=kwargs['instance'].barangay
+                )]
+        except:
+            purok_init_form = [('', '---------')]
+ 
         
         # Override the form, add onchange attribute to call the ajax function
         self.fields['municipality'].widget = forms.Select(
@@ -114,6 +124,23 @@ class HouseholdSearchForm(forms.ModelForm):
             },
             choices=municipality_list,
         )
+        self.fields['barangay'].widget = forms.Select(
+            attrs={
+                'id': 'id_barangay',
+                'onchange': 'getPurok(this.value)',
+                'class': 'form-control'
+            },
+            choices=barangay_init_form,
+        )
+        self.fields['purok_fk'].widget = forms.Select(
+           attrs={
+                'id': 'id_purok_id',
+                'class': 'form-control',
+            
+            },
+            choices=purok_init_form,
+        )
+
 
         # Override the form, add onchange attribute to call the ajax function
         self.fields['controlnumber'].widget = forms.TextInput(
