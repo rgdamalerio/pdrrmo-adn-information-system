@@ -142,6 +142,7 @@ class DemographiesAdmin(admin.ModelAdmin):
   #list_filter = ('controlnumber_id',)
   search_fields = ('lastname',)
 
+
   '''def has_add_permission(self, request):
         return False'''
   

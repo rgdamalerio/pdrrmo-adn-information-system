@@ -616,7 +616,79 @@
                     "#fff";    
         }
        
-       
+        function caragaColor(c) {
+            return  c === 'Dinagat Island' ? "#19A7CE":
+                    c === 'Surigao del Norte' ? "#94c248":
+                    c === 'Surigao City' ? "#94c248":
+                    c === 'Surigao del Sur' ? "#F7DB6A":
+                    c === 'Butuan City' ? "#285430":
+                    c === 'Dinagat Island' ? "#00a4e4":
+                    c === 'Agusan del Norte' ? "#285430":
+                    c === 'Agusan del Sur' ? "#DC8449":
+                    c === 'Lake Mainit' ? " #00000000":
+                    "#ff7f00";
+        }
+
+        function style(feature) {
+         return {opacity: 1,
+                fillOpacity: 1,
+                radius: 6,
+                fillColor: caragaColor(feature.properties.Province),
+                color: "#fff",
+                dashArray: '3'}; 
+        }
+
+        function highlightFeature(e) {
+            var layer = e.target;
+
+            layer.setStyle({
+                weight: 4,
+                color: '#212121',
+                dashArray: '3',
+                fillOpacity: 0.5
+            });
+
+            layer.bringToFront();
+        }
+
+       function resetHighlight(e) {
+         Caraga.resetStyle(e.target);
+        }
+
+        function zoomToFeature(e) {
+                mymap.fitBounds(e.target.getBounds());
+            }
+
+            function onEachFeature(feature, layer) {
+                layer.on({
+                    mouseover: highlightFeature,
+                    mouseout: resetHighlight,
+                    //click: zoomToFeature
+                });
+                layer.on({ click: zoomToFeature });
+
+            }
+
+        var legend = L.control({position: 'bottomright'});
+        legend.onAdd = function (mymap) {
+
+            var div = L.DomUtil.create('div', 'details legend');
+            labels = ['<strong>Categories</strong>'],
+            categories = ['Dinagat Island' ,'Surigao del Norte','Surigao City','Surigao del Sur','Butuan City','Agusan del Norte','Agusan del Sur'];
+
+            for (var i = 0; i < categories.length; i++) {
+
+                    div.innerHTML += 
+                    labels.push(
+                        '<i class="circle" style="background:' + caragaColor(categories[i]) + '"></i> ' +
+                    (categories[i] ? categories[i] : '+'));
+
+                }
+                div.innerHTML = labels.join('<br>');
+            return div;
+            };
+        legend.addTo(mymap);
+
         
         //Cluster Markers
         var markers = L.markerClusterGroup({
@@ -631,7 +703,11 @@
         mymap.addLayer(markers);
         
         //Shapefiles
-      
+        var Caraga = L.geoJson(caraga, {
+            style:style,
+            onEachFeature:onEachFeature
+        });
+
         var Major_Rivers = L.geoJson(major_rivers)
         var Landslide = L.geoJson(landslide, {
             style: {
@@ -679,6 +755,7 @@
         var groupedOverlays = {
             "Overlays": {
                 "Households": markers,
+                "Caraga": Caraga,
                 "Barangay": Barangay,
                 "Major Rivers": Major_Rivers,
                 "Landslide": Landslide

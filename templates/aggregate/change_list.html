@@ -32,7 +32,7 @@
     {% block breadcrumbs %}
     <div class="row mb-2">
         <div class="col-sm-6">
-            <h2>{{title}}</h2>
+            <h2>Families and Population</h2>
         </div>
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -57,21 +57,27 @@
             {{ cl.formset.non_form_errors }}
         {% endif %}
         <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+           
             <div class="d-flex justify-content-end row p-3">
                 {% block search %}{% search_form cl %}{% endblock %}
-               
                 <!--  -->
                 {% block object-tools %}
         
                 <div class="col-md-{% if cl.has_filters %}4{% else %}4{% endif %}">
+                    <div class="d-flex justify-content-end row p-2">
+                        <a href="{% url 'aggregate:export_aggregate'%}" 
+                        class="btn btn-info btn-sm text-sm">
+                            <i class="fa fa-download"></i> Download
+                        </a>
+                    </div>
                         {% if cl.has_filters %}
                         <span class="float-sm-right">
-                                <a href="#"
-                                class="btn btn-success btn-sm text-light ml-2" data-toggle="collapse" data-target="#changelist-filter" aria-expanded="false" aria-controls="changelist-filter">
-                                    <i class="fas fa-filter"></i>
-                                    {% trans 'Filter' %}
-                                </a>
-                            </span>
+                            <a href="#"
+                            class="btn btn-success btn-sm text-light ml-2" data-toggle="collapse" data-target="#changelist-filter" aria-expanded="false" aria-controls="changelist-filter">
+                                <i class="fas fa-filter"></i>
+                                {% trans 'Filter' %}
+                            </a>
+                        </span>
                             {% endif %}
                         {% block object-tools-items %}
                             {% if has_add_permission %}

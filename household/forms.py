@@ -28,7 +28,8 @@ class HouseholdForm(forms.ModelForm):
                     municipality=kwargs['instance'].municipality
                 )]
         except:
-            barangay_init_form = [('', '---------')]
+            pass
+        barangay_init_form = [('', '---------')]
         
         try:
             self.initial['purok_fk'] = kwargs['instance'].purok_fk.purok_id
