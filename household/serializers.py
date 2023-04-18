@@ -43,6 +43,7 @@ class HouseholdSerializer(serializers.ModelSerializer):
 
   municipality = serializers.StringRelatedField()
   barangay = serializers.StringRelatedField()
+  purok_fk = serializers.StringRelatedField()
   householdbuildingtypes = serializers.StringRelatedField()
   householdtenuralstatus = serializers.StringRelatedField()
   householdroofmaterials = serializers.StringRelatedField()
@@ -59,7 +60,7 @@ class HouseholdSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Households
-    fields = ['controlnumber','latitude','longitude','respondent','municipality', 'barangay', 'location','householdbuildingtypes',
+    fields = ['controlnumber','latitude','longitude','respondent','municipality', 'barangay','purok_fk','location','householdbuildingtypes',
             'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
             'access_electricity', 'householdroofmaterials','householdwallmaterials','medical_treatment',
             'access_water_supply','potable','householdwatertenuralstatus','waterlevelsystems','floods_occur',

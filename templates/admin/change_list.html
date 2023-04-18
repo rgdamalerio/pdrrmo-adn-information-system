@@ -58,10 +58,11 @@
         {% endif %}
         <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
             <div class="d-flex justify-content-end row p-3">
-            
                 {% block search %}{% search_form cl %}{% endblock %}
+               
                 <!--  -->
                 {% block object-tools %}
+        
                 <div class="col-md-{% if cl.has_filters %}4{% else %}4{% endif %}">
                         {% if cl.has_filters %}
                         <span class="float-sm-right">

@@ -22,7 +22,7 @@ def household_datasets(request):
     qs = Households.objects.all()
 
     controlnumber_icontains_query = request.GET.get('controlnumber')
-    purok_icontains_query = request.GET.get('purok')
+    purok_fk_icontains_query = request.GET.get('purok_fk')
     respondent_icontains_query = request.GET.get('respondent')
     enumerator_icontains_query = request.GET.get('enumerator')
     municipality_exact = request.GET.get('municipality')
@@ -57,8 +57,8 @@ def household_datasets(request):
     if is_valid_queryparam(controlnumber_icontains_query):
       qs = qs.filter(controlnumber__icontains=controlnumber_icontains_query)
     
-    if is_valid_queryparam(purok_icontains_query):
-      qs = qs.filter(purok__icontains=purok_icontains_query)
+    if is_valid_queryparam(purok_fk_icontains_query):
+      qs = qs.filter(purok__icontains=purok_fk_icontains_query)
 
     if is_valid_queryparam(respondent_icontains_query):
       qs = qs.filter(respondent__icontains=respondent_icontains_query)
