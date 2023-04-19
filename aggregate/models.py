@@ -31,7 +31,27 @@ class Familiesandpopulation(models.Model):
     verbose_name_plural = "No. of families and population"
     ordering = ['municipality','barangay']
     
-    
+class AggregatedFamiliesandPopulation(models.Model):
+  munname = models.CharField(primary_key=True,max_length=50,verbose_name='Municipality')
+  brgyname = models.CharField(max_length=50,null=True,verbose_name='Barangay')
+  households = models.IntegerField(default=0,verbose_name='No. of Households')
+  male = models.IntegerField(default=0,verbose_name='Individuals (M)')
+  female = models.IntegerField(verbose_name='Individuals (F)')
+  male_infant = models.IntegerField(verbose_name='Infant 0-11months (M)')
+  female_infant = models.IntegerField(verbose_name='Infant 0-11months (F)')
+  male_children = models.IntegerField(verbose_name='Children 1-17y/o (M)')
+  female_children = models.IntegerField(verbose_name='Children 1-17y/o (F)')
+  male_adult = models.IntegerField(verbose_name='Adult 18-59y/o (M)')
+  female_adult = models.IntegerField(verbose_name='Adult 18-59y/o (F)')
+  male_elderly = models.IntegerField(verbose_name='Elderly 60y/o above (M)')
+  female_elderly = models.IntegerField(verbose_name='Elderly 60y/o above (F)')
+  ip_male = models.IntegerField(verbose_name='IP (M)')
+  ip_female = models.IntegerField(verbose_name='IP (F)')
+
+  class Meta:
+    db_table = 'aggregate'
+    verbose_name_plural = "No. of families and population"
+
 # Create your models here.
 
 # class Sampletable(models.Model):

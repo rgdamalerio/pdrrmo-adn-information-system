@@ -44,35 +44,18 @@
         max-height: 460px;
         overflow: auto;
     }
-    .legend {
-        line-height: 18px;
-        color: #555;
-    }
-    .legend i {
-        width: 18px;
-        height: 18px;
-        float: left;
-        margin-right: 8px;
-        opacity: 0.7;
-    }
-    .details {
-        padding: 8px 10px;
-        background: white;
-        background: rgba(255,255,255,0.8);
-        box-shadow: 0 0 15px rgba(0,0,0,0.2);
-        border-radius: 5px;
-    }
-    .details h4 {
-        margin: 0 0 5px;
-        color: #777;
-    }
+    
 </style>
 <link rel="stylsheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css'%}">
 <script type="text/javascript" src="{% static 'js/leaflet.markercluster-src.js'%}"></script>
-{% comment %} <script type="text/javascript" src="{% static 'js/MarkerCluster.js'%}"></script> {% endcomment %}
+<script type="text/javascript" src="{% static 'js/MarkerCluster.js'%}"></script> 
+<script type="text/javascript" src="{% static 'leaflet_dist/leaflet.browser.print.min.js'%}"></script> 
 <script type="text/javascript" src="{% static 'leaflet_dist/leaflet.ajax.js'%}"></script>
 <script type="text/javascript" src="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.js'%}"></script>
 <script type="text/javascript" src="{% static 'js/caraga.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/major_rivers.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/landslide.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/barangay.js' %}"></script>
 {% endblock %}
 
 {% block coltype %}colMS{% endblock %}
@@ -470,7 +453,7 @@
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Purok</span></td>'+
                                                     '<td style="width: 1%"><span class="font-weight-bold">:</span></td>'+
-                                                    '<td><span>'+response[0].purok+'</span></td>'+                                            
+                                                    '<td><span>'+response[0].purok_fk+'</span></td>'+                                            
                                                 '</tr>'+
                                                 '<tr>'+                                         
                                                     '<td style="width: 25%"><span class="font-weight-bold">Type of building</span></td>'+
@@ -625,97 +608,39 @@
             });
         }
 
-        function caragaColor(d) {
-            return  d === 'Dinagat Island' ? "#19A7CE":
-                    d === 'Surigao del Norte' ? "#94c248":
-                    d === 'Surigao City' ? "#94c248":
-                    d === 'Surigao del Sur' ? "#F7DB6A":
-                    d === 'Butuan City' ? "#285430":
-                    d === 'Dinagat Island' ? "#00a4e4":
-                    d === 'Agusan del Norte' ? "#285430":
-                    d === 'Agusan del Sur' ? "#DC8449":
-                    d === 'Lake Mainit' ? " #00000000":
-                    "#ff7f00";
+        function landslideColor(l) {
+            return  l === 'LL' ? "#fce83b":
+                    l === 'HL' ? "#fe0003":
+                    l === 'ML' ? "#01ab02":
+                    l === 'VHL' ? "#660000":
+                    "#fff";    
         }
-
-        function style(feature) {
-            return {
-                opacity: 1,
-                fillOpacity: 1,
-                radius: 6,
-                fillColor: caragaColor(feature.properties.Province),
-                color: "#fff",
-                dashArray: '3'
-
-            };
-        }
-
-        function highlightFeature(e) {
-            var layer = e.target;
-
-            layer.setStyle({
-                weight: 4,
-                color: '#212121',
-                dashArray: '3',
-                fillOpacity: 0.5
-            });
-
-            layer.bringToFront();
-        }
-
-       function resetHighlight(e) {
-         Caraga.resetStyle(e.target);
-        }
-
-        function zoomToFeature(e) {
-                mymap.fitBounds(e.target.getBounds());
-            }
-
-            function onEachFeature(feature, layer) {
-                layer.on({
-                    mouseover: highlightFeature,
-                    mouseout: resetHighlight,
-                    click: zoomToFeature
-                });
-                layer.on({ click: zoomToFeature });
-
-            }
-
-        var legend = L.control({position: 'bottomright'});
-        legend.onAdd = function (mymap) {
-
-            var div = L.DomUtil.create('div', 'details legend');
-            labels = ['<strong>Categories</strong>'],
-            categories = ['Dinagat Island' ,'Surigao del Norte','Surigao City','Surigao del Sur','Butuan City','Agusan del Norte','Agusan del Sur'];
-
-            for (var i = 0; i < categories.length; i++) {
-
-                    div.innerHTML += 
-                    labels.push(
-                        '<i class="circle" style="background:' + caragaColor(categories[i]) + '"></i> ' +
-                    (categories[i] ? categories[i] : '+'));
-
-                }
-                div.innerHTML = labels.join('<br>');
-            return div;
-            };
-        legend.addTo(mymap);
+       
+       
         
         //Cluster Markers
         var markers = L.markerClusterGroup({
-            maxClusterRadius: 50
+            maxClusterRadius: 50,
+            spiderfyOnMaxZoom: false, // Disable spiderfy on max zoom
+            showCoverageOnHover: false, // Disable showing coverage on hover
+            //zoomToBoundsOnClick: true, // Enable zoom to bounds on click
+            disableClusteringAtZoom: 16// Set the max zoom level to disable clustering
         });
       
         markers.addLayer(households);
         mymap.addLayer(markers);
         
-        var Caraga = L.geoJson(caraga, {
-            style:style,
-            onEachFeature:onEachFeature
-        }).addTo(mymap);
+        //Shapefiles
+      
+        var Major_Rivers = L.geoJson(major_rivers)
+        var Landslide = L.geoJson(landslide, {
+            style: {
+                color: '#e60000'
+            }
+        })
+        var Barangay = L.geoJson(barangay)
 
-        
-        
+
         //BaseMaps
         var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
@@ -737,8 +662,8 @@
             subdomains: 'abcd',
             maxZoom: 20
         });
-                      
-
+            
+        
         households.on('data:loaded', function() {
             if(households.getBounds().isValid())
                 mymap.fitBounds(households.getBounds());
@@ -748,17 +673,51 @@
             "Esri WorldImagery": Esri_WorldImagery,
             "CartoDB Voyager":CartoDB_Voyager,
             "Open StreetMap":OSM,
-            "CartoDB_DarkMatter": CartoDB_DarkMatter
+            "CartoDB_DarkMatter": CartoDB_DarkMatter,  
         };
 
         var groupedOverlays = {
             "Overlays": {
                 "Households": markers,
-                "Caraga": Caraga
+                "Barangay": Barangay,
+                "Major Rivers": Major_Rivers,
+                "Landslide": Landslide
+    
             }
             //"Evacuation Center": evacuation_center
         };
         L.control.groupedLayers(baseMaps, groupedOverlays).addTo(mymap);
+        var browserPrint = L.browserPrint(mymap,{debug:false, cancelWithEsc: true});
+        var c = L.control.browserPrint({
+            printModes: [
+                L.BrowserPrint.Mode.Landscape(),
+                L.BrowserPrint.Mode.Landscape('A4',{margin: 0, title: 'Header / Footer', header: {
+                    enabled: true,
+                    text: "<span>A wonderful print Plugin</span>",
+                    size: "10mm",
+                    overTheMap: false,
+                },
+                footer: {
+                    enabled: true,
+                    text: "<span>Created by PDRRMO-ADN</span>",
+                    size: "8mm",
+                    overTheMap: false,
+                }
+            }), L.BrowserPrint.Mode.Custom("A4", {title: "Select area (Custom)"})]
+        }, browserPrint).addTo(mymap);
+
+        
+        // We are not cloning markercluster to preserve original clasterization behavior and prevent OutOfMemory problems
+        L.BrowserPrint.Utils.registerLayer(L.MarkerClusterGroup, 'L.MarkerClusterGroup', function (layer, utils) {
+            return layer;
+        });
+
+        // On print end we invalidate markercluster to update markers;
+        mymap.on(L.BrowserPrint.Event.PrintEnd, function (e) {
+            mymap.removeLayer(markers);
+            mymap.addLayer(markers);
+        });
+            
 
         $( "#advance_search" ).click(function() {          
             /* Get from elements values */
