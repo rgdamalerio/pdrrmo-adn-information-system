@@ -7,13 +7,23 @@ from .models import Municipalities,Barangays,Buildingroofmaterials, \
   Livelihoods, Maritalstatus, Monthlyincomes, Nutritionalstatus, Relationshiptoheads, \
   Livelihoodtenuralstatus, Trackstrandcourses, Typeofprograms, Purok
 
+class PuroksInline(admin.StackedInline):
+  model = Purok
+  extra = 0
+
+class BarangaysInline(admin.StackedInline):
+  model= Barangays
+  extra = 0
 
 # Register your models here.
 class MunicipalitiesAdmin(admin.ModelAdmin):
   list_display = ("psgccode","munname","created_at","updated_at","owner")
+  inlines = [BarangaysInline]
 
 class BarangaysAdmin(admin.ModelAdmin):
   list_display = ("psgccode","brgyname","created_at","updated_at","owner","psgcmun")
+  search_fields = ('brgyname',)
+  inlines = [PuroksInline]
 
 class BuildingroofmaterialsAdmin(admin.ModelAdmin):
   list_display = ("id","description","created_at","updated_at","owner")
@@ -87,8 +97,6 @@ class TrackstrandcoursesAdmin(admin.ModelAdmin):
 class TypeofprogramsAdmin(admin.ModelAdmin):
   list_display = ("id","type","created_at","updated_at","owner")
 
-class PurokAdmin(admin.ModelAdmin):
-  list_display = ("purok_id","psgccode_brgy","purok_name")
 
 admin.site.register(Municipalities,MunicipalitiesAdmin)
 admin.site.register(Barangays,BarangaysAdmin)
@@ -116,4 +124,3 @@ admin.site.register(Relationshiptoheads,RelationshiptoheadsAdmin)
 admin.site.register(Livelihoodtenuralstatus,LivelihoodtenuralstatusAdmin)
 admin.site.register(Trackstrandcourses,TrackstrandcoursesAdmin)
 admin.site.register(Typeofprograms,TypeofprogramsAdmin)
-admin.site.register(Purok, PurokAdmin)
