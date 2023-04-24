@@ -28,10 +28,7 @@ class DemographiesInline(admin.StackedInline):
     datem = datetime.datetime.strptime(bday,"%Y-%m-%d %H:%M:%S")
     return today.year - datem.year - ((today.month, today.day) < (datem.month, datem.day))
 
-class AvailprogramsInline(admin.StackedInline):
-  model = Availprograms
-  extra = 0
-  readonly_fields = ['owner','created_at','updated_at',]
+
 
 class LivelihoodsInline(admin.StackedInline):
   model = Hhlivelihoods
@@ -55,6 +52,8 @@ class HouseholdsAdmin(admin.ModelAdmin):
            ]
   list_display = ('controlnumber','municipality','barangay','purok_fk','respondent',
     'date_interview','created_at','updated_at','owner','views_demographies_link','views_availprograms_link','views_hhlivelihoods_link')
+  list_editable = ('respondent','purok_fk')
+  list_per_page = 10
   
   def views_demographies_link(self, obj):
     count_demographies = obj.demographies_set.count()
@@ -130,7 +129,7 @@ class HouseholdsAdmin(admin.ModelAdmin):
 
 @admin.register(Demographies)
 class DemographiesAdmin(admin.ModelAdmin):
-  list_display = ('lastname','firstname','middlename','birthdate','age','controlnumber_id',
+  list_display = ('controlnumber_id','lastname','firstname','middlename','extension','birthdate','age','primary_occupation',
     'created_at','updated_at','owner')
   fields = ['controlnumber','lastname','firstname','middlename','extension','nuclear_family','relationshiptohead',
             'gender','birthdate', 'marital_status', 'ethnicity_by_blood', 'member_ip', 'informal_settler', 'religion',
@@ -139,6 +138,10 @@ class DemographiesAdmin(admin.ModelAdmin):
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
   readonly_fields = ['owner','created_at','updated_at','age',]
+  list_editable = ('lastname','firstname','middlename','extension','birthdate','primary_occupation',)
+  #list_display_links = ('lastname',)
+  list_per_page = 10
+  
   #list_filter = ('controlnumber_id',)
   search_fields = ('lastname',)
 

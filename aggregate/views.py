@@ -6,6 +6,8 @@ from django.http import HttpResponse
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
+from io import StringIO
+
 
 
 
@@ -46,6 +48,15 @@ def exportFamilyandPopulation(request):
     return response
 
     
+'''def print_aggregate(request):
+    queryset = AggregatedFamiliesandPopulation.objects.all()
+    output = StringIO()
+    for obj in queryset:
+        output.write(str(obj) + "\n")
+
+    response = HttpResponse(output.getvalue(), content_type="text/plain")
+    response["Content-Disposition"] = "attachment; filename=FamiliesandPopulatio.txt"
+    return response'''
 
  
 

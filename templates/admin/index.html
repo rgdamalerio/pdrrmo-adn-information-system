@@ -616,15 +616,13 @@
                     "#fff";    
         }
        
-       
-        
         //Cluster Markers
         var markers = L.markerClusterGroup({
             maxClusterRadius: 50,
             spiderfyOnMaxZoom: false, // Disable spiderfy on max zoom
             showCoverageOnHover: false, // Disable showing coverage on hover
             //zoomToBoundsOnClick: true, // Enable zoom to bounds on click
-            disableClusteringAtZoom: 16// Set the max zoom level to disable clustering
+            disableClusteringAtZoom: 17// Set the max zoom level to disable clustering
         });
       
         markers.addLayer(households);
