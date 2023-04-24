@@ -4,6 +4,8 @@ from .models import Households, Demographies, Availprograms, Hhlivelihoods
 from leaflet.admin import LeafletGeoAdmin
 from mapwidgets.widgets import GooglePointFieldWidget, MapboxPointFieldWidget
 from household.forms import HouseholdForm
+from django import forms
+
 
 
 from datetime import date
@@ -138,12 +140,16 @@ class DemographiesAdmin(admin.ModelAdmin):
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
   readonly_fields = ['owner','created_at','updated_at','age',]
-  list_editable = ('lastname','firstname','middlename','extension','birthdate','primary_occupation',)
+  list_editable = ('lastname','firstname','middlename','extension','birthdate','primary_occupation','owner',)
   #list_display_links = ('lastname',)
   list_per_page = 10
   
   #list_filter = ('controlnumber_id',)
   search_fields = ('lastname',)
+
+  formfield_overrides = {
+        models.CharField: {'widget': forms.TextInput(attrs={'size': '18'})},
+    }
 
 
   '''def has_add_permission(self, request):
