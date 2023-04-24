@@ -23,21 +23,16 @@ class HouseholdForm(forms.ModelForm):
 
         # Barangay is on the child level, it will be loaded when user click the parent level
         try:
-            self.initial['barangays'] = kwargs['instance'].barangays.psgccode
-            barangay_init_form = [(b.psgccode, b.brgyname) for b in Barangays.objects.filter(
-                    municipality=kwargs['instance'].municipality
-                )]
+          self.initial['barangays'] = kwargs['instance'].barangays.psgccode
         except:
             pass
-        barangay_init_form = [('', '---------')]
-        
+        barangay_list = [('', '---------')] + [(i.psgccode, i.brgyname) for i in Barangays.objects.all()]
+
         try:
             self.initial['purok_fk'] = kwargs['instance'].purok_fk.purok_id
-            purok_init_form = [(p.purok_id, p.purok_name) for p in Purok.objects.filter(
-                    barangay=kwargs['instance'].barangay
-                )]
         except:
-            purok_init_form = [('', '---------')]
+            pass
+        purok_list = [('', '---------')] + [(i.purok_id, i.purok_name) for i in Purok.objects.all()] 
  
         
         # Override the form, add onchange attribute to call the ajax function
@@ -49,23 +44,21 @@ class HouseholdForm(forms.ModelForm):
             },
             choices=municipality_list,
         )
-
         self.fields['barangay'].widget = forms.Select(
             attrs={
                 'id': 'id_barangay',
                 'onchange': 'getPurok(this.value)',
                 'style': 'width:200px'
             },
-            choices=barangay_init_form,
+            choices=barangay_list,
         )
-
         self.fields['purok_fk'].widget = forms.Select(
            attrs={
                 'id': 'id_purok_id',
-                'style': 'width:200px',
+                'style': 'width:200px'
             
-           },
-            choices=purok_init_form,
+            },
+            choices=purok_list,
         )
 
 
@@ -101,19 +94,15 @@ class HouseholdSearchForm(forms.ModelForm):
         # Barangay is on the child level, it will be loaded when user click the parent level
         try:
           self.initial['barangays'] = kwargs['instance'].barangays.psgccode
-          barangay_init_form = [(i.psgccode, i.brgyname) for i in Barangays.objects.filter(
-                municipality=kwargs['instance'].municipality
-            )]
         except:
-            barangay_init_form = [('', '---------')]
+            pass
+        barangay_list = [('', '---------')] + [(i.psgccode, i.brgyname) for i in Barangays.objects.all()]
 
         try:
             self.initial['purok_fk'] = kwargs['instance'].purok_fk.purok_id
-            purok_init_form = [(p.purok_id, p.purok_name) for p in Purok.objects.filter(
-                    barangay=kwargs['instance'].barangay
-                )]
         except:
-            purok_init_form = [('', '---------')]
+            pass
+        purok_list = [('', '---------')] + [(i.purok_id, i.purok_name) for i in Purok.objects.all()] 
  
         
         # Override the form, add onchange attribute to call the ajax function
@@ -131,7 +120,7 @@ class HouseholdSearchForm(forms.ModelForm):
                 'onchange': 'getPurok(this.value)',
                 'class': 'form-control'
             },
-            choices=barangay_init_form,
+            choices=barangay_list,
         )
         self.fields['purok_fk'].widget = forms.Select(
            attrs={
@@ -139,7 +128,7 @@ class HouseholdSearchForm(forms.ModelForm):
                 'class': 'form-control',
             
             },
-            choices=purok_init_form,
+            choices=purok_list,
         )
 
 
