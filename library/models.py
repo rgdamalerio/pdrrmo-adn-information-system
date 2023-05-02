@@ -444,3 +444,29 @@ class Typeofprograms(models.Model):
   class Meta:
     verbose_name_plural = "Type of programs"
     ordering = ['pk']
+
+
+class Familystatus(models.Model):
+  type = models.CharField(max_length=250,unique=True)
+  created_at = models.DateField(auto_now_add=True)
+  updated_at = models.DateField(auto_now=True)
+  owner = models.ForeignKey(User,on_delete=models.CASCADE)
+
+  def __str__(self):
+    return self.type
+
+  class Meta:
+    verbose_name_plural = "Family Status"
+
+class Familyrelationship(models.Model):
+  type = models.CharField(max_length=250,unique=True)
+  created_at = models.DateField(auto_now_add=True)
+  updated_at = models.DateField(auto_now=True)
+  owner = models.ForeignKey(User,on_delete=models.CASCADE)
+
+  def __str__(self):
+    return self.type
+
+  class Meta:
+    verbose_name_plural = "Family Relationship"
+
