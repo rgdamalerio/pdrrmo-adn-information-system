@@ -29,7 +29,7 @@ from django.views.generic.base import RedirectView
 
 admin.site.index_title = "PDRRMO-ADN"
 admin.site.site_title = "PDRRMO Agusan-Norte Admin Portal"
-admin.site.site_header = "PDRRMO-ADN Information System"
+#admin.site.site_header = "PDRRMO-ADN Information System"
 
 urlpatterns = [
     # Redirect home view to admin:index
