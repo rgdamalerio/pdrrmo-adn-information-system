@@ -17,15 +17,35 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 </head>
+<style>
+    .navbar-brand img {
+    height: 150px;
+    }
+    .logo {
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
+    }
+    .login-box {
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+</style>
 <body class="hold-transition login-page">
 <div class="login-box">
+    
     <div class="login-logo">
-        <a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a>
+        <a class="navbar-brand" href="https://infodynamicsph.net/backend/home">
+            <img src="{%static 'image/ADN_PNG.png' %}" alt="logo">
+        </a>
+        <h2>PDRRMO-ADN Information System</h2>
+        <!--<a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a>-->
     </div>
+    
     <!-- /.login-logo -->
     <div class="login-box-body">
         <p class="login-box-msg">Sign in to start your session</p>
-
         {% block content %}
             {% block object-tools %}{% endblock %}
             {{ content }}

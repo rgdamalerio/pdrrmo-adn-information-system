@@ -5,7 +5,7 @@ from .models import Municipalities,Barangays,Buildingroofmaterials, \
   Waterlevelsystems, Householdroofmaterials, Householdtenuralstatus, \
   Householdbuildingtypes, Householdwallmaterials, Householdwatertenuralstatus, \
   Livelihoods, Maritalstatus, Monthlyincomes, Nutritionalstatus, Relationshiptoheads, \
-  Livelihoodtenuralstatus, Trackstrandcourses, Typeofprograms, Purok
+  Livelihoodtenuralstatus, Trackstrandcourses, Typeofprograms, Purok, Familystatus, Familyrelationship
 
 class PuroksInline(admin.StackedInline):
   model = Purok
@@ -97,6 +97,12 @@ class TrackstrandcoursesAdmin(admin.ModelAdmin):
 class TypeofprogramsAdmin(admin.ModelAdmin):
   list_display = ("id","type","created_at","updated_at","owner")
 
+class FamilystatusAdmin(admin.ModelAdmin):
+  list_display = ("id","type","created_at","updated_at","owner")
+
+class FamilyrelationshipAdmin(admin.ModelAdmin):
+  list_display = ("id","type","created_at","updated_at","owner")
+
 
 admin.site.register(Municipalities,MunicipalitiesAdmin)
 admin.site.register(Barangays,BarangaysAdmin)
@@ -124,3 +130,5 @@ admin.site.register(Relationshiptoheads,RelationshiptoheadsAdmin)
 admin.site.register(Livelihoodtenuralstatus,LivelihoodtenuralstatusAdmin)
 admin.site.register(Trackstrandcourses,TrackstrandcoursesAdmin)
 admin.site.register(Typeofprograms,TypeofprogramsAdmin)
+admin.site.register(Familystatus,FamilystatusAdmin)
+admin.site.register(Familyrelationship,FamilyrelationshipAdmin)

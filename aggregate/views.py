@@ -7,6 +7,7 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
 from io import StringIO
+from openpyxl import load_workbook
 
 
 
@@ -15,7 +16,7 @@ def index(request):
     
     return render(request,'aggregate/index.html')
 
-def exportFamilyandPopulation(request):
+'''def exportFamilyandPopulation(request):
     aggregated = AggregatedFamiliesandPopulation.objects.all()
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
@@ -45,10 +46,46 @@ def exportFamilyandPopulation(request):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=FamiliesandPopulation.xlsx'
     workbook.save(response)
+    return response'''
+
+def exportFamilyandPopulation(request):
+    aggregated = AggregatedFamiliesandPopulation.objects.all()
+
+    # Load the template file
+    template_file = 'static/template_files/excel_template.xlsx'
+    workbook = load_workbook(filename=template_file)
+    worksheet = workbook.active
+
+    worksheet.print_options.fit_to_page = True
+    worksheet.print_options.fit_to_width = 1
+    
+    bold_font = Font(bold=True)
+    fill = PatternFill(start_color='FFCC00', end_color='FFCC00', fill_type='solid')
+    headers = ['Municipality','Barangay','No. of Households','Individuals (M)','Individuals (F)','Infant 0-11months (M)',
+               'Infant 0-11months (F)','Children 1-17y/o (M)','Children 1-17y/o (F)','Adult 18-59y/o (M)','Adult 18-59y/o (F)',
+               'Elderly 60y/o above (M)','Elderly 60y/o above (F)','IP (M)','IP (F)']
+    
+    for col_num, header_title in enumerate(headers, 1):
+        cell = worksheet.cell(row=7, column=col_num, value=header_title)
+        cell.font = bold_font
+        cell.fill = fill
+        column_letter = get_column_letter(col_num)
+        worksheet.column_dimensions[column_letter].width = 18
+
+    # Insert data into the appropriate cells of the template
+   
+    for data in aggregated:
+        worksheet.append([data.munname,data.brgyname,data.households,data.male,data.female,data.male_infant,
+                        data.female_infant,data.male_children,data.female_children,data.male_adult,
+                        data.female_adult,data.male_elderly,data.female_elderly,data.ip_male,data.ip_female])
+    # Save the modified workbook to a new file
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=FamiliesandPopulation.xlsx'
+    workbook.save(response)
     return response
 
-    
-'''def print_aggregate(request):
+'''
+def print_aggregate(request):
     queryset = AggregatedFamiliesandPopulation.objects.all()
     output = StringIO()
     for obj in queryset:
