@@ -6,12 +6,13 @@ from library.models import Municipalities, Barangays, Householdbuildingtypes, \
   Householdtenuralstatus, Householdroofmaterials, Buildingwallmaterials, \
   Householdwatertenuralstatus, Waterlevelsystems, Evacuationareas, Relationshiptoheads, \
   Genders, Maritalstatus, Disabilities, Nutritionalstatus, Gradelevels, Trackstrandcourses, \
-  Monthlyincomes, Typeofprograms, Livelihoods, Livelihoodtenuralstatus, Purok
+  Monthlyincomes, Typeofprograms, Livelihoods, Livelihoodtenuralstatus, Purok, Familystatus,Familyrelationship
 from django.contrib.auth.models import User
 from django import forms
-
+import uuid
 import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
+
 
 def current_year():
     return datetime.date.today().year
@@ -70,10 +71,8 @@ class Households(models.Model):
   waterlevelsystems = models.ForeignKey(Waterlevelsystems,null=True,on_delete=models.SET_NULL,verbose_name='Level of water system')
   evacuationareas = models.ForeignKey(Evacuationareas,null=True,on_delete=models.SET_NULL,verbose_name='Nearest evacuation center')
 
-  
   def __str__(self):
     return self.respondent
-
   def munname(self):
     return self.municipality.munname
   
@@ -119,16 +118,48 @@ class Demographies(models.Model):
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
 
-
   def __str__(self):
-    return self.lastname
-
+    return f"{self.firstname} {self.lastname}"
+  
   class Meta:
     verbose_name_plural = "Demographies"
 
+class Families(models.Model):
+  fam_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+  household = models.ForeignKey(Households, on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Household belong')
+  family_head = models.ForeignKey(Demographies,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Head of family')
+  status = models.ForeignKey(Familystatus,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Family status')
+  remarks = models.CharField(max_length=150,null=True,blank=True)
+  created_at = models.DateField(auto_now_add=True)
+  updated_at = models.DateField(auto_now=True)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL, null=True,default=1)
+
+  def __str__(self):
+    return f"{self.family_head.firstname} {self.family_head.lastname}"
+
+  class Meta:
+    verbose_name = "Family"
+    verbose_name_plural = "Families"
+
+class Familydetails(models.Model):
+  fam_fk = models.ForeignKey(Families,on_delete=models.CASCADE,verbose_name='Family head')
+  fam_member = models.ForeignKey(Demographies,on_delete=models.CASCADE,verbose_name='Family member')
+  relationship = models.ForeignKey(Familyrelationship,on_delete=models.CASCADE,verbose_name='Relationship')
+  status = models.ForeignKey(Familystatus,on_delete=models.CASCADE,verbose_name='Status')
+  remarks = models.CharField(max_length=150)
+  created_at = models.DateField(auto_now_add=True)
+  updated_at = models.DateField(auto_now=True)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
+
+  def __str__(self):
+    return self.fam_fk
+
+  class Meta:
+    verbose_name = "Family Member"
+    verbose_name_plural = "Family Members"
+
 
 class Availprograms(models.Model):
- 
   controlnumber = models.ForeignKey(Households,null=True,on_delete=models.SET_NULL,verbose_name='Housedhold belong')
   type_of_program = models.ForeignKey(Typeofprograms,null=True,on_delete=models.SET_NULL)
   name_of_program = models.CharField(max_length=150)

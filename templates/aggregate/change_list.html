@@ -66,9 +66,10 @@
                 <div class="col-md-{% if cl.has_filters %}4{% else %}4{% endif %}">
                     <div class="d-flex justify-content-end row p-2">
                         <a href="{% url 'aggregate:export_aggregate'%}" 
-                        class="btn btn-info btn-sm text-sm">
+                        class="btn btn-info btn-sm text-sm mr-1">
                             <i class="fa fa-download"></i> Download
                         </a>
+                        
                     </div>
                         {% if cl.has_filters %}
                         <span class="float-sm-right">
