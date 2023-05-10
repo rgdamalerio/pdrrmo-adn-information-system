@@ -8,6 +8,8 @@ from .forms import HouseholdSearchForm
 from .serializers import HouseholdSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from aggregate.models import AggregatedFamiliesandPopulation
+from django.db.models import Sum
 
 def is_valid_queryparam(param):
     return param != '' and param is not None
@@ -187,46 +189,43 @@ def household_search_form(request):
 @require_http_methods(['POST'])
 def chart_view(request):
   if request.user.is_authenticated:
-    # Do something for authenticated users.   
+    qresult = AggregatedFamiliesandPopulation.objects.values('munname').annotate(
+        total_households=Sum('households'),
+        total_male=Sum('male'),
+        total_female=Sum('female'),
+        total_male_infant=Sum('male_infant'),
+        total_female_infant=Sum('female_infant'),
+        total_male_children=Sum('male_children'),
+        total_female_children=Sum('female_children'),
+        total_male_adult=Sum('male_adult'),
+        total_female_adult=Sum('female_adult'),
+        total_male_elderly=Sum('male_elderly'),
+        total_female_elderly=Sum('female_elderly'),
+        total_ip_male=Sum('ip_male'),
+        total_ip_female=Sum('ip_female')
+    )
+    labels = []
+    data = []
+    for item in qresult:
+        labels.append(item['munname'])
+        data.append([
+            item['total_households'],
+            item['total_male'],
+            item['total_female'],
+            item['total_male_infant'],
+            item['total_female_infant'],
+            item['total_male_children'],
+            item['total_female_children'],
+            item['total_male_adult'],
+            item['total_female_adult'],
+            item['total_male_elderly'],
+            item['total_female_elderly'],
+            item['total_ip_male'],
+            item['total_ip_female'],
+        ])
 
-    qs = Households.objects.all()
-
-    data = request.POST
-
-    #print(data.get('controlnumber'))
-    controlnumber_icontains_query = data.get('controlnumber')
-    # purok_icontains_query = request.GET.get('purok')
-    # respondent_icontains_query = request.GET.get('respondent')
-    # enumerator_icontains_query = request.GET.get('enumerator')
-    # municipality_exact = request.GET.get('municipality')
-    # barangay_exact = request.GET.get('barangay')
-    # enumerator_icontains_query = request.GET.get('enumerator')
-    # editor_icontains_query = request.GET.get('editor')
-    # year_construct_exact_query = request.GET.get('year_construct')
-    # estimated_cost_exact_query = request.GET.get('estimated_cost')
-    # number_bedrooms_exact_query = request.GET.get('number_bedrooms')
-    # number_storey_exact_query = request.GET.get('number_storey')
-    # access_electricity = request.GET.getlist('access_electricity')
-    # access_internet = request.GET.getlist('access_internet')
-    # medical_treatment_icontains_query = request.GET.get('medical_treatment')
-    # access_water_supply = request.GET.getlist('access_water_supply')
-    # potable = request.GET.getlist('potable')
-    # floods_occur = request.GET.getlist('floods_occur')
-    # year_flooded_exact = request.GET.get('year_flooded')
-    # experience_evacuate = request.GET.getlist('experience_evacuate')
-    # year_evacuate_exact = request.GET.get('year_evacuate')
-    # access_health_medical_facility = request.GET.getlist('access_health_medical_facility')
-    # access_telecommuniciation = request.GET.getlist('access_telecommuniciation')
-    # access_drill_simulation = request.GET.getlist('access_drill_simulation')
-    # householdbuildingtypes_exact = request.GET.get('householdbuildingtypes')
-    # householdtenuralstatus_exact = request.GET.get('householdtenuralstatus')
-    # householdroofmaterials_exact = request.GET.get('householdroofmaterials')
-    # householdwallmaterials_exact = request.GET.get('householdwallmaterials')
-    # householdwatertenuralstatus_exact = request.GET.get('householdwatertenuralstatus')
-    # waterlevelsystems_exact = request.GET.get('waterlevelsystems')
-    # evacuationareas_exact = request.GET.get('evacuationareas')
-
-    return render(request,'household/chart_view_content.html')
+    context = {'labels': labels, 'data': data}
+    return render(request,'household/chart_view_content.html', context)
   else:
     # Do something for anonymous users.
     raise PermissionDenied()

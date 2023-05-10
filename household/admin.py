@@ -5,7 +5,7 @@ from .models import Households, Demographies, Availprograms, Hhlivelihoods, Fami
 from leaflet.admin import LeafletGeoAdmin
 from mapwidgets.widgets import GooglePointFieldWidget, MapboxPointFieldWidget
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
-from household.forms import HouseholdForm
+from household.forms import HouseholdForm, DemographiesForm
 from django import forms
 
 
@@ -56,10 +56,10 @@ class FamilydetailsInline(admin.StackedInline):
       )
     return super().formfield_for_foreignkey(db_field, request, **kwargs)
   
-  formfield_overrides = {
+  '''formfield_overrides = {
     models.CharField: {'widget': forms.TextInput(attrs={'size': '25'})},
     models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 200px;'})}
-    }
+    }'''
   
 
 # /Related model with inline view in household model
@@ -97,11 +97,13 @@ class HouseholdsAdmin(admin.ModelAdmin):
             'year_flooded','experience_evacuate','year_evacuate','evacuationareas','access_health_medical_facility',
             'access_telecommuniciation','access_drill_simulation','image','enumerator','editor'
            ]
-  list_display = ('controlnumber','municipality','barangay','purok_fk','respondent','date_interview',
+  list_display = ('household_controlnumber','municipality','barangay','purok_fk','respondent','date_interview',
             'views_families_link','views_availprograms_link','views_hhlivelihoods_link','created_at','updated_at','owner')
+  
   #list_editable = ('respondent','purok_fk')
   list_per_page = 10
-   
+
+  
   def views_families_link(self, obj):
     num_families = obj.families_set.count()
     changelist_link = (
@@ -185,6 +187,10 @@ class DemographiesAdmin(admin.ModelAdmin):
     'created_at','updated_at','owner')
   list_select_related = ('controlnumber',)
 
+  def controlnumber_id(self, obj):
+    return obj.controlnumber_id[:15]+"..."
+ 
+
   fields = ['controlnumber','lastname','firstname','middlename','extension','nuclear_family','relationshiptohead',
             'gender','birthdate', 'marital_status', 'ethnicity_by_blood', 'member_ip', 'informal_settler', 'religion',
             'person_with_special_needs', 'type_of_disability', 'is_ofw', 'residence', 'nutritional_status', 'nutritional_status_recorded',
@@ -192,7 +198,7 @@ class DemographiesAdmin(admin.ModelAdmin):
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
   readonly_fields = ['owner','created_at','updated_at','age',]
-  list_editable = ('lastname','firstname','middlename','extension','birthdate','primary_occupation','owner',)
+  #list_editable = ('lastname','firstname','middlename','extension','birthdate','primary_occupation','owner',)
   #list_display_links = ('lastname',)
   list_per_page = 10
   
@@ -217,29 +223,28 @@ class FamiliesAdmin(admin.ModelAdmin):
     search_fields = ('family_head',)
 
     def household_controlnumber(self, obj):
-       return obj.household.controlnumber[:10] + '...' if len(obj.household.controlnumber) > 10 else obj.household.controlnumber
-    household_controlnumber.short_description = 'Household belong'
+       return obj.household.respondent
+    household_controlnumber.short_description = 'Family belong'
+
 
     def family_members(self, obj):
       count_family_members = obj.familydetails_set.count()
       changelist_link = (
-      reverse("admin:household_families_changelist") + "?" + urlencode({"household": obj.household,"family_head": obj.family_head})
+      reverse("admin:household_familydetails_changelist") + "?" + urlencode({"fam_fk": obj.fam_id})
       )
       add_link = (
-        reverse("admin:household_families_add") + "?" + urlencode({"household": obj.household,"family_head": obj.family_head})
+        reverse("admin:household_familydetails_add") + "?" + urlencode({"fam_fk": obj.fam_id,})
       )
 
       if count_family_members > 1:
-        return format_html('<a href="{}">{} Livelihoods | <a href="{}">Add</a>', changelist_link, count_family_members, add_link)
+        return format_html('<a href="{}">{} Members | <a href="{}">Add</a>', changelist_link, count_family_members, add_link)
       elif count_family_members == 1:
-        return format_html('<a href="{}">{} Livelihood | <a href="{}">Add</a>', changelist_link, count_family_members, add_link)
+        return format_html('<a href="{}">{} Member | <a href="{}">Add</a>', changelist_link, count_family_members, add_link)
       else:
         return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
 
     family_members.short_description = "No. of family members"
 
-    def household(self, obj):
-      return obj.household.controlnumber
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
       if db_field.name == 'household':
@@ -264,11 +269,38 @@ class FamiliesAdmin(admin.ModelAdmin):
   
     inlines = [FamilydetailsInline]
 
+@admin.register(Familydetails)
+class FamilydetailsAdmin(admin.ModelAdmin):
+  list_display = ('fam_fk','fam_member','relationship','status','remarks','created_at','updated_at','owner')
+  #search_fields = ('fam_member','fam_fk',)
+  
+  def formfield_for_foreignkey(self, db_field, request, **kwargs):
+      if db_field.name == 'fam_fk':
+        kwargs['widget'] = ForeignKeyRawIdWidget(
+            rel=db_field.remote_field,
+            admin_site=admin.site,
+            attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
+        )
+      elif db_field.name == 'fam_member':
+        kwargs['widget'] = ForeignKeyRawIdWidget(
+            rel=db_field.remote_field,
+            admin_site=admin.site,
+            attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
+        )
+  
+      return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+  formfield_overrides = {
+    models.CharField: {'widget': forms.TextInput(attrs={'size': '25'})},
+    models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 200px;'})}
+    }
+
 @admin.register(Availprograms)
 class AvailprogramsAdmin(admin.ModelAdmin):
-  list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','program_implementor','created_at','updated_at','owner')
+  list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','upper_progimplementor','created_at','updated_at','owner')
   search_fields = ('controlnumber',)
 
+  
 @admin.register(Hhlivelihoods)
 class HlivelihoodsAdmin(admin.ModelAdmin):
   list_display = ('controlnumber','products','market_value','area','livelihood_tenural_status','with_insurance','livelihood','created_at','updated_at','owner')
