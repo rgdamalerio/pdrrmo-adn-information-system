@@ -1,6 +1,6 @@
 from email.policy import default
 from django import forms
-from household.models import Households
+from household.models import Households, Demographies, Families
 from library.models import Municipalities, Barangays, Purok
 from library.views import municipality_list, barangay_list, purok_list
 
@@ -154,4 +154,40 @@ class HouseholdSearchForm(forms.ModelForm):
         js = (
             'js/chained-address-advance-search.js',
         )
-    
+
+class DemographiesForm(forms.ModelForm):
+   def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.TextInput):
+                field.widget.attrs.update({'class': 'form-control'})
+            elif isinstance(field.widget, forms.Select):
+                field.widget.attrs.update({'class': 'form-control', 'size': 10})
+            elif isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({'class': 'form-check-input'})
+            elif isinstance(field.widget, forms.CheckboxSelectMultiple):
+                field.widget.attrs.update({'class': 'form-check-input'})
+
+class Meta:
+    model = Demographies
+    fields = '__all__'
+
+'''class FamiliesForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.TextInput) or isinstance(field.widget, forms.Select):
+                field.widget.attrs.update({'class': 'form-control', 'style': 'width: 150px;'})
+            elif isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({'class': 'form-check-input'})
+            elif isinstance(field.widget, forms.CheckboxSelectMultiple):
+                field.widget.attrs.update({'class': 'form-check-input'})
+
+    class Meta:
+        model = Families
+        fields = '__all__'
+        widgets = {
+            'household': forms.Select(attrs={'class': 'form-control'}),
+            'family_head': forms.Select(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),'''
+        
