@@ -54,27 +54,27 @@ class LandslideReportAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 @admin.register(StormSurgeReport)
-class LandslideReportAdmin(admin.ModelAdmin):
+class StormSurgeReporAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     
-    list_display = ('status','municipality_name','barangay_name','household','person','num_male','num_female','num_male_infant','num_female_infant',
+    list_display = ('ssid','municipality_name','barangay_name','household','person','num_male','num_female','num_male_infant','num_female_infant',
                     'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly',
                     'num_ip_male','num_ip_female')
     
-    def status(self, obj):
-        if obj.surge_id == 1:
+    '''def status(self, obj):
+        if obj.ssid == 1:
             return 'Knee Deep Surge Height'
-        elif obj.surge_id == 2:
+        elif obj.ssid == 2:
             return 'Chest Deep Surge Height'
-        elif obj.surge_id == 3:
+        elif obj.ssid == 3:
             return 'Above Head Surge Height'
-    status.short_description = 'Storm Surge Susceptibility'
+    status.short_description = 'Storm Surge Susceptibility'''
         
 
     search_fields = ('municipality_name','barangay_name',)
     ordering = ('municipality_name','barangay_name',)
-    list_filter = ('surge_id',)
+    list_filter = ('ssid',)
     list_per_page = 10
 
     

@@ -50,7 +50,7 @@ class LandslideReport(models.Model):
 
 
 class StormSurgeReport(models.Model):
-    surge_id = models.CharField(max_length=255,primary_key=True,verbose_name='Storm Surge Susceptibility')
+    ssid = models.CharField(max_length=255,primary_key=True,verbose_name='Storm Surge Susceptibility')
     municipality_name = models.CharField(max_length=255,verbose_name='Municipality')
     barangay_name = models.CharField(max_length=255,verbose_name='Barangay')
     household = models.IntegerField(verbose_name='No. of Households')

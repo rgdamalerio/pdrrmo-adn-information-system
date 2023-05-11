@@ -6,6 +6,9 @@ from .models import Municipalities,Barangays,Buildingroofmaterials, \
   Householdbuildingtypes, Householdwallmaterials, Householdwatertenuralstatus, \
   Livelihoods, Maritalstatus, Monthlyincomes, Nutritionalstatus, Relationshiptoheads, \
   Livelihoodtenuralstatus, Trackstrandcourses, Typeofprograms, Purok, Familystatus, Familyrelationship
+from django.urls import reverse
+from django.utils.http import urlencode
+from django.utils.html import format_html
 
 class PuroksInline(admin.StackedInline):
   model = Purok
@@ -103,9 +106,15 @@ class FamilystatusAdmin(admin.ModelAdmin):
 class FamilyrelationshipAdmin(admin.ModelAdmin):
   list_display = ("id","type","created_at","updated_at","owner")
 
+class PurokAdmin(admin.ModelAdmin):
+  list_display = ("purok_id","psgccode_brgy","purok_name")
+  search_fields = ("purok_name",)
+  ordering = ("psgccode_brgy",)
+
 
 admin.site.register(Municipalities,MunicipalitiesAdmin)
 admin.site.register(Barangays,BarangaysAdmin)
+admin.site.register(Purok,PurokAdmin)
 admin.site.register(Buildingroofmaterials,BuildingroofmaterialsAdmin)
 admin.site.register(Buildingstatus,BuildingstatusAdmin)
 admin.site.register(Buildingtypes,BuildingtypesAdmin)
