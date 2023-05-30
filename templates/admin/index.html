@@ -708,7 +708,9 @@
         
         // We are not cloning markercluster to preserve original clasterization behavior and prevent OutOfMemory problems
         L.BrowserPrint.Utils.registerLayer(L.MarkerClusterGroup, 'L.MarkerClusterGroup', function (layer, utils) {
-            return layer;
+            var cluster = L.markerClusterGroup(layer._group.options);
+            cluster.addLayers(utils.cloneInnerLayers(layer._group));
+            return cluster;
         });
 
         // On print end we invalidate markercluster to update markers;
