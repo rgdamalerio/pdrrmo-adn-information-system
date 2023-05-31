@@ -7,14 +7,30 @@ from mapwidgets.widgets import GooglePointFieldWidget, MapboxPointFieldWidget
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from household.forms import HouseholdForm, DemographiesForm
 from django import forms
-
-
-
 from datetime import date
 import datetime
 from django.urls import reverse
 from django.utils.http import urlencode
 from django.utils.html import format_html
+
+
+class FilterUserAdmin(admin.ModelAdmin):
+  def save_model(self, request, obj, form, change):
+    user = request.user
+    user_location = user.userlocation  # Assuming 'userlocation' is the OneToOneField related to User
+    obj.municipality = user_location.psgccode_mun
+    obj.save()
+
+  def get_queryset(self, request):
+    qs = super().get_queryset(request)
+    user_location = request.user.userlocation
+    return qs.filter(municipality=user_location.psgccode_mun)
+
+  def has_change_permission(self, request, obj=None):
+    if not obj:
+        return True
+    user_location = request.user.userlocation
+    return obj.municipality == user_location.psgccode_mun
 
 
 class FamiliesInline(admin.StackedInline):
@@ -82,9 +98,15 @@ class LivelihoodsInline(admin.StackedInline):
   extra = 0
   readonly_fields = ['owner','created_at','updated_at',]
 
+
 # Register your models here.
 @admin.register(Households)
 class HouseholdsAdmin(admin.ModelAdmin):
+  def get_queryset(self, request):
+    qs = super().get_queryset(request)
+    if hasattr(request, 'households'):
+      return request.households
+    return qs
   form = HouseholdForm
   formfield_overrides = {
       models.PointField: {"widget": GooglePointFieldWidget}
@@ -180,9 +202,13 @@ class HouseholdsAdmin(admin.ModelAdmin):
       )
     
 
-
 @admin.register(Demographies)
 class DemographiesAdmin(admin.ModelAdmin):
+  def get_queryset(self, request):
+    queryset = super().get_queryset(request)
+    if hasattr(request, 'demographies'):
+      return request.demographies
+    return queryset
   list_display = ('controlnumber_id','lastname','firstname','middlename','extension','birthdate','age','primary_occupation',
     'created_at','updated_at','owner')
   list_select_related = ('controlnumber',)
@@ -297,14 +323,25 @@ class FamilydetailsAdmin(admin.ModelAdmin):
 
 @admin.register(Availprograms)
 class AvailprogramsAdmin(admin.ModelAdmin):
+  def get_queryset(self, request):
+    queryset = super().get_queryset(request)
+    if hasattr(request, 'availprograms'):
+      return request.availprograms
+    return queryset
   list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','upper_progimplementor','created_at','updated_at','owner')
   search_fields = ('controlnumber',)
 
   
 @admin.register(Hhlivelihoods)
 class HlivelihoodsAdmin(admin.ModelAdmin):
+  def get_queryset(self, request):
+    queryset = super().get_queryset(request)
+    if hasattr(request, 'livelihoods'):
+      return request.livelihoods
+    return queryset
   list_display = ('controlnumber','products','market_value','area','livelihood_tenural_status','with_insurance','livelihood','created_at','updated_at','owner')
   search_fields = ('controlnumber',)
+  list_per_page = 20
 
   formfield_overrides = {
         models.CharField: {'widget': forms.TextInput(attrs={'size': '18'})},
