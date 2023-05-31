@@ -26,7 +26,6 @@ def year_choices():
 
 # Create your models here.
 class Households(models.Model):
-
   def getBarangay(self):
     brgycode = self.barangay
     return brgycode
