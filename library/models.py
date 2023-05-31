@@ -2,9 +2,12 @@ from tabnanny import verbose
 from django.db import models
 from django.contrib.auth.models import User
 
+
+
 class MunicipalitiesManager(models.Manager):
     def get_by_natural_key(self, munname):
         return self.get(municipality_name=munname)
+    
 
 # Create your models here.
 class Municipalities(models.Model):
@@ -12,7 +15,7 @@ class Municipalities(models.Model):
   munname = models.CharField(max_length=255,unique=True)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
-  owner = models.ForeignKey(User,on_delete=models.CASCADE)
+  owner = models.ForeignKey(User,null=True,blank=True,on_delete=models.SET_NULL)
 
   objects = MunicipalitiesManager()
 
@@ -35,7 +38,7 @@ class Barangays(models.Model):
   brgyname = models.CharField(max_length=255)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
-  owner = models.ForeignKey(User,on_delete=models.CASCADE)
+  owner = models.ForeignKey(User,null=True,blank=True,on_delete=models.CASCADE)
 
   objects = BarangaysManager()
 
@@ -47,6 +50,12 @@ class Barangays(models.Model):
 
   class Meta:
     verbose_name_plural = "Barangays"
+
+class UserLocation(models.Model):
+  user = models.OneToOneField(User, on_delete=models.CASCADE,null=True)
+  psgccode_mun = models.ForeignKey(Municipalities,on_delete=models.CASCADE,null=True,blank=True)
+  psgccode_brgy = models.ForeignKey(Barangays,on_delete=models.CASCADE,null=True,blank=True)
+
 
 class Purok(models.Model):
   purok_id = models.AutoField(primary_key=True)
