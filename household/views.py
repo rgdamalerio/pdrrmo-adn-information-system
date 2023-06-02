@@ -37,34 +37,7 @@ def household_datasets(request):
         if purok_fk_icontains_query:
             qs = qs.filter(purok__icontains=purok_fk_icontains_query)
 
-        query_params = [
-            'respondent', 'enumerator', 'municipality', 'barangay', 'enumerator',
-            'editor', 'year_construct', 'estimated_cost', 'number_bedrooms',
-            'number_storey', 'medical_treatment', 'year_flooded', 'year_evacuate',
-            'householdbuildingtypes', 'householdtenuralstatus', 'householdroofmaterials',
-            'householdwallmaterials', 'householdwatertenuralstatus', 'waterlevelsystems',
-            'evacuationareas'
-        ]
-
-        for param in query_params:
-            value = request.GET.get(param)
-            if is_valid_queryparam(value):
-                qs = qs.filter(**{param + '__exact': value})
-
-        boolean_fields = [
-            'access_electricity', 'access_internet', 'access_water_supply',
-            'potable', 'floods_occur', 'experience_evacuate',
-            'access_health_medical_facility', 'access_telecommuniciation',
-            'access_drill_simulation'
-        ]
-
-        for field in boolean_fields:
-            values = request.GET.getlist(field)
-            if values:
-                qs = qs.filter(**{field + '__in': values})
-
-        households = serialize('geojson', qs, use_natural_foreign_keys=True,
-                               fields=('pk', 'location', 'latitude', 'longitude'))
+        # ... add the rest of your filter conditions here
         
         households = serialize('geojson', qs, use_natural_foreign_keys=True, fields=('pk', 'location', 'latitude', 'longitude'))
 
