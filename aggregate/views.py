@@ -15,9 +15,6 @@ from django.core import serializers
 from django.db.models import Sum
 
 
-
-
-
 def index(request): 
     return render(request,'aggregate/index.html')
 
@@ -34,7 +31,7 @@ def exportFamilyandPopulation(request):
             municipality = user_location.psgccode_mun
             aggregated = AggregatedFamiliesandPopulation.objects.filter(munname=municipality)
 
-        # Rest of your code for exporting families and population data
+        #exporting families and population data
         template_file = 'static/template_files/excel_template.xlsx'
         workbook = load_workbook(filename=template_file)
         worksheet = workbook.active
