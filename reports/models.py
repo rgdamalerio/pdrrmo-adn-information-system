@@ -22,8 +22,12 @@ class FloodReport(models.Model):
     num_ip_female = models.IntegerField(verbose_name='IP (F)')
 
     class Meta:
-       db_table = 'flood_report'
-       verbose_name_plural = "Flood"
+        db_table = 'flood_report'
+        verbose_name_plural = "Flood"
+        permissions = [
+            ("view_report", "Can view report"),
+            ("change_report", "Can change report"),
+        ]
 
 class LandslideReport(models.Model):
     ril_id = models.CharField(max_length=255,primary_key=True,verbose_name='Landslide Susceptibility')
@@ -45,8 +49,12 @@ class LandslideReport(models.Model):
     num_ip_female = models.IntegerField(verbose_name='IP (F)')
 
     class Meta:
-       db_table = 'landslide_report'
-       verbose_name_plural = "Landslide"
+        db_table = 'landslide_report'
+        verbose_name_plural = "Landslide"
+        permissions = [
+            ("view_report", "Can view report"),
+            ("change_report", "Can change report"),
+        ]
 
 
 class StormSurgeReport(models.Model):
@@ -69,8 +77,13 @@ class StormSurgeReport(models.Model):
     num_ip_female = models.IntegerField(verbose_name='IP (F)')
 
     class Meta:
-       db_table = 'stormsurge_report'
-       verbose_name_plural = "Storm Surge"
+        db_table = 'stormsurge_report'
+        verbose_name_plural = "Storm Surge"
+        permissions = [
+            ("view_report", "Can view report"),
+            ("change_report", "Can change report"),
+        ]
+      
 
 
 
