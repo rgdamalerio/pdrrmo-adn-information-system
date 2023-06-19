@@ -80,7 +80,7 @@ class FloodReportAdmin(FilterReportsAdmin):
 
 
 @admin.register(LandslideReport)
-class LandslideReportAdmin(admin.ModelAdmin):
+class LandslideReportAdmin(FilterReportsAdmin):
     def has_add_permission(self, request):
         return False
 

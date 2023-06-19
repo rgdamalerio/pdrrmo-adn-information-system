@@ -98,48 +98,67 @@ def household_search_form(request):
     raise PermissionDenied()
 
 #AJAX
-@require_http_methods(['POST'])
+@require_http_methods(['GET'])
 def chart_view(request):
-  if request.user.is_authenticated:
-    qresult = AggregatedFamiliesandPopulation.objects.values('munname').annotate(
-        total_households=Sum('households'),
-        total_male=Sum('male'),
-        total_female=Sum('female'),
-        total_male_infant=Sum('male_infant'),
-        total_female_infant=Sum('female_infant'),
-        total_male_children=Sum('male_children'),
-        total_female_children=Sum('female_children'),
-        total_male_adult=Sum('male_adult'),
-        total_female_adult=Sum('female_adult'),
-        total_male_elderly=Sum('male_elderly'),
-        total_female_elderly=Sum('female_elderly'),
-        total_ip_male=Sum('ip_male'),
-        total_ip_female=Sum('ip_female')
-    )
-    labels = []
-    data = []
-    for item in qresult:
-        labels.append(item['munname'])
-        data.append([
-            item['total_households'],
-            item['total_male'],
-            item['total_female'],
-            item['total_male_infant'],
-            item['total_female_infant'],
-            item['total_male_children'],
-            item['total_female_children'],
-            item['total_male_adult'],
-            item['total_female_adult'],
-            item['total_male_elderly'],
-            item['total_female_elderly'],
-            item['total_ip_male'],
-            item['total_ip_female'],
-        ])
+    if request.user.is_authenticated:
+        if request.user.is_superuser or request.user.groups.filter(name='admin').exists():
+            qresult = AggregatedFamiliesandPopulation.objects.values('munname').annotate(
+                total_households=Sum('households'),
+                total_male=Sum('male'),
+                total_female=Sum('female'),
+                total_male_infant=Sum('male_infant'),
+                total_female_infant=Sum('female_infant'),
+                total_male_children=Sum('male_children'),
+                total_female_children=Sum('female_children'),
+                total_male_adult=Sum('male_adult'),
+                total_female_adult=Sum('female_adult'),
+                total_male_elderly=Sum('male_elderly'),
+                total_female_elderly=Sum('female_elderly'),
+                total_ip_male=Sum('ip_male'),
+                total_ip_female=Sum('ip_female')
+            )
+        else:
+            municipality = request.user.userlocation.psgccode_mun
+            qresult = AggregatedFamiliesandPopulation.objects.filter(munname=municipality).values('munname').annotate(
+                total_households=Sum('households'),
+                total_male=Sum('male'),
+                total_female=Sum('female'),
+                total_male_infant=Sum('male_infant'),
+                total_female_infant=Sum('female_infant'),
+                total_male_children=Sum('male_children'),
+                total_female_children=Sum('female_children'),
+                total_male_adult=Sum('male_adult'),
+                total_female_adult=Sum('female_adult'),
+                total_male_elderly=Sum('male_elderly'),
+                total_female_elderly=Sum('female_elderly'),
+                total_ip_male=Sum('ip_male'),
+                total_ip_female=Sum('ip_female')
+            )
 
-    context = {'labels': labels, 'data': data}
-    return render(request,'household/chart_view_content.html', context)
-  else:
-    # Do something for anonymous users.
-    raise PermissionDenied()
+        labels = []
+        data = []
+        for item in qresult:
+            labels.append(item['munname'])
+            data.append([
+                item['total_households'],
+                item['total_male'],
+                item['total_female'],
+                item['total_male_infant'],
+                item['total_female_infant'],
+                item['total_male_children'],
+                item['total_female_children'],
+                item['total_male_adult'],
+                item['total_female_adult'],
+                item['total_male_elderly'],
+                item['total_female_elderly'],
+                item['total_ip_male'],
+                item['total_ip_female'],
+            ])
+
+        context = {'labels': labels, 'data': data}
+        return render(request, 'household/chart_view_content.html', context)
+    else:
+        # Do something for anonymous users.
+        raise PermissionDenied()
 
 
