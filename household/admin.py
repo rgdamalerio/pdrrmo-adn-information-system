@@ -101,16 +101,28 @@ class LivelihoodsInline(admin.StackedInline):
 
 # Register your models here.
 @admin.register(Households)
-class HouseholdsAdmin(admin.ModelAdmin):
+class HouseholdsAdmin(LeafletGeoAdmin):
   def get_queryset(self, request):
     qs = super().get_queryset(request)
     if hasattr(request, 'households'):
       return request.households
     return qs
   form = HouseholdForm
-  formfield_overrides = {
-      models.PointField: {"widget": GooglePointFieldWidget}
+  settings_overrides = {
+    'TILES': [('Esri_WorldImagery', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          'attribution': 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+        }),('OpenStreetMap', 'http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+          'attribution': '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        }),
+        ('Drak Map', 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            'subdomains': 'abcd',
+            'maxZoom': 19
+        })],
   }
+  '''formfield_overrides = {
+      models.PointField: {"widget": GooglePointFieldWidget}
+  }'''
   readonly_fields = ('enumerator','editor',)
   fields = ['respondent','municipality', 'barangay','purok_fk','location','householdbuildingtypes',
             'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
@@ -122,7 +134,7 @@ class HouseholdsAdmin(admin.ModelAdmin):
   list_display = ('household_controlnumber','municipality','barangay','purok_fk','respondent','date_interview',
             'views_families_link','views_availprograms_link','views_hhlivelihoods_link','created_at','updated_at','owner')
   
-  #list_editable = ('respondent','purok_fk')
+  list_editable = ['respondent','purok_fk',]
   list_per_page = 10
 
   

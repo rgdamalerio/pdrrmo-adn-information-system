@@ -14,13 +14,8 @@ from django.views.decorators.http import require_http_methods
 from django.core import serializers
 from django.db.models import Sum
 
-
-
-
-
 def index(request): 
     return render(request,'aggregate/index.html')
-
 
 def exportFamilyandPopulation(request):
     user = request.user
