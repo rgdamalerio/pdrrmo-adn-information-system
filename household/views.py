@@ -98,7 +98,7 @@ def household_search_form(request):
     raise PermissionDenied()
 
 #AJAX
-@require_http_methods(['GET'])
+@require_http_methods(['POST'])
 def chart_view(request):
     if request.user.is_authenticated:
         if request.user.is_superuser or request.user.groups.filter(name='admin').exists():
