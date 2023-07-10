@@ -55,7 +55,7 @@ class FamiliesInline(admin.StackedInline):
 
 class FamilydetailsInline(admin.StackedInline):
   model = Familydetails
-  extra = 0
+  extra = 5
 
   def formfield_for_foreignkey(self, db_field, request, **kwargs):
     if db_field.name == 'fam_fk':
@@ -124,7 +124,7 @@ class HouseholdsAdmin(LeafletGeoAdmin):
       models.PointField: {"widget": GooglePointFieldWidget}
   }'''
   readonly_fields = ('enumerator','editor',)
-  fields = ['respondent','municipality', 'barangay','purok_fk','location','householdbuildingtypes',
+  fields = ['respondent','date_interview','municipality', 'barangay','purok_fk','location','householdbuildingtypes',
             'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
             'access_electricity', 'householdroofmaterials','householdwallmaterials','medical_treatment',
             'access_water_supply','potable','householdwatertenuralstatus','waterlevelsystems','floods_occur',
@@ -134,7 +134,7 @@ class HouseholdsAdmin(LeafletGeoAdmin):
   list_display = ('household_controlnumber','municipality','barangay','purok_fk','respondent','date_interview',
             'views_families_link','views_availprograms_link','views_hhlivelihoods_link','created_at','updated_at','owner')
   
-  list_editable = ['respondent','purok_fk',]
+  #list_editable = ['respondent','purok_fk',]
   list_per_page = 10
 
   
@@ -198,10 +198,11 @@ class HouseholdsAdmin(LeafletGeoAdmin):
     'floods_occur','experience_evacuate','access_health_medical_facility',
     'access_telecommuniciation','access_drill_simulation')
   inlines = [
-    #DemographiesInline,
+    
     #AvailprogramsInline,
     #LivelihoodsInline
-    FamiliesInline
+    FamiliesInline,
+    #DemographiesInline,
   ]
   formfield_overrides = {
         models.CharField: {'widget': forms.TextInput(attrs={'size': '18'})},
@@ -224,24 +225,34 @@ class DemographiesAdmin(admin.ModelAdmin):
   list_display = ('controlnumber_id','lastname','firstname','middlename','extension','birthdate','age','primary_occupation',
     'created_at','updated_at','owner')
   list_select_related = ('controlnumber',)
-
+  ordering = ('-id',)
   def controlnumber_id(self, obj):
-    return obj.controlnumber_id[:15]+"..."
+    return obj.controlnumber_id[:10]+"..."
  
 
-  fields = ['controlnumber','lastname','firstname','middlename','extension','nuclear_family','relationshiptohead',
+  fields = ['controlnumber','lastname','firstname','middlename','extension','relationshiptohead',
             'gender','birthdate', 'marital_status', 'ethnicity_by_blood', 'member_ip', 'informal_settler', 'religion',
             'person_with_special_needs', 'type_of_disability', 'is_ofw', 'residence', 'nutritional_status', 'nutritional_status_recorded',
             'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
   readonly_fields = ['owner','created_at','updated_at','age',]
-  #list_editable = ('lastname','firstname','middlename','extension','birthdate','primary_occupation','owner',)
+  list_editable = ('lastname','firstname','middlename','extension','birthdate','primary_occupation','owner',)
   #list_display_links = ('lastname',)
-  list_per_page = 10
+  list_per_page = 15
   
   #list_filter = ('controlnumber_id',)
   search_fields = ('lastname','middlename','firstname',)
+
+  def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    if db_field.name == 'controlnumber':
+      kwargs['widget'] = ForeignKeyRawIdWidget(
+          rel=db_field.remote_field,
+          admin_site=admin.site,
+          attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
+      )
+
+    return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
   formfield_overrides = {
     models.CharField: {'widget': forms.TextInput(attrs={'size': '25'})},
@@ -258,7 +269,10 @@ class DemographiesAdmin(admin.ModelAdmin):
 @admin.register(Families)
 class FamiliesAdmin(admin.ModelAdmin):
     list_display = ('household_controlnumber','family_head','family_members','status','remarks','created_at','updated_at','owner')
-    search_fields = ('family_head',)
+    search_fields = ['family_head__firstname', 'family_head__lastname', 'family_head__middlenapme']
+    list_filter = ['status']
+    list_per_page = 20
+    
 
     def household_controlnumber(self, obj):
        return obj.household.respondent
@@ -310,7 +324,9 @@ class FamiliesAdmin(admin.ModelAdmin):
 @admin.register(Familydetails)
 class FamilydetailsAdmin(admin.ModelAdmin):
   list_display = ('fam_fk','fam_member','relationship','status','remarks','created_at','updated_at','owner')
-  #search_fields = ('fam_member','fam_fk',)
+  search_fields = ['fam_member__firstname','fam_member__lastname','fam_fk__family_head__firstname','fam_fk__family_head__lastname']
+  list_filter = ['relationship','status']
+  list_per_page = 20
   
   def formfield_for_foreignkey(self, db_field, request, **kwargs):
       if db_field.name == 'fam_fk':
@@ -342,6 +358,7 @@ class AvailprogramsAdmin(admin.ModelAdmin):
     return queryset
   list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','upper_progimplementor','created_at','updated_at','owner')
   search_fields = ('controlnumber',)
+  list_max_show_all = 100
 
   
 @admin.register(Hhlivelihoods)

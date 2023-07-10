@@ -47,7 +47,7 @@ class HouseholdForm(forms.ModelForm):
         self.fields['barangay'].widget = forms.Select(
             attrs={
                 'id': 'id_barangay',
-                'onchange': 'getPurok(this.value)',
+                'onclick': 'getPurok(this.value)',
                 'style': 'width:200px'
             },
             choices=barangay_list,

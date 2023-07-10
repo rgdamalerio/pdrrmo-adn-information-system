@@ -51,6 +51,7 @@ class BarangaysAdmin(admin.ModelAdmin):
 class PurokAdmin(admin.ModelAdmin):
   list_display = ("purok_id","psgccode_brgy","purok_name")
   search_fields = ("purok_name",)
+  list_per_page = 10
   ordering = ("psgccode_brgy",)
 
 class BuildingroofmaterialsAdmin(admin.ModelAdmin):
@@ -127,9 +128,11 @@ class TypeofprogramsAdmin(admin.ModelAdmin):
 
 class FamilystatusAdmin(admin.ModelAdmin):
   list_display = ("id","type","created_at","updated_at","owner")
+  ordering = ['type']
 
 class FamilyrelationshipAdmin(admin.ModelAdmin):
   list_display = ("id","type","created_at","updated_at","owner")
+  ordering = ['type']
 
 
 
