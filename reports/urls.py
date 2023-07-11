@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import get_infant_counts
+from .views import export_infant_counts
 
 urlpatterns = [
-    path('num_infants/', get_infant_counts, name='num_infants')
+    path('num_infants/', export_infant_counts, name='num_infants')
 ]

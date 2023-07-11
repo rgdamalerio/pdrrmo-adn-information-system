@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from .models import FloodReport, LandslideReport, StormSurgeReport
 from django.core.exceptions import PermissionDenied
