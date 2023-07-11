@@ -153,7 +153,7 @@ class Familydetails(models.Model):
   fam_fk = models.ForeignKey(Families,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Family head')
   fam_member = models.ForeignKey(Demographies,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Family member')
   relationship = models.ForeignKey(Familyrelationship,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Relationship to head')
-  status = models.ForeignKey(Familystatus,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Status')
+  status = models.ForeignKey(Familystatus,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Family status')
   remarks = models.CharField(max_length=150,null=True,default='N/A')
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)

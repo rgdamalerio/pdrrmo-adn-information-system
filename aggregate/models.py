@@ -35,6 +35,7 @@ class AggregatedFamiliesandPopulation(models.Model):
   munname = models.CharField(primary_key=True,max_length=50,verbose_name='Municipality')
   brgyname = models.CharField(max_length=50,null=True,verbose_name='Barangay')
   households = models.IntegerField(default=0,verbose_name='No. of Households')
+  families = models.IntegerField(default=0,verbose_name='No. of Families')
   male = models.IntegerField(default=0,verbose_name='Individuals (M)')
   female = models.IntegerField(verbose_name='Individuals (F)')
   male_infant = models.IntegerField(verbose_name='Infant 0-11months (M)')
