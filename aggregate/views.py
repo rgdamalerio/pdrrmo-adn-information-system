@@ -4,6 +4,7 @@ from urllib import response
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 import openpyxl
+import xlsxwriter
 from django.views.generic import View
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
@@ -29,37 +30,49 @@ def exportFamilyandPopulation(request):
             municipality = user_location.psgccode_mun
             aggregated = AggregatedFamiliesandPopulation.objects.filter(munname=municipality)
 
-        # Rest of your code for exporting families and population data
-        template_file = 'static/template_files/excel_template.xlsx'
-        workbook = load_workbook(filename=template_file)
-        worksheet = workbook.active
+        # Create a new workbook
+        workbook = xlsxwriter.Workbook('FamiliesandPopulation.xlsx')
+        worksheet = workbook.add_worksheet()
 
-        worksheet.print_options.fit_to_page = True
-        worksheet.print_options.fit_to_width = 1
+        bold_format = workbook.add_format({'bold': True})
+        fill_format = workbook.add_format({'bg_color': 'yellow'})
 
-        bold_font = Font(bold=True)
-        fill = PatternFill(start_color='FFCC00', end_color='FFCC00', fill_type='solid')
         headers = ['Municipality', 'Barangay', 'No. of Households', 'Individuals (M)', 'Individuals (F)',
-                   'Infant 0-11months (M)',
-                   'Infant 0-11months (F)', 'Children 1-17y/o (M)', 'Children 1-17y/o (F)', 'Adult 18-59y/o (M)',
-                   'Adult 18-59y/o (F)',
-                   'Elderly 60y/o above (M)', 'Elderly 60y/o above (F)', 'IP (M)', 'IP (F)']
+                   'Infant 0-11months (M)', 'Infant 0-11months (F)', 'Children 1-17y/o (M)', 'Children 1-17y/o (F)',
+                   'Adult 18-59y/o (M)', 'Adult 18-59y/o (F)', 'Elderly 60y/o above (M)', 'Elderly 60y/o above (F)',
+                   'IP (M)', 'IP (F)']
 
-        for col_num, header_title in enumerate(headers, 1):
-            cell = worksheet.cell(row=7, column=col_num, value=header_title)
-            cell.font = bold_font
-            cell.fill = fill
-            column_letter = get_column_letter(col_num)
-            worksheet.column_dimensions[column_letter].width = 18
+        # Write headers with formatting
+        for col_num, header_title in enumerate(headers):
+            worksheet.write(6, col_num, header_title, bold_format)
+            worksheet.set_column(col_num, col_num, 18)
 
+        # Write data
+        row = 7
         for data in aggregated:
-            worksheet.append([data.munname, data.brgyname, data.households, data.male, data.female, data.male_infant,
-                              data.female_infant, data.male_children, data.female_children, data.male_adult,
-                              data.female_adult, data.male_elderly, data.female_elderly, data.ip_male, data.ip_female])
+            worksheet.write(row, 0, data.munname)
+            worksheet.write(row, 1, data.brgyname)
+            worksheet.write(row, 2, data.households)
+            worksheet.write(row, 3, data.male)
+            worksheet.write(row, 4, data.female)
+            worksheet.write(row, 5, data.male_infant)
+            worksheet.write(row, 6, data.female_infant)
+            worksheet.write(row, 7, data.male_children)
+            worksheet.write(row, 8, data.female_children)
+            worksheet.write(row, 9, data.male_adult)
+            worksheet.write(row, 10, data.female_adult)
+            worksheet.write(row, 11, data.male_elderly)
+            worksheet.write(row, 12, data.female_elderly)
+            worksheet.write(row, 13, data.ip_male)
+            worksheet.write(row, 14, data.ip_female)
+            row += 1
+
+        workbook.close()
 
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename=FamiliesandPopulation.xlsx'
-        workbook.save(response)
+        with open('FamiliesandPopulation.xlsx', 'rb') as file:
+            response.write(file.read())
         return response
 
     else:
