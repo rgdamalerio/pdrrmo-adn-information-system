@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.core.cache import cache
 from django.contrib.gis.db import models
 from .models import Households, Demographies, Availprograms, Hhlivelihoods, Families, Familydetails
 from leaflet.admin import LeafletGeoAdmin
@@ -14,27 +13,9 @@ from django.utils.http import urlencode
 from django.utils.html import format_html
 
 
-class FilterUserAdmin(admin.ModelAdmin):
-  def save_model(self, request, obj, form, change):
-    user = request.user
-    user_location = user.userlocation  # Assuming 'userlocation' is the OneToOneField related to User
-    obj.municipality = user_location.psgccode_mun
-    obj.save()
-
-  def get_queryset(self, request):
-    qs = super().get_queryset(request)
-    user_location = request.user.userlocation
-    return qs.filter(municipality=user_location.psgccode_mun)
-
-  def has_change_permission(self, request, obj=None):
-    if not obj:
-        return True
-    user_location = request.user.userlocation
-    return obj.municipality == user_location.psgccode_mun
-
-
 class FamiliesInline(admin.StackedInline):
   model = Families
+  exclude = ('owner',)
   extra = 0
 
   def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -55,8 +36,9 @@ class FamiliesInline(admin.StackedInline):
 
 class FamilydetailsInline(admin.StackedInline):
   model = Familydetails
-  extra = 5
-
+  exclude = ('owner',)
+  extra = 3
+  
   def formfield_for_foreignkey(self, db_field, request, **kwargs):
     if db_field.name == 'fam_fk':
         kwargs['widget'] = ForeignKeyRawIdWidget(
@@ -78,19 +60,16 @@ class FamilydetailsInline(admin.StackedInline):
     }'''
   
 
-# /Related model with inline view in household model
 class DemographiesInline(admin.StackedInline):
   model = Demographies
   extra = 0
   readonly_fields = ['owner','created_at','updated_at','age',]
-
 
   def age(self,demography):
     today = date.today()
     bday = demography.birthdate.strftime("%Y-%m-%d %H:%M:%S")
     datem = datetime.datetime.strptime(bday,"%Y-%m-%d %H:%M:%S")
     return today.year - datem.year - ((today.month, today.day) < (datem.month, datem.day))
-
 
 
 class LivelihoodsInline(admin.StackedInline):
@@ -132,9 +111,11 @@ class HouseholdsAdmin(LeafletGeoAdmin):
             'access_telecommuniciation','access_drill_simulation','image','enumerator','editor'
            ]
   list_display = ('household_controlnumber','municipality','barangay','purok_fk','respondent','date_interview',
-            'views_families_link','views_availprograms_link','views_hhlivelihoods_link','created_at','updated_at','owner')
-  
-  #list_editable = ['respondent','purok_fk',]
+            'views_families_link','views_availprograms_link','views_hhlivelihoods_link','created_at','updated_at')
+  search_fields = ('controlnumber', 'respondent', 'municipality__munname', 'barangay__brgyname',)
+  list_filter = ('municipality_id','barangay_id','access_electricity','householdbuildingtypes','access_internet','access_water_supply','potable',
+    'floods_occur','experience_evacuate','access_health_medical_facility',
+    'access_telecommuniciation','access_drill_simulation')
   list_per_page = 10
 
   
@@ -192,13 +173,8 @@ class HouseholdsAdmin(LeafletGeoAdmin):
       return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
 
   views_hhlivelihoods_link.short_description = "Livelihoods"
-
-  search_fields = ('controlnumber', 'respondent', 'municipality__munname', 'barangay__brgyname',)
-  list_filter = ('municipality_id','barangay_id','access_electricity','householdbuildingtypes','access_internet','access_water_supply','potable',
-    'floods_occur','experience_evacuate','access_health_medical_facility',
-    'access_telecommuniciation','access_drill_simulation')
+ 
   inlines = [
-    
     #AvailprogramsInline,
     #LivelihoodsInline
     FamiliesInline,
@@ -208,7 +184,6 @@ class HouseholdsAdmin(LeafletGeoAdmin):
         models.CharField: {'widget': forms.TextInput(attrs={'size': '18'})},
         models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 200px;'})}
     }
-
   class Media:
       js = (
           'js/chained-address.js',
@@ -217,68 +192,79 @@ class HouseholdsAdmin(LeafletGeoAdmin):
 
 @admin.register(Demographies)
 class DemographiesAdmin(admin.ModelAdmin):
-  def get_queryset(self, request):
-    queryset = super().get_queryset(request)
-    if hasattr(request, 'demographies'):
-      return request.demographies
-    return queryset
-  list_display = ('controlnumber_id','lastname','firstname','middlename','extension','birthdate','age','primary_occupation',
-    'created_at','updated_at','owner')
-  list_select_related = ('controlnumber',)
-  ordering = ('-id',)
-  def controlnumber_id(self, obj):
-    return obj.controlnumber_id[:10]+"..."
- 
+    def get_queryset(self, request):
+      queryset = super().get_queryset(request)
+      if hasattr(request, 'demographies'):
+        return request.demographies
+      return queryset
+    list_display = ['controlnumber_id','lastname','firstname','middlename','extension','birthdate','age','marital_status','occupation',
+      'created_at','updated_at','owner']
+    list_filter = ['marital_status']
+    list_select_related = ('controlnumber',)
+    ordering = ('-id',)
+    '''def controlnumber_id(self, obj):
+      return obj.controlnumber_id[:10]+"..."'''
 
-  fields = ['controlnumber','lastname','firstname','middlename','extension','relationshiptohead',
-            'gender','birthdate', 'marital_status', 'ethnicity_by_blood', 'member_ip', 'informal_settler', 'religion',
-            'person_with_special_needs', 'type_of_disability', 'is_ofw', 'residence', 'nutritional_status', 'nutritional_status_recorded',
-            'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
-            'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
-            'dependent_of_philhealth_member', 'owner']
-  readonly_fields = ['owner','created_at','updated_at','age',]
-  list_editable = ('lastname','firstname','middlename','extension','birthdate','primary_occupation','owner',)
-  #list_display_links = ('lastname',)
-  list_per_page = 15
-  
-  #list_filter = ('controlnumber_id',)
-  search_fields = ('lastname','middlename','firstname',)
+    fields = ['controlnumber','lastname','firstname','middlename','extension',
+              'gender','birthdate', 'marital_status', 'ethnicity_by_blood', 'member_ip', 'informal_settler', 'religion',
+              'person_with_special_needs', 'type_of_disability', 'is_ofw', 'residence', 'nutritional_status', 'nutritional_status_recorded',
+              'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
+              'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
+              'dependent_of_philhealth_member', 'owner']
+    readonly_fields = ['owner','created_at','updated_at','age',]
+    list_editable = ['lastname','firstname','middlename','extension','birthdate','marital_status']
+    list_per_page = 15
+    
+    search_fields = ('controlnumber_id__controlnumber','lastname','firstname','middlename',)
 
-  def formfield_for_foreignkey(self, db_field, request, **kwargs):
-    if db_field.name == 'controlnumber':
-      kwargs['widget'] = ForeignKeyRawIdWidget(
-          rel=db_field.remote_field,
-          admin_site=admin.site,
-          attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
-      )
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+      if db_field.name == 'controlnumber':
+        kwargs['widget'] = ForeignKeyRawIdWidget(
+            rel=db_field.remote_field,
+            admin_site=admin.site,
+            attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
+        )
 
-    return super().formfield_for_foreignkey(db_field, request, **kwargs)
+      return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-  formfield_overrides = {
-    models.CharField: {'widget': forms.TextInput(attrs={'size': '25'})},
-    models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 200px;'})}
+    formfield_overrides = {
+      models.CharField: {'widget': forms.TextInput(attrs={'size': '20','style': 'border: 1px solid #000;'})},
+      models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 100px;'})},
+      models.DateField: {'widget': forms.DateInput(attrs={'size': '15','style': 'border: 1px solid #000;'})},
     }
-  
-  def age(self,demography):
-    today = date.today()
-    bday = demography.birthdate.strftime("%Y-%m-%d %H:%M:%S")
-    datem = datetime.datetime.strptime(bday,"%Y-%m-%d %H:%M:%S")
-    return today.year - datem.year - ((today.month, today.day) < (datem.month, datem.day))
+    
+    def age(self,demography):
+      today = date.today()
+      bday = demography.birthdate.strftime("%Y-%m-%d %H:%M:%S")
+      datem = datetime.datetime.strptime(bday,"%Y-%m-%d %H:%M:%S")
+      return today.year - datem.year - ((today.month, today.day) < (datem.month, datem.day))
+    
+    def occupation(self, obj):
+      if obj.primary_occupation:
+          return obj.primary_occupation
+      else:
+          return 'None'
+    occupation.short_description = 'Occupation'
+
 
 
 @admin.register(Families)
 class FamiliesAdmin(admin.ModelAdmin):
     list_display = ('household_controlnumber','family_head','family_members','status','remarks','created_at','updated_at','owner')
-    search_fields = ['family_head__firstname', 'family_head__lastname', 'family_head__middlenapme']
+    search_fields = ['family_head__firstname', 'family_head__lastname', 'family_head__middlename']
     list_filter = ['status']
+    exclude = ('owner',)
     list_per_page = 20
     
-
     def household_controlnumber(self, obj):
        return obj.household.respondent
     household_controlnumber.short_description = 'Family belong'
 
-
+    def save_model(self, request, obj, form, change):
+      if not obj.pk:
+        obj.owner_id = request.user.id
+      super().save_model(request, obj, form, change)
+    
     def family_members(self, obj):
       count_family_members = obj.familydetails_set.count()
       changelist_link = (
@@ -297,7 +283,6 @@ class FamiliesAdmin(admin.ModelAdmin):
 
     family_members.short_description = "No. of family members"
 
-    
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
       if db_field.name == 'household':
         kwargs['widget'] = ForeignKeyRawIdWidget(
@@ -323,11 +308,28 @@ class FamiliesAdmin(admin.ModelAdmin):
 
 @admin.register(Familydetails)
 class FamilydetailsAdmin(admin.ModelAdmin):
-  list_display = ('fam_fk','fam_member','relationship','status','remarks','created_at','updated_at','owner')
-  search_fields = ['fam_member__firstname','fam_member__lastname','fam_fk__family_head__firstname','fam_fk__family_head__lastname']
+  list_display = ('fam_fk','fam_member','member_birthdate','age','relationship','status','remarks','created_at','updated_at','owner')
+  search_fields = ['fam_member__firstname','fam_member__middlename','fam_member__lastname','fam_fk__family_head__firstname',
+                   'fam_fk__family_head__lastname','fam_fk__family_head__middlename']
   list_filter = ['relationship','status']
+  exclude = ('owner',)
   list_per_page = 20
   
+  def save_model(self, request, obj, form, change):
+    if not obj.pk:
+      obj.owner_id = request.user.id
+    super().save_model(request, obj, form, change)
+    
+  def member_birthdate(self, obj):
+    return f"{obj.fam_member.birthdate.strftime('%Y-%m-%d')}"
+  member_birthdate.short_description = 'Birthdate'
+
+  def age(self, obj):
+    today = date.today()
+    bday = obj.fam_member.birthdate
+    return today.year - bday.year - ((today.month, today.day) < (bday.month, bday.day))
+  age.short_description = 'Age'
+
   def formfield_for_foreignkey(self, db_field, request, **kwargs):
       if db_field.name == 'fam_fk':
         kwargs['widget'] = ForeignKeyRawIdWidget(
@@ -358,9 +360,7 @@ class AvailprogramsAdmin(admin.ModelAdmin):
     return queryset
   list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','upper_progimplementor','created_at','updated_at','owner')
   search_fields = ('controlnumber',)
-  list_max_show_all = 100
 
-  
 @admin.register(Hhlivelihoods)
 class HlivelihoodsAdmin(admin.ModelAdmin):
   def get_queryset(self, request):
@@ -379,5 +379,3 @@ class HlivelihoodsAdmin(admin.ModelAdmin):
   
   class Meta:
     verbose_name_plural = "Household livelihoods"
-
-

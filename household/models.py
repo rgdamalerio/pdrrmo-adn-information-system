@@ -24,16 +24,14 @@ def year_choices():
     return [(r,r) for r in range(1940, datetime.date.today().year+1)]
 
 
-# Create your models here.
 class Households(models.Model):
   def getBarangay(self):
     brgycode = self.barangay
     return brgycode
-
+  
   controlnumber = models.TextField(primary_key=True)
-
   def save(self, *args, **kwargs):
-    if not self.controlnumber:  # Generate UUID only if controlnumber is not set
+    if not self.controlnumber: 
         self.controlnumber = str(uuid.uuid4())
     super(Households, self).save(*args, **kwargs)
 
@@ -83,7 +81,7 @@ class Households(models.Model):
     return self.municipality.munname
   
   def household_controlnumber(self):
-    return str(self.controlnumber)[:15] + "..."
+    return str(self.controlnumber)[:20] + "..."
   
   class Meta:
     verbose_name_plural = "Households"
@@ -125,10 +123,9 @@ class Demographies(models.Model):
   dependent_of_philhealth_member = models.BooleanField(null=True)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
-  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Created by')
 
   def __str__(self):
-    #return str(self.firstname)
     return f"{str(self.firstname)} {str(self.middlename)} {str(self.lastname)}"
   
   class Meta:
@@ -138,17 +135,16 @@ class Demographies(models.Model):
 class Families(models.Model):
   fam_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
   household = models.ForeignKey(Households, on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Household belong')
-  family_head = models.ForeignKey(Demographies,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Head of family')
+  family_head = models.ForeignKey(Demographies,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Head of the family')
   status = models.ForeignKey(Familystatus,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Family status')
   remarks = models.CharField(max_length=150,null=True,default='N/A')
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
-  owner = models.ForeignKey(User,on_delete=models.SET_NULL, null=True,default=1)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL, null=True, blank=True,verbose_name='Created by')
 
   def __str__(self):
-    #return str(self.fam_id)
-    return f"{self.family_head.firstname} {self.family_head.lastname}"
-  
+    return f"{self.family_head.firstname} {str(self.family_head.middlename)} {self.family_head.lastname}"
+
   class Meta:
     verbose_name = "Family"
     verbose_name_plural = "Families"
@@ -156,12 +152,12 @@ class Families(models.Model):
 class Familydetails(models.Model):
   fam_fk = models.ForeignKey(Families,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Family head')
   fam_member = models.ForeignKey(Demographies,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Family member')
-  relationship = models.ForeignKey(Familyrelationship,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Relationship')
+  relationship = models.ForeignKey(Familyrelationship,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Relationship to head')
   status = models.ForeignKey(Familystatus,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Status')
   remarks = models.CharField(max_length=150,null=True,default='N/A')
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
-  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,verbose_name='Created by')
 
   def __str__(self):
     return str(self.fam_fk)
@@ -179,7 +175,7 @@ class Availprograms(models.Model):
   program_implementor = models.CharField(max_length=150)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
-  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1,verbose_name='Created by')
 
   def __str__(self):
     return self.name_of_program
@@ -202,7 +198,7 @@ class Hhlivelihoods(models.Model):
   with_insurance = models.BooleanField()
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
-  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
+  owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1,verbose_name='Created by')
 
   def __str__(self):
     return self.livelihood.description
