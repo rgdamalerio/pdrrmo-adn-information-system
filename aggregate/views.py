@@ -30,9 +30,7 @@ def exportFamilyandPopulation(request):
             aggregated = AggregatedFamiliesandPopulation.objects.filter(munname=municipality)
 
         # Rest of your code for exporting families and population data
-
-        template_file = '/pdrrmo-adn-information-system/static/template_files/excel_template.xlsx'
-
+        template_file = '/static/template_files/excel_template.xlsx'
         workbook = load_workbook(filename=template_file)
         worksheet = workbook.active
 
