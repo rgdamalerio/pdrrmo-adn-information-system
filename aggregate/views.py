@@ -3,13 +3,11 @@ from datetime import datetime
 from urllib import response
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-import openpyxl
-import os
 from django.views.generic import View
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
 from io import StringIO
-from openpyxl import load_workbook
+from openpyxl import Workbook
 from django.db import models
 from django.views.decorators.http import require_http_methods
 from django.core import serializers
@@ -18,10 +16,7 @@ from django.db.models import Sum
 def index(request): 
     return render(request,'aggregate/index.html')
 
-from openpyxl import Workbook
-from openpyxl.utils import get_column_letter
-from openpyxl.styles import Font, PatternFill
-from django.http import HttpResponse
+
 
 def exportFamilyandPopulation(request):
     try:
@@ -74,7 +69,8 @@ def exportFamilyandPopulation(request):
             return HttpResponse('You do not have permission to export data')
 
     except Exception as e:
-        return HttpResponse(f'An error occurred: {str(e)}')
+        error_message = f'An error occurred: {str(e)}'
+        return render(request, 'aggregate/error_template.html', {'error_message': error_message})
 
 
 def chart_view(request):
