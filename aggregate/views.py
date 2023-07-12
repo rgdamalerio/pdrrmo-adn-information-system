@@ -20,6 +20,7 @@ def index(request):
 def exportFamilyandPopulation(request):
     user = request.user
 
+    # Check if user belongs to the "municipality" group or is an admin
     if user.groups.filter(name='municipality').exists() or user.is_superuser:
         if user.is_superuser:
             aggregated = AggregatedFamiliesandPopulation.objects.all()
@@ -28,7 +29,10 @@ def exportFamilyandPopulation(request):
             municipality = user_location.psgccode_mun
             aggregated = AggregatedFamiliesandPopulation.objects.filter(munname=municipality)
 
+        # Rest of your code for exporting families and population data
+
         template_file = '/pdrrmo-adn-information-system/static/template_files/excel_template.xlsx'
+
         workbook = load_workbook(filename=template_file)
         worksheet = workbook.active
 
