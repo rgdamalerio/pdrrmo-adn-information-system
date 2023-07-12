@@ -4,7 +4,6 @@ from urllib import response
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 import openpyxl
-import xlsxwriter
 from django.views.generic import View
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
