@@ -64,10 +64,6 @@ def exportFamilyandPopulation(request):
 
     else:
         return HttpResponse('You do not have permission to export data')
-        
-   
-
-
 
 def chart_view(request):
     return render(request, 'aggregate/population_chart.html')
