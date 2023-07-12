@@ -4,7 +4,7 @@ from urllib import response
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 import openpyxl
-import xlsxwriter
+import os
 from django.views.generic import View
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
@@ -31,7 +31,7 @@ def exportFamilyandPopulation(request):
             aggregated = AggregatedFamiliesandPopulation.objects.filter(munname=municipality)
 
         # Rest of your code for exporting families and population data
-        template_file = '/static/template_files/excel_template.xlsx'
+        template_file = os.path.join('static', 'template_files', 'excel_template.xlsx')
         workbook = load_workbook(filename=template_file)
         worksheet = workbook.active
 
