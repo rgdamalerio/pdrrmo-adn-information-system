@@ -1,7 +1,4 @@
 from django.shortcuts import render
-from django.core.serializers import serialize
-from django.http import HttpResponse
-from .models import Households
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_http_methods
 from .forms import HouseholdSearchForm

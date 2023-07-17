@@ -88,15 +88,15 @@ class HouseholdsAdmin(LeafletGeoAdmin):
     return qs
   form = HouseholdForm
   settings_overrides = {
-    'TILES': [('Esri_WorldImagery', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          'attribution': 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-        }),('OpenStreetMap', 'http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-          'attribution': '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    'TILES': [('Mapbox Satellite', 'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+            'attribution': 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            'accessToken': 'pk.eyJ1IjoiaWFtdGVrc29uIiwiYSI6ImNqdjV4YzI4YjB0aXk0ZHBtNnVnNWxlM20ifQ.FjQJyCTodXASYtOK8IrLQA',
         }),
-        ('Drak Map', 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            'subdomains': 'abcd',
-            'maxZoom': 19
+        ('Mapbox V1', 'https://api.tiles.mapbox.com/styles/v1/{username}/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+            'attribution': 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            'username': 'iamtekson',
+            'id': 'cjwhym7s70tae1co8zf17a3r5',
+            'accessToken': 'pk.eyJ1IjoiaWFtdGVrc29uIiwiYSI6ImNqdjV4YzI4YjB0aXk0ZHBtNnVnNWxlM20ifQ.FjQJyCTodXASYtOK8IrLQA'
         })],
   }
   '''formfield_overrides = {
@@ -250,6 +250,11 @@ class DemographiesAdmin(admin.ModelAdmin):
 
 @admin.register(Families)
 class FamiliesAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+      qs = super().get_queryset(request)
+      if hasattr(request, 'families'):
+        return request.families
+      return qs
     list_display = ('household_controlnumber','family_head','family_members','status','remarks','created_at','updated_at','owner')
     search_fields = ['family_head__firstname', 'family_head__lastname', 'family_head__middlename']
     list_filter = ['status']
@@ -308,6 +313,11 @@ class FamiliesAdmin(admin.ModelAdmin):
 
 @admin.register(Familydetails)
 class FamilydetailsAdmin(admin.ModelAdmin):
+  def get_queryset(self, request):
+    qs = super().get_queryset(request)
+    if hasattr(request, 'family_members'):
+      return request.family_members
+    return qs
   list_display = ('fam_fk','fam_member','member_birthdate','age','relationship','status','remarks','created_at','updated_at','owner')
   search_fields = ['fam_member__firstname','fam_member__middlename','fam_member__lastname','fam_fk__family_head__firstname',
                    'fam_fk__family_head__lastname','fam_fk__family_head__middlename']

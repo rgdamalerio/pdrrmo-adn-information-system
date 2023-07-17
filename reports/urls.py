@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import export_infant_counts
+from . import views
 
 urlpatterns = [
-    path('num_infants/', export_infant_counts, name='num_infants')
+    path('pdf_view/', views.ViewPDF.as_view(), name="pdf_view"),
+    path('pdf_download/', views.DownloadPDF.as_view(), name="pdf_download"),
 ]

@@ -34,6 +34,7 @@ class Familiesandpopulation(models.Model):
 class AggregatedFamiliesandPopulation(models.Model):
   munname = models.CharField(primary_key=True,max_length=50,verbose_name='Municipality')
   brgyname = models.CharField(max_length=50,null=True,verbose_name='Barangay')
+  purok_name = models.CharField(max_length=50,null=True,verbose_name='Purok')
   households = models.IntegerField(default=0,verbose_name='No. of Households')
   families = models.IntegerField(default=0,verbose_name='No. of Families')
   male = models.IntegerField(default=0,verbose_name='Individuals (M)')
@@ -46,6 +47,8 @@ class AggregatedFamiliesandPopulation(models.Model):
   female_adult = models.IntegerField(verbose_name='Adult 18-59y/o (F)')
   male_elderly = models.IntegerField(verbose_name='Elderly 60y/o above (M)')
   female_elderly = models.IntegerField(verbose_name='Elderly 60y/o above (F)')
+  pwd_male = models.IntegerField(verbose_name='PWD (M)')
+  pwd_female = models.IntegerField(verbose_name='PWD (F)')
   ip_male = models.IntegerField(verbose_name='IP (M)')
   ip_female = models.IntegerField(verbose_name='IP (F)')
 

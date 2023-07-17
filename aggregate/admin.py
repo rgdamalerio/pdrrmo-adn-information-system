@@ -62,8 +62,8 @@ class AggregatedFamiliesandPopulationAdmin(FilterUserAdmin):
     return False
   
   change_list_template = 'aggregate/change_list.html'
-  list_display = ('munname','brgyname','households','families','male','female','male_infant','female_infant','male_children',
-                  'female_children','male_adult','female_adult','male_elderly','female_elderly','ip_male','ip_female')
+  list_display = ('munname','brgyname','purok_name','households','families','male','female','male_infant','female_infant','male_children',
+                  'female_children','male_adult','female_adult','male_elderly','female_elderly','pwd_male','pwd_female','ip_male','ip_female')
   ordering = ['munname','brgyname','households']
   search_fields = ('munname','brgyname',)
   list_per_page = 15

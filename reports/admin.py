@@ -56,7 +56,13 @@ class FilterReportsAdmin(admin.ModelAdmin):
 # Register your models here.
 @admin.register(FloodReport)
 class FloodReportAdmin(FilterReportsAdmin):
-    list_display = ('status','municipality_name','barangay_name','household','person','num_male','num_female','num_male_infant','num_female_infant',
+    change_list_template = 'reports/change_list.html'
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
+    def has_add_permission(self, request):
+        return False
+    list_display = ('status','municipality_name','barangay_name','purok_name','household','families','person','num_male','num_female','num_male_infant','num_female_infant',
                     'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly',
                     'num_ip_male','num_ip_female')
     
@@ -80,10 +86,12 @@ class FloodReportAdmin(FilterReportsAdmin):
 
 @admin.register(LandslideReport)
 class LandslideReportAdmin(FilterReportsAdmin):
+    change_list_template = 'reports/change_list.html'
+    def has_delete_permission(self, request, obj=None):
+        return False
     def has_add_permission(self, request):
         return False
-
-    list_display = ('status','municipality_name','barangay_name','household','person','num_male','num_female','num_male_infant','num_female_infant',
+    list_display = ('status','municipality_name','barangay_name','purok_name','household','families','person','num_male','num_female','num_male_infant','num_female_infant',
                     'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly',
                     'num_ip_male','num_ip_female')
     
@@ -107,10 +115,13 @@ class LandslideReportAdmin(FilterReportsAdmin):
 
 @admin.register(StormSurgeReport)
 class StormSurgeReporAdmin(FilterReportsAdmin):
+    change_list_template = 'reports/change_list.html'
+    def has_delete_permission(self, request, obj=None):
+        return False
     def has_add_permission(self, request):
         return False
     
-    list_display = ('ssid','municipality_name','barangay_name','household','person','num_male','num_female','num_male_infant','num_female_infant',
+    list_display = ('ssid','municipality_name','barangay_name','purok_name','household','families','person','num_male','num_female','num_male_infant','num_female_infant',
                     'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly',
                     'num_ip_male','num_ip_female')
     
