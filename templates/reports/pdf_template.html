@@ -1,0 +1,100 @@
+<head>
+    <style>
+        @page {
+            size: legal landscape;
+            @frame header_frame {           /* Static Frame */
+                -pdf-frame-content: header_content;
+                left: 50pt; width: 900pt; top: 10pt; height: 40pt; 
+            }
+            @frame content_frame {          /* Content Frame */
+                left: 20pt; width: 960pt; top: 30pt; height: 500pt;
+            }
+            @frame footer_frame {           /* Another static Frame */
+                -pdf-frame-content: footer_content;
+                left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+            }
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 0px;
+            text-align: center;
+            word-break: break-word;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
+    </style>
+</head>
+    
+<body>
+    <hr>
+        <div id="footer_content">(c) - page <pdf:pagenumber> of <pdf:pagecount></div>
+        
+        <table>
+            <h3>Number of families and population that can be affected by<br><br>Flood Report (2023)</h3>
+            <hr>
+            <tr>
+                <th>Municipality</th>
+                <th>Barangay</th>
+                <th>Purok</th>
+                <th colspan="2">No. of Individuals</th>
+                <th colspan="2">Infant (0-11months)</th>
+                <th colspan="2">Children (1-17y/o)</th>
+                <th colspan="2">Adult (18-59y/o)</th>
+                <th colspan="2">Elderly (60y/o above)</th>
+                <th colspan="2">Indigenous People</th>
+
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>M</th>
+                <th>F</th>
+                <th>M</th>
+                <th>F</th>
+                <th>M</th>
+                <th>F</th>
+                <th>M</th>
+                <th>F</th>
+                <th>M</th>
+                <th>F</th>
+                <th>M</th>
+                <th>F</th>
+            </tr>
+            {% for data in flood_data %}
+            <tr>
+                <td>{{ data.municipality_name }}</td>
+                <td>{{ data.barangay_name }}</td>
+                <td>{{ data.purok_name }}</td>
+                <td>{{ data.num_male }}</td>
+                <td>{{ data.num_female }}</td>
+                <td>{{ data.num_male_infant }}</td>
+                <td>{{ data.num_female_infant }}</td>
+                <td>{{ data.num_male_children }}</td>
+                <td>{{ data.num_female_children }}</td>
+                <td>{{ data.num_male_adult }}</td>
+                <td>{{ data.num_female_adult }}</td>
+                <td>{{ data.num_male_elderly }}</td>
+                <td>{{ data.num_female_elderly }}</td>
+                <td>{{ data.num_ip_male }}</td>
+                <td>{{ data.num_ip_female }}</td>
+            </tr>
+            {% endfor %}
+            <hr>
+            <tr>
+                <td><b>TOTAL</b></td>
+                <td></td>
+                <td></td>
+                <td>{{ total_male }}</td>
+                <td>{{ total_female }}</td>
+            </tr>
+        </table>
+</body>
+</html>

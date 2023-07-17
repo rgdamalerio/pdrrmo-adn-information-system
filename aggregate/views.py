@@ -21,7 +21,6 @@ def index(request):
 def exportFamilyandPopulation(request):
     try:
         user = request.user
-
         # Check if user belongs to the "municipality" group or is an admin
         if user.groups.filter(name='municipality').exists() or user.is_superuser:
             if user.is_superuser:
@@ -40,14 +39,14 @@ def exportFamilyandPopulation(request):
             bold_font = Font(bold=True)
             fill = PatternFill(start_color='FFCC00', end_color='FFCC00', fill_type='solid')
             headers = [
-                'Municipality', 'Barangay', 'No. of Households', 'Individuals (M)', 'Individuals (F)',
+                'Municipality', 'Barangay', 'No. of Households', 'No. of Families', 'Individuals (M)', 'Individuals (F)',
                 'Infant 0-11months (M)', 'Infant 0-11months (F)', 'Children 1-17y/o (M)', 'Children 1-17y/o (F)',
                 'Adult 18-59y/o (M)', 'Adult 18-59y/o (F)', 'Elderly 60y/o above (M)', 'Elderly 60y/o above (F)',
                 'IP (M)', 'IP (F)'
             ]
 
             for col_num, header_title in enumerate(headers, 1):
-                cell = worksheet.cell(row=7, column=col_num, value=header_title)
+                cell = worksheet.cell(row=1, column=col_num, value=header_title)
                 cell.font = bold_font
                 cell.fill = fill
                 column_letter = get_column_letter(col_num)
@@ -55,7 +54,7 @@ def exportFamilyandPopulation(request):
 
             for data in aggregated:
                 worksheet.append([
-                    data.munname, data.brgyname, data.households, data.male, data.female, data.male_infant,
+                    data.munname, data.brgyname, data.households, data.families, data.male, data.female, data.male_infant,
                     data.female_infant, data.male_children, data.female_children, data.male_adult,
                     data.female_adult, data.male_elderly, data.female_elderly, data.ip_male, data.ip_female
                 ])

@@ -1,4 +1,4 @@
-from .models import Households, Demographies, Hhlivelihoods, Availprograms
+from .models import Households, Demographies, Hhlivelihoods, Availprograms, Families, Familydetails
 from library.models import Municipalities
 from django.utils.deprecation import MiddlewareMixin
 
@@ -19,9 +19,12 @@ class HouseholdsMiddleware(MiddlewareMixin):
                     demographies = Demographies.objects.filter(controlnumber__in=households.values_list('controlnumber', flat=True))
                     hlivelihoods = Hhlivelihoods.objects.filter(controlnumber__in=households.values_list('controlnumber', flat=True))
                     availprograms = Availprograms.objects.filter(controlnumber__in=households.values_list('controlnumber', flat=True))
+                    families = Families.objects.filter(household__in=households.values_list('controlnumber', flat=True))
+                    family_members = Familydetails.objects.filter(fam_fk__in=families.values_list('fam_id', flat=True))
                     request.households = households
                     request.demographies = demographies
-                   
+                    request.families = families
+                    request.family_members = family_members
                     request.livelihoods = hlivelihoods
                     request.availprograms = availprograms
                 except Municipalities.DoesNotExist:

@@ -38,7 +38,7 @@ urlpatterns = [
     path('',include('household.urls')),
     path('address/',include('library.urls')),
     path('aggregate/',include("aggregate.urls")),
-    #path('reports/',include('reports.urls')),
+    path('reports/',include('reports.urls')),
     ## URL for api rest framework
     #path('api-auth/', include('rest_framework.urls')),
     #path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

@@ -1,68 +1,54 @@
-import json
-import os
-import locale
-import matplotlib
-matplotlib.use('agg') 
-from docx import Document
-from docx.shared import Inches
-import matplotlib.pyplot as plt
+from .models import FloodReport
 from django.shortcuts import render
-from reports.models import *
-from django.db.models import Sum
-from django.http import HttpResponse, JsonResponse
-from django.core import serializers
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+from django.views import View
+from xhtml2pdf import pisa
 
-def export_infant_counts(request):
-    infant_counts = FloodReport.objects.values('municipality_name').annotate(
-        total_infants=Sum('num_male_infant') + Sum('num_female_infant')
-    )
+def render_to_pdf(template_src, context_dict={}):
+	template = get_template(template_src)
+	html  = template.render(context_dict)
+	result = BytesIO()
+	pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+	if not pdf.err:
+		return HttpResponse(result.getvalue(), content_type='application/pdf')
+	return None
 
-    chart_data = []
-    count_infants = 0
-    for result in infant_counts:
-        municipality_name = result['municipality_name']
-        total_infants = result['total_infants']
-        count_infants += total_infants
-        chart_data.append({'Municipality': municipality_name, 'Total Infants': total_infants})
+#Opens up page as PDF
+class ViewPDF(View):
+	def get(self, request, *args, **kwargs):
+		qs = FloodReport.objects.all()
+		
+		flood_report = list(qs)
+		sum_male = 0
+		sum_female = 0
+		for data in flood_report:
+			sum_male += data.num_male 
+			sum_female += data.num_female
+		context = {'flood_data': flood_report, 'total_male': sum_male,'total_female': sum_male}
+		pdf = render_to_pdf('reports/pdf_template.html',context)
+		return HttpResponse(pdf, content_type='application/pdf')
 
-    # Generate the chart using matplotlib
-    labels = [data['Municipality'] for data in chart_data]
-    values = [data['Total Infants'] for data in chart_data]
-    fig = plt.figure(figsize=(12, 10))
-    plt.pie(values, labels=labels, autopct='%1.1f%%', textprops={'fontsize': 12})
 
-    plt.title('Infant Counts by Municipality (Flood Hazard)')
-    plt.tight_layout()
+#Automaticly downloads to PDF file
+class DownloadPDF(View):
+	def get(self, request, *args, **kwargs):
+		qs = FloodReport.objects.all()
+		
+		flood_report = list(qs)
+		sum_male = 0
+		sum_female = 0
+		for data in flood_report:
+			sum_male += data.num_male 
+			sum_female += data.num_female
+		context = {'flood_data': flood_report, 'total_male': sum_male,'total_female': sum_male}
+		pdf = render_to_pdf('reports/pdf_template.html',context)
+		response = HttpResponse(pdf, content_type='application/pdf')
+		response['Content-Disposition'] = 'attachment; filename="AffectedFamiliesandPopulation.pdf"'
+		return response
 
-    # Set the download path
-    download_path = os.path.join(os.path.expanduser('~'), 'Downloads')
 
-    # Save the chart as an image
-    chart_image_path = os.path.join(download_path, 'chart.png')
-    plt.savefig(chart_image_path)
-    plt.close()
-
-    # Define the template file path
-    template_file = 'static/template_files/floodreport_template.docx'
-
-    # Create a Word document
-    document = Document(template_file)
-
-    # Format the total_infants value with thousands separators
-    locale.setlocale(locale.LC_ALL, '')  # Use the system's default locale
-    for i, paragraph in enumerate(document.paragraphs):
-        if '{{ infant_counts }}' in paragraph.text:
-            total_infants_str = locale.format_string('%d', count_infants, grouping=True)
-            paragraph.text = paragraph.text.replace('{{ infant_counts }}', total_infants_str)
-            document.paragraphs[i].insert_paragraph_before().add_run().add_picture(chart_image_path, width=Inches(7), height=Inches(5))
-            break
-
-    # Save the Word document
-    document_path = os.path.join(download_path, 'document.docx')
-    document.save(document_path)
-
-    # Return the document as an HTTP response
-    with open(document_path, 'rb') as file:
-        response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-        response['Content-Disposition'] = 'attachment; filename=document.docx'
-        return response
+def index(request):
+	context = {}
+	return render(request, 'app/index.html', context)

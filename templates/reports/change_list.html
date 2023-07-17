@@ -4,6 +4,8 @@
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2"></script>
+    
     {% if cl.formset %}
         <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}"/>
     {% endif %}
@@ -41,6 +43,7 @@
                 <li class="breadcrumb-item active">{{ cl.opts.verbose_name_plural|capfirst }}</li>  
             </ol>
         </div>
+
     </div>    
     {% endblock %}
 {% endif %}
@@ -48,6 +51,7 @@
 {% block coltype %}flex{% endblock %}
 
 {% block content %}
+   
     <div id="content-main" class="container-fluid">
         {% if cl.formset.errors %}
             <p class="errornote">
@@ -57,21 +61,25 @@
             {{ cl.formset.non_form_errors }}
         {% endif %}
         <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+           
             <div class="d-flex justify-content-end row p-3">
                 {% block search %}{% search_form cl %}{% endblock %}
-               
                 <!--  -->
                 {% block object-tools %}
         
                 <div class="col-md-{% if cl.has_filters %}4{% else %}4{% endif %}">
                         {% if cl.has_filters %}
                         <span class="float-sm-right">
-                                <a href="#"
-                                class="btn btn-success btn-sm text-light ml-2" data-toggle="collapse" data-target="#changelist-filter" aria-expanded="false" aria-controls="changelist-filter">
-                                    <i class="fas fa-filter"></i>
-                                    {% trans 'Filter' %}
-                                </a>
-                            </span>
+                            <a href="#"
+                            class="btn btn-dark btn-xs" data-toggle="collapse" data-target="#changelist-filter" aria-expanded="false" aria-controls="changelist-filter">
+                                <i class="fas fa-filter fa-sm" aria-hidden="true"></i>
+                                {% trans 'Filter' %}
+                            </a>
+                            <a href="{% url 'pdf_view'%}" 
+                                class="btn btn-primary btn-xs">
+                                <i class="fa fa-download fa-sm" aria-hidden="true"></i> View PDF
+                            </a>
+                        </span>
                             {% endif %}
                         {% block object-tools-items %}
                             {% if has_add_permission %}
@@ -118,6 +126,7 @@
             </form>
         </div>
     </div>
+     
 {% endblock %}
 
 
@@ -129,12 +138,12 @@
 $(function () {
   $('#result_list').DataTable(
    {
-      "paging": false,
-       "lengthChange": false,
-//       "searching": false,
-       "ordering": true,
-       "info": true,
-       "autoWidth": false,
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": true,
      });
   });
   
