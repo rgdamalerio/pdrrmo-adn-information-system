@@ -1,4 +1,5 @@
 {% extends "admin/base_site.html" %}
+{% load custom_filters %}
 {% load i18n admin_urls static admin_list %}
 
 {% block extrastyle %}
@@ -75,10 +76,18 @@
                                 <i class="fas fa-filter fa-sm" aria-hidden="true"></i>
                                 {% trans 'Filter' %}
                             </a>
-                            <a href="{% url 'pdf_view'%}" 
-                                class="btn btn-primary btn-xs">
-                                <i class="fa fa-download fa-sm" aria-hidden="true"></i> View PDF
-                            </a>
+                            {% if queryset %}
+                                {% with model_instance=queryset.0 %}
+                                    {% with model_name=model_instance|model_name %}
+                                        <a href="{% url 'pdf_download' model=model_name|lower %}" class="btn btn-primary btn-xs">
+                                            <i class="fa fa-download fa-sm" aria-hidden="true"></i> Download PDF
+                                        </a>
+                                    {% endwith %}
+                                {% endwith %}
+                            {% else %}
+                                <p>No data available for download.</p>
+                            {% endif %}
+                    
                         </span>
                             {% endif %}
                         {% block object-tools-items %}
