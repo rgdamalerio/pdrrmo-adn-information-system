@@ -1,61 +1,30 @@
 from django.contrib import admin
 from .models import FloodReport, LandslideReport, StormSurgeReport
-from django.core.exceptions import PermissionDenied
-from django.contrib.auth.models import Permission
-from library.models import UserLocation
+from .views import ViewPDF
+from django.urls import path
 
 
-class FilterReportsAdmin(admin.ModelAdmin):
-    def save_model(self, request, obj, form, change):
-        user = request.user
-        try:
-            user_location = user.userlocation 
-        except UserLocation.DoesNotExist:
-            user_location = None
-        
-        # Check if user belongs to the "municipality" group or is an admin
-        if user.groups.filter(name='municipality').exists() or user.is_superuser:
-            if user_location:
-                obj.municipality = user_location.psgccode_mun
-            obj.save()
-        else:
-            raise PermissionDenied("You do not have permission to save this object.")
-            
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        try:
-            user_location = request.user.userlocation
-        except UserLocation.DoesNotExist:
-            user_location = None
-        
-        # Check if user is an admin or has no location
-        if request.user.is_superuser or not user_location:
-            return qs
-        
-        # Check if user belongs to the "municipality" group
-        if request.user.groups.filter(name='municipality').exists():
-            return qs.filter(municipality_name=user_location.psgccode_mun)
-        return qs.none()
-    
-    def has_change_permission(self, request, obj=None):
-        if not obj:
-            return True
-        try:
-            user_location = request.user.userlocation 
-        except UserLocation.DoesNotExist:
-            user_location = None
-        
-        # Check if user belongs to the "municipality" group or is an admin
-        if request.user.groups.filter(name='municipality').exists() or request.user.is_superuser:
-            if user_location:
-                return obj.municipality == user_location.psgccode_mun
-            return True
-        
-        return False
+
 
 # Register your models here.
 @admin.register(FloodReport)
-class FloodReportAdmin(FilterReportsAdmin):
+class FloodReportAdmin(admin.ModelAdmin):
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('pdf_download/<str:model>/', ViewPDF.as_view(), name="pdf_download"),
+        ]
+        return my_urls + urls
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['queryset'] = FloodReport.objects.all()
+        return super().changelist_view(request, extra_context=extra_context)
+    def get_queryset(self, request):
+      queryset = super().get_queryset(request)
+      if hasattr(request, 'flood'):
+        return request.flood
+      return queryset
     change_list_template = 'reports/change_list.html'
     
     def has_delete_permission(self, request, obj=None):
@@ -85,7 +54,25 @@ class FloodReportAdmin(FilterReportsAdmin):
 
 
 @admin.register(LandslideReport)
-class LandslideReportAdmin(FilterReportsAdmin):
+class LandslideReportAdmin(admin.ModelAdmin):
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('pdf_download/<str:model>/', ViewPDF.as_view(), name="pdf_download"),
+        ]
+        return my_urls + urls
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['queryset'] = LandslideReport.objects.all()
+        return super().changelist_view(request, extra_context=extra_context)
+    
+    def get_queryset(self, request):
+      queryset = super().get_queryset(request)
+      if hasattr(request, 'landslide'):
+        return request.landslide
+      return queryset
+    
     change_list_template = 'reports/change_list.html'
     def has_delete_permission(self, request, obj=None):
         return False
@@ -114,7 +101,25 @@ class LandslideReportAdmin(FilterReportsAdmin):
     
 
 @admin.register(StormSurgeReport)
-class StormSurgeReporAdmin(FilterReportsAdmin):
+class StormSurgeReporAdmin(admin.ModelAdmin):
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('pdf_download/<str:model>/', ViewPDF.as_view(), name="pdf_download"),
+        ]
+        return my_urls + urls
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['queryset'] = StormSurgeReport.objects.all()
+        return super().changelist_view(request, extra_context=extra_context)
+    
+    def get_queryset(self, request):
+      queryset = super().get_queryset(request)
+      if hasattr(request, 'storm_surge'):
+        return request.storm_surge
+      return queryset
+    
     change_list_template = 'reports/change_list.html'
     def has_delete_permission(self, request, obj=None):
         return False
