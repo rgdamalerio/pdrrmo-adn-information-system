@@ -133,180 +133,6 @@
                     var url_mask = "{% url 'admin:household_households_change' object_id='change_id' %}".replace(/change_id/, response[0].controlnumber.toString());
 
 
-                    function printDemographies(vDemographies){
-                        
-                        var str = "";
-                        str += '<div id="myGroup">'; 
-                        for(var i=0; i<vDemographies.length; i++) {
-                            var url_mask_demography = "{% url 'admin:household_demographies_change' object_id='change_id' %}".replace(/change_id/, vDemographies[i].id.toString());
-                            str += '<li>';
-                                str += '<a style="text-transform: capitalize" data-toggle="collapse" href="#demography-'+i+' "aria-expanded="false" aria-controls="collapseExample">';
-                                    str += vDemographies[i].lastname +' '+ vDemographies[i].firstname +' '+ vDemographies[i].middlename;
-                                str += '</a>';
-                                str += '</br>';
-                                str += '<div class="collapse" id="demography-'+ i +'" data-parent="#myGroup">';
-                                    str += '<table class="table table-borderless table-sm" style="margin-left:12px; margin-top:5px;">'
-                                        str += '<tbody>'; 
-                                            str += '<tr>';    
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Link for more info:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span><a href="'+url_mask_demography+'"> : Click here.</a></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';    
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Lastname:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].lastname+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Firstname:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].firstname+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Middlename:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].middlename+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Extension:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].extension+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Nuclear family belongs to:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].nuclear_family+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Relationship to head:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].relationshiptohead+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Gender:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].gender+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Birthdate::</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].birthdate+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Marital status:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].marital_status+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Member of IP\'s</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].member_ip ? 'Yes' : 'No'}`+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Informal settler:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].informal_settler ? 'Yes' : 'No'}`+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Religion:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].religion+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Person with special needs:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].person_with_special_needs ? 'Yes' : 'No'}`+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Type of disability:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].type_of_disability+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Is OFW:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].is_ofw ? 'Yes' : 'No'}`+'</span></td>';                                     
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Residence:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].residence ? 'Yes' : 'No'}`+'</span></td>';                                     
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Nutritional status:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].nutritional_status+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Nutritional status recorded:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].nutritional_status_recorded+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Currently attending in school:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].currently_attending_school ? 'Yes' : 'No'}`+'</span></td>';                                     
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Current grade level attending:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].current_grade_level_attending+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Highest eductional attainment:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].highest_eductional_attainment+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Track/Strand/Course completed (for senior High school/Vocational/College):</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].course_completed_vocational+'</span></td>';                                        
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Can read and write or atleast high school graduate:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].can_read_and_write ? 'Yes' : 'No'}`+'</span></td>';                                     
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Primary occupation:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].primary_occupation +'</span></td>';                                     
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Monthly income:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+vDemographies[i].monthly_income +'</span></td>';                                     
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Sss member:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].sss_member ? 'Yes' : 'No'}`+'</span></td>';                                     
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Gsis member:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].gsis_member ? 'Yes' : 'No'}`+'</span></td>';                                     
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Philhealth member:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].philhealth_member ? 'Yes' : 'No'}`+'</span></td>';                                     
-                                            str += '</tr>';
-                                            str += '<tr>';
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Dependent of philhealth member:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span>'+`${vDemographies[i].dependent_of_philhealth_member ? 'Yes' : 'No'}`+'</span></td>';                                     
-                                            str += '</tr>';
-                                        str += '</tbody>';
-                                    str += '</table>';                        
-                                str += '</div>';
-                            str += '</li>';
-                        }
-                        str += '</div> ';
-
-                        return str;
-                    }
-
                     function printAvailedprograms(vAvailprograms){
                         
                         var str = "";
@@ -351,6 +177,50 @@
                         return str;
                     }
 
+                    function printFamilies(vFamilies){
+
+                        var str = "";
+                        str += '<div id="myGroup">';
+                        for(var i=0; i<vFamilies.length; i++) {
+                            var url_mask_families = "{% url 'admin:household_families_change' object_id='fam_id' %}".replace(/fam_id/, vFamilies[i].fam_id.toString());
+                                str += '<a style="text-transform: capitalize" data-toggle="collapse" href="#families-'+i+' "aria-expanded="false" aria-controls="collapseExample">';
+                                    str += vFamilies[i].family_head_firstname+' '+vFamilies[i].family_head_lastname+' '+'(Head)';
+                                str += '</a>';
+                                str += '</br>';
+                                str += '<div class="collapse" id="families-'+ i +'" data-parent="#myGroup">';
+                                    str += '<table class="table table-borderless table-sm" style="margin-left:12px; margin-top:5px;">'
+                                        str += '<tbody>';
+                                            str += '<tr>';    
+                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Link for more info:</span></td>';
+                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                            str +=    '<td><span><a href="'+url_mask_families+'"> : Click here.</a></td>';                                        
+                                            str += '</tr>'; 
+                                            var familyDetails = vFamilies[i].familydetails_set;
+                                            if (familyDetails && familyDetails.length > 0) {
+                                                for (var j = 0; j < familyDetails.length; j++) {
+                                                    str += '<tr>';
+                                                    str += '<td style="width: 25%"><span class="font-weight-bold">'+ familyDetails[j].relationship +'</span></td>';
+                                                    str += '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                                    str += '<td><span>' + familyDetails[j].fam_member + '</span></td>';
+                                                    str += '</tr>';
+                                                    // You can add more details here similarly
+                                                }
+                                            } else {
+                                                str += '<tr>';
+                                                str += '<td colspan="3">No family details available</td>';
+                                                str += '</tr>';
+                                            }                                               
+                                        str += '</tbody>';
+                                    str += '</table>';    
+                                str += '</div>';
+                            str += '</li>';
+                        }
+                        str += '</div> ';
+
+                        return str;
+                        
+                    }
+                    
                     function printLivelihoodprograms(vLivelhoods){
                         var str = "";
                         str += '<div id="myGroup">'; 
@@ -414,13 +284,13 @@
                                                 '<a class="nav-link active" id="custom-tabs-four-household-information-tab" data-toggle="pill" href="#custom-tabs-four-household-information" role="tab" aria-controls="custom-tabs-four-household-information" aria-selected="true">Household information</a>'+
                                                 '</li>'+
                                                 '<li class="nav-item">'+
-                                                '<a class="nav-link" id="custom-tabs-four-demography-tab" data-toggle="pill" href="#custom-tabs-four-demography" role="tab" aria-controls="custom-tabs-four-demography" aria-selected="false">Demography</a>'+
-                                                '</li>'+
-                                                '<li class="nav-item">'+
                                                 '<a class="nav-link" id="custom-tabs-four-availed-programs-tab" data-toggle="pill" href="#custom-tabs-four-availed-programs" role="tab" aria-controls="custom-tabs-four-availed-programs" aria-selected="false">Availed programs</a>'+
                                                 '</li>'+
                                                 '<li class="nav-item">'+
                                                 '<a class="nav-link" id="custom-tabs-four-livelihood-tab" data-toggle="pill" href="#custom-tabs-four-livelihood" role="tab" aria-controls="custom-tabs-four-livelihood" aria-selected="false">Livelihood</a>'+
+                                                '</li>'+
+                                                '<li class="nav-item">'+
+                                                '<a class="nav-link" id="custom-tabs-four-families-tab" data-toggle="pill" href="#custom-tabs-four-families" role="tab" aria-controls="custom-tabs-four-families" aria-selected="false">Families</a>'+
                                                 '</li>'+
                                             '</ul>'+
                                         '</div>'+
@@ -584,10 +454,6 @@
                                             '</tbody>'+
                                             '</table>'+                          
                                         '</div>'+ 
-                                        '<div class="tab-pane fade" id="custom-tabs-four-demography" role="tabpanel" aria-labelledby="custom-tabs-four-demography-tab">'+
-                                            '<!-- Foldable list of demography component -->  '+    
-                                            printDemographies(response[0].demographies_set)+                                                 
-                                        '</div>'+
                                         '<div class="tab-pane fade" id="custom-tabs-four-availed-programs" role="tabpanel" aria-labelledby="custom-tabs-four-availed-programs-tab">'+
                                             '<!-- Foldable list of availed programs -->'+
                                             printAvailedprograms(response[0].availprograms_set)+
@@ -595,6 +461,10 @@
                                         '<div class="tab-pane fade" id="custom-tabs-four-livelihood" role="tabpanel" aria-labelledby="custom-tabs-four-livelihood-tab">'+
                                             '<!-- Foldable list of livelihood -->'+    
                                             printLivelihoodprograms(response[0].hhlivelihoods_set)+                             
+                                        '</div>'+
+                                        '<div class="tab-pane fade" id="custom-tabs-four-families" role="tabpanel" aria-labelledby="custom-tabs-four-families-tab">'+
+                                            '<!-- Foldable list of families -->'+    
+                                            printFamilies(response[0].families_set)+                             
                                         '</div>'+
                                     '</div>'+
                                     '</div>'+
@@ -609,28 +479,19 @@
             });
         }
 
-        function landslideColor(l) {
-            return  l === 'LL' ? "#fce83b":
-                    l === 'HL' ? "#fe0003":
-                    l === 'ML' ? "#01ab02":
-                    l === 'VHL' ? "#660000":
-                    "#fff";    
-        }
-       
         //Cluster Markers
         var markers = L.markerClusterGroup({
-            maxClusterRadius: 50,
+            maxClusterRadius: 35,
             spiderfyOnMaxZoom: false, // Disable spiderfy on max zoom
             showCoverageOnHover: false, // Disable showing coverage on hover
             //zoomToBoundsOnClick: true, // Enable zoom to bounds on click
-            disableClusteringAtZoom: 17// Set the max zoom level to disable clustering
+            disableClusteringAtZoom: 18// Set the max zoom level to disable clustering
         });
       
         markers.addLayer(households);
         mymap.addLayer(markers);
         
         //Shapefiles
-      
         var Major_Rivers = L.geoJson(major_rivers)
         var Landslide = L.geoJson(landslide, {
             style: {
@@ -641,7 +502,6 @@
 
 
         //BaseMaps
-        
         var mapboxSatellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
             accessToken: 'pk.eyJ1IjoiaWFtdGVrc29uIiwiYSI6ImNqdjV4YzI4YjB0aXk0ZHBtNnVnNWxlM20ifQ.FjQJyCTodXASYtOK8IrLQA',
