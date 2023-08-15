@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Availprograms, Hhlivelihoods, Households, Demographies
+from .models import Availprograms, Hhlivelihoods, Households, Demographies, Families, Familydetails
 
 class DemographySerializer(serializers.ModelSerializer):
 
@@ -21,6 +21,28 @@ class DemographySerializer(serializers.ModelSerializer):
             'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
             'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
             'dependent_of_philhealth_member', 'owner']
+  
+class FamilydetailsSerializer(serializers.ModelSerializer):
+  fam_member = serializers.StringRelatedField()
+  status = serializers.StringRelatedField()
+  relationship = serializers.StringRelatedField()
+
+  class Meta:
+    model = Familydetails
+    fields = ['fam_fk','fam_member','relationship','status','remarks']
+
+
+class FamiliesSerializer(serializers.ModelSerializer):
+  status = serializers.StringRelatedField()
+  family_head_firstname = serializers.ReadOnlyField(source='family_head.firstname')
+  family_head_lastname = serializers.ReadOnlyField(source='family_head.lastname')
+
+  familydetails_set =  FamilydetailsSerializer(many=True, read_only=True)
+
+  class Meta:
+    model = Families
+    fields = ['fam_id', 'household', 'family_head_firstname', 'family_head_lastname', 'status', 'remarks','familydetails_set']
+
 
 class AvailedprogramsSerializer(serializers.ModelSerializer):
 
@@ -29,6 +51,8 @@ class AvailedprogramsSerializer(serializers.ModelSerializer):
   class Meta:
     model = Availprograms
     fields = ['id','type_of_program','name_of_program','number_of_beneficiaries','program_implementor']
+
+  
 
 class LivelihoodSerializer(serializers.ModelSerializer):
   
@@ -56,6 +80,7 @@ class HouseholdSerializer(serializers.ModelSerializer):
   demographies_set = DemographySerializer(many=True, read_only=True)
   availprograms_set = AvailedprogramsSerializer(many=True, read_only=True)
   hhlivelihoods_set = LivelihoodSerializer(many=True, read_only=True)
+  families_set =  FamiliesSerializer(many=True, read_only=True)
 
 
   class Meta:
@@ -65,5 +90,6 @@ class HouseholdSerializer(serializers.ModelSerializer):
             'access_electricity', 'householdroofmaterials','householdwallmaterials','medical_treatment',
             'access_water_supply','potable','householdwatertenuralstatus','waterlevelsystems','floods_occur',
             'year_flooded','experience_evacuate','year_evacuate','evacuationareas','access_health_medical_facility',
-            'access_telecommuniciation','access_drill_simulation','image','enumerator','editor','demographies_set','availprograms_set','hhlivelihoods_set']
+            'access_telecommuniciation','access_drill_simulation','image','enumerator','editor','demographies_set','availprograms_set',
+            'hhlivelihoods_set','families_set']
     # fields = '__all__'
