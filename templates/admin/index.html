@@ -182,19 +182,18 @@
                         var str = "";
                         str += '<div id="myGroup">';
                         for(var i=0; i<vFamilies.length; i++) {
-                            var url_mask_families = "{% url 'admin:household_families_change' object_id='fam_id' %}".replace(/fam_id/, vFamilies[i].fam_id.toString());
                                 str += '<a style="text-transform: capitalize" data-toggle="collapse" href="#families-'+i+' "aria-expanded="false" aria-controls="collapseExample">';
-                                    str += vFamilies[i].family_head_firstname+' '+vFamilies[i].family_head_lastname+' '+'(Head)';
+                                    str += vFamilies[i].family_head_firstname+' '+ vFamilies[i].family_head_lastname +' '+'- Family Head';
                                 str += '</a>';
                                 str += '</br>';
                                 str += '<div class="collapse" id="families-'+ i +'" data-parent="#myGroup">';
                                     str += '<table class="table table-borderless table-sm" style="margin-left:12px; margin-top:5px;">'
                                         str += '<tbody>';
                                             str += '<tr>';    
-                                            str +=    '<td style="width: 25%"><span class="font-weight-bold">Link for more info:</span></td>';
-                                            str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
-                                            str +=    '<td><span><a href="'+url_mask_families+'"> : Click here.</a></td>';                                        
-                                            str += '</tr>'; 
+                                                str +=    '<td style="width: 25%"><span class="font-weight-bold">Family Status</span></td>';
+                                                str +=    '<td style="width: 1%"><span class="font-weight-bold">:</span></td>';
+                                                str +=    '<td><span>'+ vFamilies[i].status+'</span></td>';                                        
+                                                str += '</tr>';
                                             var familyDetails = vFamilies[i].familydetails_set;
                                             if (familyDetails && familyDetails.length > 0) {
                                                 for (var j = 0; j < familyDetails.length; j++) {
