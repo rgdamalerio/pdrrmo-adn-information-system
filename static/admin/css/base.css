@@ -596,3 +596,7 @@ table#change-history tbody th {
     margin: 0 0 5px;
     color: #777;
 }
+/* Apply highlighting to table rows on hover */
+.table-hover tbody tr:hover {
+    background-color: #bfbfbf;
+}

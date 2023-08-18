@@ -91,6 +91,7 @@ class HouseholdsAdmin(LeafletGeoAdmin):
     'TILES': [('Mapbox Satellite', 'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             'attribution': 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
             'accessToken': 'pk.eyJ1IjoiaWFtdGVrc29uIiwiYSI6ImNqdjV4YzI4YjB0aXk0ZHBtNnVnNWxlM20ifQ.FjQJyCTodXASYtOK8IrLQA',
+            'maxZoom': 20,
         }),
         ('Mapbox V1', 'https://api.tiles.mapbox.com/styles/v1/{username}/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             'attribution': 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -197,22 +198,26 @@ class DemographiesAdmin(admin.ModelAdmin):
       if hasattr(request, 'demographies'):
         return request.demographies
       return queryset
-    list_display = ['controlnumber_id','lastname','firstname','middlename','extension','birthdate','age','marital_status','occupation',
-      'created_at','updated_at','owner']
-    list_filter = ['marital_status']
-    list_select_related = ('controlnumber',)
-    ordering = ('-id',)
-    '''def controlnumber_id(self, obj):
-      return obj.controlnumber_id[:10]+"..."'''
-
+    form = DemographiesForm
+    list_display  = ['controlnumber_id','lastname','firstname','middlename','extension',
+              'gender','birthdate', 'marital_status', 'primary_occupation', 'religion',
+              'can_read_and_write','created_at','updated_at','owner']
+      
     fields = ['controlnumber','lastname','firstname','middlename','extension',
               'gender','birthdate', 'marital_status', 'ethnicity_by_blood', 'member_ip', 'informal_settler', 'religion',
               'person_with_special_needs', 'type_of_disability', 'is_ofw', 'residence', 'nutritional_status', 'nutritional_status_recorded',
               'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
               'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
               'dependent_of_philhealth_member', 'owner']
+    list_filter = ['marital_status']
+    list_select_related = ('controlnumber',)
+    ordering = ('-id',)
+    '''def controlnumber_id(self, obj):
+      return obj.controlnumber_id[:10]+"..."'''
+
+  
     readonly_fields = ['owner','created_at','updated_at','age',]
-    list_editable = ['lastname','firstname','middlename','extension','birthdate','marital_status']
+    list_editable = ['lastname','firstname','middlename','extension','birthdate','marital_status','primary_occupation','gender']
     list_per_page = 15
     
     search_fields = ('controlnumber_id__controlnumber','lastname','firstname','middlename',)
@@ -255,11 +260,14 @@ class FamiliesAdmin(admin.ModelAdmin):
       if hasattr(request, 'families'):
         return request.families
       return qs
-    list_display = ('household_controlnumber','family_head','family_members','status','remarks','created_at','updated_at','owner')
-    search_fields = ['family_head__firstname', 'family_head__lastname', 'family_head__middlename']
+    list_display = ('household_id','household_controlnumber','family_head','family_members','status','remarks','created_at','updated_at','owner')
+    search_fields = ['family_head__firstname', 'family_head__lastname', 'family_head__middlename', 'household__controlnumber']
     list_filter = ['status']
     exclude = ('owner',)
     list_per_page = 20
+
+    def household_id(self, obj):
+      return obj.household_id[:15]+"..."
     
     def household_controlnumber(self, obj):
        return obj.household.respondent

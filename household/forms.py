@@ -7,13 +7,13 @@ from library.views import municipality_list, barangay_list, purok_list
 class HouseholdForm(forms.ModelForm):
     class Meta:
         model = Households
-
-        fields = ['municipality','barangay','purok_fk']
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(HouseholdForm, self).__init__(*args, **kwargs)
-
-        # when there is instance key, select the default value
+        for field_name, field in self.fields.items():
+            field.widget.attrs['style'] = 'width: 200px;'
+                
         # Municipality always loaded for initial data, because Municipality is on the first level 
         try:
           self.initial['municipality'] = kwargs['instance'].municipality.psgccode
@@ -34,32 +34,52 @@ class HouseholdForm(forms.ModelForm):
             pass
         purok_list = [('', '---------')] + [(i.purok_id, i.purok_name) for i in Purok.objects.all()] 
  
-        
         # Override the form, add onchange attribute to call the ajax function
         self.fields['municipality'].widget = forms.Select(
             attrs={
                 'id': 'id_municipality',
                 'onchange': 'getBarangay(this.value)',
-                'style': 'width:200px'
+                'style': 'width: 200px;',
             },
             choices=municipality_list,
         )
         self.fields['barangay'].widget = forms.Select(
             attrs={
                 'id': 'id_barangay',
-                'onclick': 'getPurok(this.value)',
-                'style': 'width:200px'
+                'onchange': 'getPurok(this.value)',
+                'style': 'width: 200px;',
             },
             choices=barangay_list,
         )
         self.fields['purok_fk'].widget = forms.Select(
            attrs={
                 'id': 'id_purok_id',
-                'style': 'width:200px'
-            
+                'style': 'width: 200px;',
             },
             choices=purok_list,
         )
+        instance = kwargs.get('instance')  # Get the instance if provided
+        if instance:
+            if hasattr(instance, 'municipality') and instance.municipality:
+                self.initial['municipality'] = instance.municipality.psgccode
+    
+                related_barangays = Barangays.objects.filter(psgcmun=instance.municipality)
+                self.fields['barangay'].widget.choices = [('', '---------')] + [
+                    (i.psgccode, i.brgyname) for i in related_barangays
+                ]
+                if hasattr(instance, 'barangay') and instance.barangay:
+                    self.initial['barangay'] = instance.barangay.psgccode
+                    related_purok = Purok.objects.filter( psgccode_brgy=instance.barangay)
+                    self.fields['purok_fk'].widget.choices = [('', '---------')] + [
+                        (i.purok_id, i.purok_name) for i in related_purok
+                    ]
+                
+            elif hasattr(instance, 'barangay') and instance.barangay:
+                self.initial['barangay'] = instance.barangay.psgccode
+                related_purok = Purok.objects.filter( psgccode_brgy=instance.barangay)
+                self.fields['purok_fk'].widget.choices = [('', '---------')] + [
+                    (i.purok_id, i.purok_name) for i in related_purok
+                ]
 
 
 class HouseholdSearchForm(forms.ModelForm):
@@ -156,22 +176,15 @@ class HouseholdSearchForm(forms.ModelForm):
         )
 
 class DemographiesForm(forms.ModelForm):
-   def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    class Meta:
+       model = Demographies
+       fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(DemographiesForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if isinstance(field.widget, forms.TextInput):
-                field.widget.attrs.update({'class': 'form-control'})
-            elif isinstance(field.widget, forms.Select):
-                field.widget.attrs.update({'class': 'form-control', 'size': 10})
-            elif isinstance(field.widget, forms.CheckboxInput):
-                field.widget.attrs.update({'class': 'form-check-input'})
-            elif isinstance(field.widget, forms.CheckboxSelectMultiple):
-                field.widget.attrs.update({'class': 'form-check-input'})
-
-class Meta:
-    model = Demographies
-    fields = '__all__'
-
+            field.widget.attrs['style'] = 'width: 200px;'
+   
 '''class FamiliesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
