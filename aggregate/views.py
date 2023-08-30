@@ -1,21 +1,14 @@
 from aggregate.models import AggregatedFamiliesandPopulation
-from datetime import datetime
-from urllib import response
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.views.generic import View
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
-from io import StringIO
 from openpyxl import Workbook
-from django.db import models
-from django.views.decorators.http import require_http_methods
-from django.core import serializers
 from django.db.models import Sum
+
 
 def index(request): 
     return render(request,'aggregate/index.html')
-
 
 
 def exportFamilyandPopulation(request):
@@ -75,22 +68,46 @@ def exportFamilyandPopulation(request):
 def chart_view(request):
     return render(request, 'aggregate/population_chart.html')
 
-def get_data(request, *args, **kwargs):
-    qresult = AggregatedFamiliesandPopulation.objects.values('munname').annotate(
-        total_households=Sum('households'),
-        total_male=Sum('male'),
-        total_female=Sum('female'),
-        total_male_infant=Sum('male_infant'),
-        total_female_infant=Sum('female_infant'),
-        total_male_children=Sum('male_children'),
-        total_female_children=Sum('female_children'),
-        total_male_adult=Sum('male_adult'),
-        total_female_adult=Sum('female_adult'),
-        total_male_elderly=Sum('male_elderly'),
-        total_female_elderly=Sum('female_elderly'),
-        total_ip_male=Sum('ip_male'),
-        total_ip_female=Sum('ip_female')
+def generate_chart_data():
+    age_groups = [
+        ('Infant 0-11months', 'male_infant', 'female_infant'),
+        ('Children 1-17y/o', 'male_children', 'female_children'),
+        ('Adult 18-59y/o', 'male_adult', 'female_adult'),
+        ('Elderly 60y/o above', 'male_elderly', 'female_elderly'),
+    ]
+
+    age_group_population = []
+    for age_group, male_field, female_field in age_groups:
+        total_population = AggregatedFamiliesandPopulation.objects.aggregate(
+            total_male=Sum(male_field),
+            total_female=Sum(female_field)
+        )
+        total_population = total_population['total_male'] + total_population['total_female']
+
+        age_group_population.append({
+            'Age Group': age_group,
+            'Total Population': total_population
+        })
+
+    infant_counts = AggregatedFamiliesandPopulation.objects.values('munname').annotate(
+        total_infants=Sum('male_infant') + Sum('female_infant')
     )
-    data = list(qresult)
-    #data = serializers.serialize('json', ser_data)
-    return HttpResponse(data, content_type='application/json')
+
+    chart_data = {
+        'age_group_population': age_group_population,
+        'infant_counts': []
+    }
+    for result in infant_counts:
+        municipality_name = result['munname']
+        total_infants = result['total_infants']
+        chart_data['infant_counts'].append({'Municipality': municipality_name, 'Total Infants': total_infants})
+
+    return chart_data
+
+def get_chart_data(request):
+    chart_data = generate_chart_data()
+    return JsonResponse(chart_data, safe=False)
+
+
+def infant_counts_report(request):
+    return render(request, 'chart.html')

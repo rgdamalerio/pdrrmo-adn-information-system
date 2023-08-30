@@ -81,114 +81,115 @@ class LivelihoodsInline(admin.StackedInline):
 # Register your models here.
 @admin.register(Households)
 class HouseholdsAdmin(LeafletGeoAdmin):
-  def get_queryset(self, request):
-    qs = super().get_queryset(request)
-    if hasattr(request, 'households'):
-      return request.households
-    return qs
-  form = HouseholdForm
-  settings_overrides = {
-    'TILES': [('Mapbox Satellite', 'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-            'attribution': 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-            'accessToken': 'pk.eyJ1IjoiaWFtdGVrc29uIiwiYSI6ImNqdjV4YzI4YjB0aXk0ZHBtNnVnNWxlM20ifQ.FjQJyCTodXASYtOK8IrLQA',
-            'maxZoom': 20,
-        }),
-        ('Mapbox V1', 'https://api.tiles.mapbox.com/styles/v1/{username}/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-            'attribution': 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-            'username': 'iamtekson',
-            'id': 'cjwhym7s70tae1co8zf17a3r5',
-            'accessToken': 'pk.eyJ1IjoiaWFtdGVrc29uIiwiYSI6ImNqdjV4YzI4YjB0aXk0ZHBtNnVnNWxlM20ifQ.FjQJyCTodXASYtOK8IrLQA'
-        })],
-  }
-  '''formfield_overrides = {
-      models.PointField: {"widget": GooglePointFieldWidget}
-  }'''
-  readonly_fields = ('enumerator','editor',)
-  fields = ['respondent','date_interview','municipality', 'barangay','purok_fk','location','householdbuildingtypes',
-            'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
-            'access_electricity', 'householdroofmaterials','householdwallmaterials','medical_treatment',
-            'access_water_supply','potable','householdwatertenuralstatus','waterlevelsystems','floods_occur',
-            'year_flooded','experience_evacuate','year_evacuate','evacuationareas','access_health_medical_facility',
-            'access_telecommuniciation','access_drill_simulation','image','enumerator','editor'
-           ]
-  list_display = ('household_controlnumber','municipality','barangay','purok_fk','respondent','date_interview',
-            'views_families_link','views_availprograms_link','views_hhlivelihoods_link','created_at','updated_at')
-  search_fields = ('controlnumber', 'respondent', 'municipality__munname', 'barangay__brgyname',)
-  list_filter = ('municipality_id','barangay_id','access_electricity','householdbuildingtypes','access_internet','access_water_supply','potable',
-    'floods_occur','experience_evacuate','access_health_medical_facility',
-    'access_telecommuniciation','access_drill_simulation')
-  list_per_page = 10
-
-  
-  def views_families_link(self, obj):
-    num_families = obj.families_set.count()
-    changelist_link = (
-      reverse("admin:household_families_changelist")  + "?" + urlencode({"household": obj.controlnumber})
-    )
-    add_link = (
-      reverse("admin:household_families_add") + "?" + urlencode({"household": obj.controlnumber})
-    )
-
-    if num_families > 1:
-      return format_html('<a href="{}">{} Families | <a href="{}">Add</a>', changelist_link, num_families, add_link)
-    elif num_families == 1:
-      return format_html('<a href="{}">{} Family | <a href="{}">Add</a>', changelist_link, num_families, add_link)
-    else:
-        return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
-  views_families_link.short_description = "No. of Families"
-
-
-  def views_availprograms_link(self, obj):
-    num_availprograms = obj.availprograms_set.count()
-
-    changelist_link = (
-      reverse("admin:household_availprograms_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
-    )
-    add_link = (
-      reverse("admin:household_availprograms_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
-    )
-    if num_availprograms > 1:
-      return format_html('<a href="{}">{} Programs | <a href="{}">Add</a>', changelist_link, num_availprograms,add_link)
-    elif num_availprograms == 1:
-      return format_html('<a href="{}">{} Program | <a href="{}">Add</a>', changelist_link, num_availprograms,add_link) 
-    else:
-      return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
-
-  views_availprograms_link.short_description = "Availed Programs"
-
-  def views_hhlivelihoods_link(self, obj):
-    num_hhlivelihoods = obj.hhlivelihoods_set.count()
-
-    changelist_link = (
-      reverse("admin:household_hhlivelihoods_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
-    )
-    add_link = (
-      reverse("admin:household_hhlivelihoods_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
-    )
-    
-    if num_hhlivelihoods > 1:
-      return format_html('<a href="{}">{} Livelihoods | <a href="{}">Add</a>', changelist_link, num_hhlivelihoods, add_link)
-    elif num_hhlivelihoods == 1:
-      return format_html('<a href="{}">{} Livelihood | <a href="{}">Add</a>', changelist_link, num_hhlivelihoods, add_link)
-    else:
-      return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
-
-  views_hhlivelihoods_link.short_description = "Livelihoods"
- 
-  inlines = [
-    #AvailprogramsInline,
-    #LivelihoodsInline
-    FamiliesInline,
-    #DemographiesInline,
-  ]
-  formfield_overrides = {
-        models.CharField: {'widget': forms.TextInput(attrs={'size': '18'})},
-        models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 200px;'})}
+    def get_queryset(self, request):
+      qs = super().get_queryset(request)
+      if hasattr(request, 'households'):
+        return request.households
+      return qs
+    form = HouseholdForm
+    settings_overrides = {
+      'TILES': [('Mapbox Satellite', 'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+              'attribution': 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+              'accessToken': 'pk.eyJ1IjoiaWFtdGVrc29uIiwiYSI6ImNqdjV4YzI4YjB0aXk0ZHBtNnVnNWxlM20ifQ.FjQJyCTodXASYtOK8IrLQA',
+              'maxZoom': 20,
+          }),
+          ('Mapbox V1', 'https://api.tiles.mapbox.com/styles/v1/{username}/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+              'attribution': 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+              'username': 'iamtekson',
+              'id': 'cjwhym7s70tae1co8zf17a3r5',
+              'accessToken': 'pk.eyJ1IjoiaWFtdGVrc29uIiwiYSI6ImNqdjV4YzI4YjB0aXk0ZHBtNnVnNWxlM20ifQ.FjQJyCTodXASYtOK8IrLQA'
+          })],
     }
-  class Media:
-      js = (
-          'js/chained-address.js',
+    '''formfield_overrides = {
+        models.PointField: {"widget": GooglePointFieldWidget}
+    }'''
+    readonly_fields = ('enumerator','editor',)
+    fields = ['respondent','date_interview','municipality', 'barangay','purok_fk','location','householdbuildingtypes',
+              'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
+              'access_electricity', 'householdroofmaterials','householdwallmaterials','medical_treatment',
+              'access_water_supply','potable','householdwatertenuralstatus','waterlevelsystems','floods_occur',
+              'year_flooded','experience_evacuate','year_evacuate','evacuationareas','access_health_medical_facility',
+              'access_telecommuniciation','access_drill_simulation','image','enumerator','editor'
+            ]
+    list_display = ('household_controlnumber','municipality','barangay','purok_fk','respondent','date_interview',
+              'views_families_link','views_availprograms_link','views_hhlivelihoods_link','created_at','updated_at')
+    search_fields = ('controlnumber', 'respondent', 'municipality__munname', 'barangay__brgyname',)
+    list_filter = ('municipality_id','barangay_id','access_electricity','householdbuildingtypes','access_internet','access_water_supply','potable',
+      'floods_occur','experience_evacuate','access_health_medical_facility',
+      'access_telecommuniciation','access_drill_simulation')
+    list_per_page = 20
+
+
+    
+    def views_families_link(self, obj):
+      num_families = obj.families_set.count()
+      changelist_link = (
+        reverse("admin:household_families_changelist")  + "?" + urlencode({"household": obj.controlnumber})
       )
+      add_link = (
+        reverse("admin:household_families_add") + "?" + urlencode({"household": obj.controlnumber})
+      )
+
+      if num_families > 1:
+        return format_html('<a href="{}">{} Families | <a href="{}">Add</a>', changelist_link, num_families, add_link)
+      elif num_families == 1:
+        return format_html('<a href="{}">{} Family | <a href="{}">Add</a>', changelist_link, num_families, add_link)
+      else:
+          return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+    views_families_link.short_description = "No. of Families"
+
+
+    def views_availprograms_link(self, obj):
+      num_availprograms = obj.availprograms_set.count()
+
+      changelist_link = (
+        reverse("admin:household_availprograms_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
+      )
+      add_link = (
+        reverse("admin:household_availprograms_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
+      )
+      if num_availprograms > 1:
+        return format_html('<a href="{}">{} Programs | <a href="{}">Add</a>', changelist_link, num_availprograms,add_link)
+      elif num_availprograms == 1:
+        return format_html('<a href="{}">{} Program | <a href="{}">Add</a>', changelist_link, num_availprograms,add_link) 
+      else:
+        return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+
+    views_availprograms_link.short_description = "Availed Programs"
+
+    def views_hhlivelihoods_link(self, obj):
+      num_hhlivelihoods = obj.hhlivelihoods_set.count()
+
+      changelist_link = (
+        reverse("admin:household_hhlivelihoods_changelist") + "?" + urlencode({"controlnumber": obj.controlnumber})
+      )
+      add_link = (
+        reverse("admin:household_hhlivelihoods_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
+      )
+      
+      if num_hhlivelihoods > 1:
+        return format_html('<a href="{}">{} Livelihoods | <a href="{}">Add</a>', changelist_link, num_hhlivelihoods, add_link)
+      elif num_hhlivelihoods == 1:
+        return format_html('<a href="{}">{} Livelihood | <a href="{}">Add</a>', changelist_link, num_hhlivelihoods, add_link)
+      else:
+        return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+
+    views_hhlivelihoods_link.short_description = "Livelihoods"
+  
+    inlines = [
+      #AvailprogramsInline,
+      #LivelihoodsInline
+      FamiliesInline,
+      #DemographiesInline,
+    ]
+    formfield_overrides = {
+          models.CharField: {'widget': forms.TextInput(attrs={'size': '18'})},
+          models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 200px;'})}
+      }
+    class Media:
+        js = (
+            'js/chained-address.js',
+        )
     
 
 @admin.register(Demographies)
@@ -199,7 +200,7 @@ class DemographiesAdmin(admin.ModelAdmin):
         return request.demographies
       return queryset
     form = DemographiesForm
-    list_display  = ['controlnumber_id','lastname','firstname','middlename','extension',
+    list_display  = ['controlnumber_id','lastname','firstname','middlename','extension','age',
               'gender','birthdate', 'marital_status', 'primary_occupation', 'religion',
               'can_read_and_write','created_at','updated_at','owner']
       
@@ -211,14 +212,16 @@ class DemographiesAdmin(admin.ModelAdmin):
               'dependent_of_philhealth_member', 'owner']
     list_filter = ['marital_status']
     list_select_related = ('controlnumber',)
+    list_per_page = 20
     ordering = ('-id',)
     '''def controlnumber_id(self, obj):
       return obj.controlnumber_id[:10]+"..."'''
 
   
     readonly_fields = ['owner','created_at','updated_at','age',]
-    list_editable = ['lastname','firstname','middlename','extension','birthdate','marital_status','primary_occupation','gender']
-    list_per_page = 15
+    list_editable = ['lastname','firstname','middlename','extension','birthdate','marital_status','primary_occupation','gender',
+                     'religion','can_read_and_write']
+  
     
     search_fields = ('controlnumber_id__controlnumber','lastname','firstname','middlename',)
 
@@ -263,8 +266,8 @@ class FamiliesAdmin(admin.ModelAdmin):
     list_display = ('household_id','household_controlnumber','family_head','family_members','status','remarks','created_at','updated_at','owner')
     search_fields = ['family_head__firstname', 'family_head__lastname', 'family_head__middlename', 'household__controlnumber']
     list_filter = ['status']
-    exclude = ('owner',)
     list_per_page = 20
+    exclude = ('owner',)
 
     def household_id(self, obj):
       return obj.household_id[:15]+"..."
@@ -378,6 +381,7 @@ class AvailprogramsAdmin(admin.ModelAdmin):
     return queryset
   list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','upper_progimplementor','created_at','updated_at','owner')
   search_fields = ('controlnumber',)
+  list_per_page = 20
 
 @admin.register(Hhlivelihoods)
 class HlivelihoodsAdmin(admin.ModelAdmin):

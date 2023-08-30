@@ -1,0 +1,87 @@
+<div style="width: 70%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-left: 250px;">
+    <!-- First Chart: Population by Age Group -->
+    <canvas id="chart" style="border: 1px solid #262626;"></canvas>
+    <p id="caption1" style="margin-top: 10px; text-align: center;"></p>
+    <div id="description1" style="margin-top: 10px; text-align: center;">
+        <p>This detailed bar chart visually presents the changing population in Agusan del Norte across different age groups.</p>
+        <p>Each bar corresponds to an age group and its height corresponds to the total population of that group. </p>
+        <p>This visual representation helps you understand the distribution of the population and provides insights into the variety of ages in the region.</p>
+    </div>
+
+    <!-- Second Chart: Infant Counts by Municipality -->
+    <canvas id="chart2" style="border: 1px solid #262626;"></canvas>
+    <p id="caption2" style="margin-top: 10px; text-align: center;"></p>
+    <div id="description2" style="margin-top: 10px; text-align: center;">
+        <p>This bar chart displays the total number of infants per municipality.</p>
+        <p>Each bar represents a municipality, and the height of the bar corresponds to the total number of infants.</p>
+        <p>Use this chart to visualize the distribution of infants across different municipalities.</p>
+    </div>
+</div>
+<script>
+    fetch("{% url 'aggregate:get_chart_data' %}")
+        .then(response => response.json())
+        .then(data => {
+            // First Chart: Population by Age Group
+            const labels1 = data.age_group_population.map(item => item['Age Group']);
+            const values1 = data.age_group_population.map(item => item['Total Population']);
+
+            const ctx1 = document.getElementById('chart').getContext('2d');
+            const myChart1 = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: labels1,
+                    datasets: [{
+                        label: 'Total Population',
+                        data: values1,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Population by Age Group',
+                            fontSize: 16
+                        }
+                    }
+                }
+            });
+
+            // Calculate and set the total population count
+            const totalPopulation1 = values1.reduce((sum, value) => sum + value, 0);
+            document.getElementById('caption1').textContent = `Total Population: ${totalPopulation1}`;
+
+            // Second Chart: Infant Counts by Municipality
+            const labels2 = data.infant_counts.map(item => item['Municipality']);
+            const values2 = data.infant_counts.map(item => item['Total Infants']);
+
+            const ctx2 = document.getElementById('chart2').getContext('2d');
+            const myChart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: labels2,
+                    datasets: [{
+                        label: 'Total Infants',
+                        data: values2,
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Infant Counts by Municipality',
+                            fontSize: 16
+                        }
+                    }
+                }
+            });
+
+            // Calculate and set the total number of infants
+            const totalInfants2 = values2.reduce((sum, value) => sum + value, 0);
+            document.getElementById('caption2').textContent = `Total Infants: ${totalInfants2}`;
+        })
+        .catch(error => console.error("Error fetching chart data:", error));
+</script>

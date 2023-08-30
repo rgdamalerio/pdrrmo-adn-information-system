@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Familiesandpopulation, Barangays, AggregatedFamiliesandPopulation
+from .models import Barangays, AggregatedFamiliesandPopulation
 from household.middleware import *
 from django.core.exceptions import PermissionDenied
 from library.models import UserLocation
@@ -65,8 +65,10 @@ class AggregatedFamiliesandPopulationAdmin(FilterUserAdmin):
   list_display = ('munname','brgyname','purok_name','households','families','male','female','male_infant','female_infant','male_children',
                   'female_children','male_adult','female_adult','male_elderly','female_elderly','pwd_male','pwd_female','ip_male','ip_female')
   ordering = ['munname','brgyname','households']
+  list_filter = ['munname']
   search_fields = ('munname','brgyname',)
-  list_per_page = 15
+  list_per_page = 20
+
 
   
 
