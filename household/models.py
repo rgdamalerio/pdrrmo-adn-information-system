@@ -114,7 +114,7 @@ class Demographies(models.Model):
   current_grade_level_attending = models.ForeignKey(Gradelevels,related_name='current_attending',on_delete=models.SET_NULL,null=True,blank=True)
   highest_eductional_attainment = models.ForeignKey(Gradelevels,related_name='%(class)s_highest_attending',on_delete=models.SET_NULL,null=True)
   course_completed_vocational = models.ForeignKey(Trackstrandcourses,on_delete=models.SET_NULL,verbose_name='Track/Strand/Course completed (for senior High school/Vocational/College)',null=True,blank=True)
-  can_read_and_write = models.BooleanField(verbose_name='Can read and write or atleast high school graduate',null=True,blank=True)
+  can_read_and_write = models.BooleanField(verbose_name='Can read & write or atleast HS graduate',null=True,blank=True)
   primary_occupation = models.CharField(max_length=255,null=True,blank=True)
   monthly_income = models.ForeignKey(Monthlyincomes,null=True,on_delete=models.SET_NULL)
   sss_member = models.BooleanField(null=True)

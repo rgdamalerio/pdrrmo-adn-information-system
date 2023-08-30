@@ -8,8 +8,7 @@ function getBarangay(mun_id) {
   });
 }
 
-
-function getPuroks(barangay_id) {
+function getPurok(barangay_id) {
   $.get('/address/purok/' + barangay_id +'/', function (resp){
       let purok_list = '<option value="" selected="">---------</option>'
       $.each(resp.data, function(i, item){
