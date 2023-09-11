@@ -20,6 +20,8 @@ class FloodReport(models.Model):
     num_female_adult = models.IntegerField(verbose_name='Adult 18-59y/o (F)')
     num_male_elderly = models.IntegerField(verbose_name='Elderly 60y/o above (M)')
     num_female_elderly = models.IntegerField(verbose_name='Elderly 60y/o above (F)')
+    num_pwd_male = models.IntegerField(verbose_name='PWD (M)')
+    num_pwd_female = models.IntegerField(verbose_name='PWD (F)')
     num_ip_male = models.IntegerField(verbose_name='IP (M)')
     num_ip_female = models.IntegerField(verbose_name='IP (F)')
 
@@ -45,6 +47,8 @@ class LandslideReport(models.Model):
     num_female_adult = models.IntegerField(verbose_name='Adult 18-59y/o (F)')
     num_male_elderly = models.IntegerField(verbose_name='Elderly 60y/o above (M)')
     num_female_elderly = models.IntegerField(verbose_name='Elderly 60y/o above (F)')
+    num_pwd_male = models.IntegerField(verbose_name='PWD (M)')
+    num_pwd_female = models.IntegerField(verbose_name='PWD (F)')
     num_ip_male = models.IntegerField(verbose_name='IP (M)')
     num_ip_female = models.IntegerField(verbose_name='IP (F)')
 
@@ -54,7 +58,7 @@ class LandslideReport(models.Model):
 
 
 class StormSurgeReport(models.Model):
-    ssid = models.CharField(max_length=255,primary_key=True,verbose_name='Storm Surge Susceptibility')
+    ss_id = models.CharField(max_length=255,primary_key=True,verbose_name='Storm Surge Susceptibility')
     municipality_name = models.CharField(max_length=255,verbose_name='Municipality')
     barangay_name = models.CharField(max_length=255,verbose_name='Barangay')
     purok_name = models.CharField(max_length=255,verbose_name='Purok')
@@ -71,6 +75,8 @@ class StormSurgeReport(models.Model):
     num_female_adult = models.IntegerField(verbose_name='Adult 18-59y/o (F)')
     num_male_elderly = models.IntegerField(verbose_name='Elderly 60y/o above (M)')
     num_female_elderly = models.IntegerField(verbose_name='Elderly 60y/o above (F)')
+    num_pwd_male = models.IntegerField(verbose_name='PWD (M)')
+    num_pwd_female = models.IntegerField(verbose_name='PWD (F)')
     num_ip_male = models.IntegerField(verbose_name='IP (M)')
     num_ip_female = models.IntegerField(verbose_name='IP (F)')
 

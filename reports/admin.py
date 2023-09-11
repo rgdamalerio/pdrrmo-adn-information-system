@@ -32,7 +32,7 @@ class FloodReportAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     list_display = ('status','municipality_name','barangay_name','purok_name','household','families','person','num_male','num_female','num_male_infant','num_female_infant',
-                    'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly',
+                    'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly','num_pwd_male','num_pwd_female',
                     'num_ip_male','num_ip_female')
     
     def status(self, obj):
@@ -79,7 +79,7 @@ class LandslideReportAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     list_display = ('status','municipality_name','barangay_name','purok_name','household','families','person','num_male','num_female','num_male_infant','num_female_infant',
-                    'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly',
+                    'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly','num_pwd_male','num_pwd_female',
                     'num_ip_male','num_ip_female')
     
     def status(self, obj):
@@ -126,8 +126,8 @@ class StormSurgeReporAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     
-    list_display = ('ssid','municipality_name','barangay_name','purok_name','household','families','person','num_male','num_female','num_male_infant','num_female_infant',
-                    'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly',
+    list_display = ('ss_id','municipality_name','barangay_name','purok_name','household','families','person','num_male','num_female','num_male_infant','num_female_infant',
+                    'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly','num_pwd_male','num_pwd_female',
                     'num_ip_male','num_ip_female')
     
     '''def status(self, obj):
@@ -142,5 +142,5 @@ class StormSurgeReporAdmin(admin.ModelAdmin):
 
     search_fields = ('municipality_name','barangay_name',)
     ordering = ('municipality_name','barangay_name',)
-    list_filter = ('ssid',)
+    list_filter = ('ss_id',)
     list_per_page = 10
