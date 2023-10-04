@@ -21,21 +21,19 @@ def max_value_current_year(value):
     return MaxValueValidator(current_year())(value)    
 
 def year_choices():
-    return [(r,r) for r in range(1940, datetime.date.today().year+1)]
+    return [(r,r) for r in range(1900, datetime.date.today().year+1)]
 
 
 class Households(models.Model):
   def getBarangay(self):
     brgycode = self.barangay
     return brgycode
-  
   controlnumber = models.TextField(primary_key=True)
   def save(self, *args, **kwargs):
     if not self.controlnumber: 
         self.controlnumber = str(uuid.uuid4())
     super(Households, self).save(*args, **kwargs)
 
-  purok = models.CharField(max_length=25,null=True)
   purok_fk = models.ForeignKey(Purok,null=True,on_delete=models.SET_NULL,verbose_name='Purok')
   longitude = models.CharField(max_length=50,null=True)
   latitude = models.CharField(max_length=50,null=True)
@@ -44,7 +42,7 @@ class Households(models.Model):
   date_interview = models.DateField(_('Date interviewed'))
   enumerator = models.CharField(max_length=50,null=True)
   editor = models.CharField(max_length=50,null=True)
-  year_construct = models.IntegerField(_('Building/House year construct'),validators=[MinValueValidator(1940), max_value_current_year],null=True)
+  year_construct = models.IntegerField(_('Building/House year construct'),validators=[MinValueValidator(1900), max_value_current_year],null=True)
   estimated_cost = models.IntegerField(null=True)
   number_bedrooms = models.SmallIntegerField(null=True)
   number_storey = models.SmallIntegerField(null=True)
@@ -54,9 +52,9 @@ class Households(models.Model):
   access_water_supply = models.BooleanField(_('Access to water supply'),null=True)
   potable = models.BooleanField(_('Safe to drink'),null=True)
   floods_occur = models.BooleanField(_('Flood occur in your area'),null=True)
-  year_flooded = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True,blank=True)
-  experience_evacuate = models.BooleanField(_('Experience evacuation during calamity'))
-  year_evacuate = models.IntegerField(validators=[MinValueValidator(1940), max_value_current_year],null=True,blank=True)
+  year_flooded = models.IntegerField(validators=[MinValueValidator(1900), max_value_current_year],null=True,blank=True)
+  experience_evacuate = models.BooleanField(_('Experienced evacuation during calamity'))
+  year_evacuate = models.IntegerField(validators=[MinValueValidator(1900), max_value_current_year],null=True,blank=True)
   access_health_medical_facility = models.BooleanField(_('Access to health and medical facility'),null=True)
   access_telecommuniciation = models.BooleanField(_('Access to telecommunication'),null=True)
   access_drill_simulation = models.BooleanField(_('Access/Join drill and simulation'),null=True)
@@ -94,17 +92,17 @@ class Demographies(models.Model):
   lastname = models.CharField(max_length=50)
   firstname = models.CharField(max_length=50)
   middlename = models.CharField(max_length=50,null=True,blank=True)
-  extension = models.CharField(max_length=15,null=True,blank=True)
+  extension = models.CharField(max_length=15,null=True,blank=True,verbose_name='Ext.')
   nuclear_family = models.ForeignKey('self',on_delete=models.SET_NULL,verbose_name='Nuclear family belongs to',null=True,blank=True)
   relationshiptohead =  models.ForeignKey(Relationshiptoheads,null=True,on_delete=models.SET_NULL,verbose_name='Relationship to head')
-  gender = models.ForeignKey(Genders,null=True,on_delete=models.SET_NULL,verbose_name='Gender')
+  gender = models.ForeignKey(Genders,null=True,on_delete=models.SET_NULL,verbose_name='Sex')
   birthdate = models.DateField()
   marital_status = models.ForeignKey(Maritalstatus,null=True,on_delete=models.SET_NULL)
   ethnicity_by_blood = models.CharField(max_length=150,null=True,blank=True,verbose_name='Belongs to tribe/enthics')
   member_ip = models.BooleanField(verbose_name='Member of IP\'s',null=True,blank=True)
   informal_settler = models.BooleanField(null=True)
   religion = models.CharField(max_length=150,null=True,blank=True)
-  person_with_special_needs = models.BooleanField(null=True)
+  person_with_special_needs = models.BooleanField(null=True,verbose_name='Person w/ special needs')
   type_of_disability = models.ForeignKey(Disabilities,on_delete=models.SET_NULL,null=True,blank=True)
   is_ofw = models.BooleanField(verbose_name='Is OFW',null=True)
   residence = models.BooleanField(null=True,blank=True)
@@ -114,7 +112,7 @@ class Demographies(models.Model):
   current_grade_level_attending = models.ForeignKey(Gradelevels,related_name='current_attending',on_delete=models.SET_NULL,null=True,blank=True)
   highest_eductional_attainment = models.ForeignKey(Gradelevels,related_name='%(class)s_highest_attending',on_delete=models.SET_NULL,null=True)
   course_completed_vocational = models.ForeignKey(Trackstrandcourses,on_delete=models.SET_NULL,verbose_name='Track/Strand/Course completed (for senior High school/Vocational/College)',null=True,blank=True)
-  can_read_and_write = models.BooleanField(verbose_name='Can read & write or atleast HS graduate',null=True,blank=True)
+  can_read_and_write = models.BooleanField(verbose_name='Can read & write',null=True,blank=True)
   primary_occupation = models.CharField(max_length=255,null=True,blank=True)
   monthly_income = models.ForeignKey(Monthlyincomes,null=True,on_delete=models.SET_NULL)
   sss_member = models.BooleanField(null=True)
@@ -127,6 +125,9 @@ class Demographies(models.Model):
 
   def __str__(self):
     return f"{str(self.firstname)} {str(self.middlename)} {str(self.lastname)}"
+  
+  '''def format_birthdate(self):
+      return self.birthdate.strftime("%m-%d-%Y")'''
   
   class Meta:
     verbose_name = "Individual"
@@ -153,7 +154,6 @@ class Familydetails(models.Model):
   fam_fk = models.ForeignKey(Families,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Family head')
   fam_member = models.ForeignKey(Demographies,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Family member')
   relationship = models.ForeignKey(Familyrelationship,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Relationship to head')
-  status = models.ForeignKey(Familystatus,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Family status')
   remarks = models.CharField(max_length=150,null=True,default='N/A')
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)

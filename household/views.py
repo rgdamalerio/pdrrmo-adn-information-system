@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.core.serializers import serialize
 from .models import Households
 
+
 def is_valid_queryparam(param):
     return param != '' and param is not None
 

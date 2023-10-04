@@ -52,6 +52,7 @@
 {% block coltype %}flex{% endblock %}
 
 {% block content %}
+
    
     <div id="content-main" class="container-fluid">
         {% if cl.formset.errors %}
@@ -72,14 +73,14 @@
                         {% if cl.has_filters %}
                         <span class="float-sm-right">
                             <a href="#"
-                            class="btn btn-dark btn-xs" data-toggle="collapse" data-target="#changelist-filter" aria-expanded="false" aria-controls="changelist-filter">
+                            class="btn btn-dark btn-sm" data-toggle="collapse" data-target="#changelist-filter" aria-expanded="false" aria-controls="changelist-filter">
                                 <i class="fas fa-filter fa-sm" aria-hidden="true"></i>
                                 {% trans 'Filter' %}
                             </a>
                             {% if queryset %}
                                 {% with model_instance=queryset.0 %}
                                     {% with model_name=model_instance|model_name %}
-                                        <a href="{% url 'pdf_download' model=model_name|lower %}" class="btn btn-primary btn-xs">
+                                        <a href="{% url 'pdf_download' model=model_name|lower %}" class="btn btn-primary btn-sm">
                                             <i class="fa fa-download fa-sm" aria-hidden="true"></i> Download PDF
                                         </a>
                                     {% endwith %}

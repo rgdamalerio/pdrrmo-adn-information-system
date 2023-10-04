@@ -67,7 +67,7 @@ class AggregatedFamiliesandPopulationAdmin(FilterUserAdmin):
   ordering = ['munname','brgyname','households']
   list_filter = ['munname']
   search_fields = ('munname','brgyname',)
-  list_per_page = 20
+  list_per_page = 15
 
 
   
