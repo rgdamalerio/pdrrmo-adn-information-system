@@ -47,6 +47,8 @@
     
 </style>
 <link rel="stylsheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css'%}">
+<link rel="stylsheet" type="text/css" href="{% static 'leaflet-coord-projection/coord-projection.css'%}">
+<script type="text/javascript" src="{% static 'leaflet-coord-projection/coord-projection.js'%}"></script>
 <script type="text/javascript" src="{% static 'js/leaflet.markercluster-src.js'%}"></script>
 <script type="text/javascript" src="{% static 'js/MarkerCluster.js'%}"></script> 
 <script type="text/javascript" src="{% static 'leaflet_dist/leaflet.browser.print.min.js'%}"></script> 
@@ -67,7 +69,7 @@
     <div class="col-sm-4">
         <!-- <h2>{{title}}</h2>  -->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchModal">
-            Advance Search
+            <i class="fa fa-search"></i> Advance Search
         </button>
         <button type="button" class="btn btn-info" id="btnChart">
             <i class="fas fa-chart-bar"></i> Chart
@@ -94,7 +96,7 @@
 
 
 <script type="text/javascript">
-    
+
     window.addEventListener("map:init", function (e) {
 
         mymap = event.detail.map;
@@ -549,6 +551,7 @@
             }
             //"Evacuation Center": evacuation_center
         };
+       
         L.control.groupedLayers(baseMaps, groupedOverlays).addTo(mymap);
         var browserPrint = L.browserPrint(mymap,{debug:false, cancelWithEsc: true});
         var c = L.control.browserPrint({

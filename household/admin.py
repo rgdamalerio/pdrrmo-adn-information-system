@@ -13,51 +13,47 @@ from django.utils.http import urlencode
 from django.utils.html import format_html
 
 
+
 class FamiliesInline(admin.StackedInline):
   model = Families
   exclude = ('owner',)
   extra = 0
 
   def formfield_for_foreignkey(self, db_field, request, **kwargs):
-    if db_field.name == 'household':
-        kwargs['widget'] = ForeignKeyRawIdWidget(
-            rel=db_field.remote_field,
-            admin_site=admin.site,
-            attrs={'size': '10', 'style': 'width: auto;', 'autocomplete_limit': 10},
-        )
-    elif db_field.name == 'family_head':
+    if db_field.name in ['household', 'family_head']:
       kwargs['widget'] = ForeignKeyRawIdWidget(
           rel=db_field.remote_field,
           admin_site=admin.site,
-          attrs={'size': '10', 'style': 'width: auto;', 'autocomplete_limit': 10},
+          attrs={'style': 'width: 215px;'}
       )
     return super().formfield_for_foreignkey(db_field, request, **kwargs)
+  def label_from_instance(self, obj):
+        return obj.family_head 
+
+  formfield_overrides = {
+      models.CharField: {'widget': forms.TextInput(attrs={'size': '30'})},  
+      models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 215px;'})},  
+  }
  
 
 class FamilydetailsInline(admin.StackedInline):
   model = Familydetails
-  exclude = ('owner',)
+  exclude = ('owner','status',)
   extra = 3
   
   def formfield_for_foreignkey(self, db_field, request, **kwargs):
-    if db_field.name == 'fam_fk':
+    if db_field.name in ['fam_fk','fam_member']:
         kwargs['widget'] = ForeignKeyRawIdWidget(
-            rel=db_field.remote_field,
-            admin_site=admin.site,
-            attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
-        )
-    elif db_field.name == 'fam_member':
-      kwargs['widget'] = ForeignKeyRawIdWidget(
           rel=db_field.remote_field,
           admin_site=admin.site,
-          attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
-      )
+          attrs={'style': 'width: 215px;'}
+        )
     return super().formfield_for_foreignkey(db_field, request, **kwargs)
   
-  '''formfield_overrides = {
-    models.CharField: {'widget': forms.TextInput(attrs={'size': '25'})},
-    models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 200px;'})}
-    }'''
+  formfield_overrides = {
+      models.CharField: {'widget': forms.TextInput(attrs={'size': '30'})},  
+      models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 215px;'})},  
+  }
   
 
 class DemographiesInline(admin.StackedInline):
@@ -120,7 +116,6 @@ class HouseholdsAdmin(LeafletGeoAdmin):
     list_per_page = 20
 
 
-    
     def views_families_link(self, obj):
       num_families = obj.families_set.count()
       changelist_link = (
@@ -149,9 +144,9 @@ class HouseholdsAdmin(LeafletGeoAdmin):
         reverse("admin:household_availprograms_add") + "?" + urlencode({"controlnumber": obj.controlnumber})
       )
       if num_availprograms > 1:
-        return format_html('<a href="{}">{} Programs | <a href="{}">Add</a>', changelist_link, num_availprograms,add_link)
+          return format_html('<a href="{}">{} Programs | <a href="{}">Add</a>', changelist_link, num_availprograms,add_link)
       elif num_availprograms == 1:
-        return format_html('<a href="{}">{} Program | <a href="{}">Add</a>', changelist_link, num_availprograms,add_link) 
+          return format_html('<a href="{}">{} Program | <a href="{}">Add</a>', changelist_link, num_availprograms,add_link) 
       else:
         return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
 
@@ -177,10 +172,7 @@ class HouseholdsAdmin(LeafletGeoAdmin):
     views_hhlivelihoods_link.short_description = "Livelihoods"
   
     inlines = [
-      #AvailprogramsInline,
-      #LivelihoodsInline
       FamiliesInline,
-      #DemographiesInline,
     ]
     formfield_overrides = {
           models.CharField: {'widget': forms.TextInput(attrs={'size': '18'})},
@@ -200,9 +192,9 @@ class DemographiesAdmin(admin.ModelAdmin):
         return request.demographies
       return queryset
     form = DemographiesForm
-    list_display  = ['controlnumber_id','lastname','firstname','middlename','extension','age',
-              'gender','birthdate', 'marital_status', 'primary_occupation', 'religion',
-              'can_read_and_write','created_at','updated_at','owner']
+    list_display  = ['controlnumber_id','relationshiptohead','lastname','firstname','middlename','extension','age',
+              'gender','birthdate', 'marital_status','primary_occupation', 'religion',
+              'can_read_and_write','person_with_special_needs','type_of_disability','created_at','updated_at']
       
     fields = ['controlnumber','lastname','firstname','middlename','extension',
               'gender','birthdate', 'marital_status', 'ethnicity_by_blood', 'member_ip', 'informal_settler', 'religion',
@@ -214,15 +206,10 @@ class DemographiesAdmin(admin.ModelAdmin):
     list_select_related = ('controlnumber',)
     list_per_page = 20
     ordering = ('-id',)
-    '''def controlnumber_id(self, obj):
-      return obj.controlnumber_id[:10]+"..."'''
 
-  
     readonly_fields = ['owner','created_at','updated_at','age',]
     list_editable = ['lastname','firstname','middlename','extension','birthdate','marital_status','primary_occupation','gender',
-                     'religion','can_read_and_write']
-  
-    
+                    'religion','can_read_and_write','person_with_special_needs','type_of_disability']
     search_fields = ('controlnumber_id__controlnumber','lastname','firstname','middlename',)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -232,13 +219,12 @@ class DemographiesAdmin(admin.ModelAdmin):
             admin_site=admin.site,
             attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
         )
-
       return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     formfield_overrides = {
-      models.CharField: {'widget': forms.TextInput(attrs={'size': '20','style': 'border: 1px solid #000;'})},
+      models.CharField: {'widget': forms.TextInput(attrs={'size': '18','style': 'border: 1px solid #000;'})},
       models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 100px;'})},
-      models.DateField: {'widget': forms.DateInput(attrs={'size': '15','style': 'border: 1px solid #000;'})},
+      models.DateField: {'widget': forms.DateInput(attrs={'size': '8','style': 'border: 1px solid #000;'})},
     }
     
     def age(self,demography):
@@ -247,80 +233,68 @@ class DemographiesAdmin(admin.ModelAdmin):
       datem = datetime.datetime.strptime(bday,"%Y-%m-%d %H:%M:%S")
       return today.year - datem.year - ((today.month, today.day) < (datem.month, datem.day))
     
-    def occupation(self, obj):
-      if obj.primary_occupation:
-          return obj.primary_occupation
-      else:
-          return 'None'
-    occupation.short_description = 'Occupation'
-
-
 
 @admin.register(Families)
 class FamiliesAdmin(admin.ModelAdmin):
-    def get_queryset(self, request):
-      qs = super().get_queryset(request)
-      if hasattr(request, 'families'):
-        return request.families
-      return qs
-    list_display = ('household_id','household_controlnumber','family_head','family_members','status','remarks','created_at','updated_at','owner')
-    search_fields = ['family_head__firstname', 'family_head__lastname', 'family_head__middlename', 'household__controlnumber']
-    list_filter = ['status']
-    list_per_page = 20
-    exclude = ('owner',)
+  def get_queryset(self, request):
+    qs = super().get_queryset(request)
+    if hasattr(request, 'families'):
+      return request.families
+    return qs
 
-    def household_id(self, obj):
-      return obj.household_id[:15]+"..."
-    
-    def household_controlnumber(self, obj):
-       return obj.household.respondent
-    household_controlnumber.short_description = 'Family belong'
+  list_display = ('household_id','household_controlnumber','family_head','family_members','status','remarks','created_at','updated_at','owner')
+  search_fields = ['family_head__firstname', 'family_head__lastname', 'family_head__middlename', 'household__controlnumber']
+  list_filter = ['status']
+  list_per_page = 20
+  exclude = ('owner',)
 
-    def save_model(self, request, obj, form, change):
-      if not obj.pk:
-        obj.owner_id = request.user.id
-      super().save_model(request, obj, form, change)
-    
-    def family_members(self, obj):
-      count_family_members = obj.familydetails_set.count()
-      changelist_link = (
-      reverse("admin:household_familydetails_changelist") + "?" + urlencode({"fam_fk": obj.fam_id})
-      )
-      add_link = (
-        reverse("admin:household_familydetails_add") + "?" + urlencode({"fam_fk": obj.fam_id,})
-      )
+  def household_id(self, obj):
+    return obj.household_id[:15]+"..."
+  
+  def household_controlnumber(self, obj):
+      return obj.household.respondent
+  household_controlnumber.short_description = 'Family belong'
 
-      if count_family_members > 1:
-        return format_html('<a href="{}">{} Members | <a href="{}">Add</a>', changelist_link, count_family_members, add_link)
-      elif count_family_members == 1:
-        return format_html('<a href="{}">{} Member | <a href="{}">Add</a>', changelist_link, count_family_members, add_link)
+  def save_model(self, request, obj, form, change):
+    if not obj.pk:  
+      if request.user.is_authenticated:
+          obj.owner = request.user
       else:
-        return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+        obj.owner = 1  
+    super().save_model(request, obj, form, change)
 
-    family_members.short_description = "No. of family members"
+  def family_members(self, obj):
+    count_family_members = obj.familydetails_set.count()
+    changelist_link = (
+    reverse("admin:household_familydetails_changelist") + "?" + urlencode({"fam_fk": obj.fam_id})
+    )
+    add_link = (
+      reverse("admin:household_familydetails_add") + "?" + urlencode({"fam_fk": obj.fam_id,})
+    )
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-      if db_field.name == 'household':
-        kwargs['widget'] = ForeignKeyRawIdWidget(
-            rel=db_field.remote_field,
-            admin_site=admin.site,
-            attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
-        )
-      elif db_field.name == 'family_head':
-        kwargs['widget'] = ForeignKeyRawIdWidget(
-            rel=db_field.remote_field,
-            admin_site=admin.site,
-            attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
-        )
+    if count_family_members > 1:
+      return format_html('<a href="{}">{} Members | <a href="{}">Add</a>', changelist_link, count_family_members, add_link)
+    elif count_family_members == 1:
+      return format_html('<a href="{}">{} Member | <a href="{}">Add</a>', changelist_link, count_family_members, add_link)
+    else:
+      return format_html('<a href="{}"> None | <a href="{}">Add</a>', changelist_link, add_link)
+
+  family_members.short_description = "No. of family members"
+
+  def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    if db_field.name in ['household', 'family_head']:
+      kwargs['widget'] = ForeignKeyRawIdWidget(
+              rel=db_field.remote_field,
+              admin_site=admin.site,
+              attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
+      )
+    return super().formfield_for_foreignkey(db_field, request, **kwargs)
   
-      return super().formfield_for_foreignkey(db_field, request, **kwargs)
-    
-    formfield_overrides = {
-      models.CharField: {'widget': forms.TextInput(attrs={'size': '25'})},
-      models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 200px;'})}
-      }
-  
-    inlines = [FamilydetailsInline]
+  formfield_overrides = {
+    models.CharField: {'widget': forms.TextInput(attrs={'size': '25'})},
+    models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 200px;'})}
+    }
+  inlines = [FamilydetailsInline]
 
 @admin.register(Familydetails)
 class FamilydetailsAdmin(admin.ModelAdmin):
@@ -329,20 +303,23 @@ class FamilydetailsAdmin(admin.ModelAdmin):
     if hasattr(request, 'family_members'):
       return request.family_members
     return qs
-  list_display = ('fam_fk','fam_member','member_birthdate','age','relationship','status','remarks','created_at','updated_at','owner')
+  list_display = ('fam_fk','fam_member','member_birthdate','age','relationship','remarks','created_at','updated_at','owner')
   search_fields = ['fam_member__firstname','fam_member__middlename','fam_member__lastname','fam_fk__family_head__firstname',
                    'fam_fk__family_head__lastname','fam_fk__family_head__middlename']
-  list_filter = ['relationship','status']
-  exclude = ('owner',)
+  list_filter = ['relationship']
+  exclude = ('owner','status')
   list_per_page = 20
   
   def save_model(self, request, obj, form, change):
-    if not obj.pk:
-      obj.owner_id = request.user.id
+    if not obj.pk: 
+      if request.user.is_authenticated:
+          obj.owner = request.user
+      else:
+        obj.owner = 1  
     super().save_model(request, obj, form, change)
     
   def member_birthdate(self, obj):
-    return f"{obj.fam_member.birthdate.strftime('%Y-%m-%d')}"
+    return f"{obj.fam_member.birthdate.strftime('%B %d, %Y')}"
   member_birthdate.short_description = 'Birthdate'
 
   def age(self, obj):
@@ -352,19 +329,12 @@ class FamilydetailsAdmin(admin.ModelAdmin):
   age.short_description = 'Age'
 
   def formfield_for_foreignkey(self, db_field, request, **kwargs):
-      if db_field.name == 'fam_fk':
+      if db_field.name in ['fam_fk', 'fam_member']:
         kwargs['widget'] = ForeignKeyRawIdWidget(
             rel=db_field.remote_field,
             admin_site=admin.site,
             attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
-        )
-      elif db_field.name == 'fam_member':
-        kwargs['widget'] = ForeignKeyRawIdWidget(
-            rel=db_field.remote_field,
-            admin_site=admin.site,
-            attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
-        )
-  
+        ) 
       return super().formfield_for_foreignkey(db_field, request, **kwargs)
     
   formfield_overrides = {
@@ -381,7 +351,24 @@ class AvailprogramsAdmin(admin.ModelAdmin):
     return queryset
   list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','upper_progimplementor','created_at','updated_at','owner')
   search_fields = ('controlnumber',)
+  list_filter = ['type_of_program']
   list_per_page = 20
+
+  def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    if db_field.name in ['controlnumber']:
+      kwargs['widget'] = ForeignKeyRawIdWidget(
+              rel=db_field.remote_field,
+              admin_site=admin.site,
+              attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
+      )
+    return super().formfield_for_foreignkey(db_field, request, **kwargs)
+  
+  formfield_overrides = {
+    models.CharField: {'widget': forms.TextInput(attrs={'size': '25'})},
+    models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 190px;'})},
+    models.FloatField: {'widget': forms.NumberInput(attrs={'style': 'width: 190px;'})},  
+    models.IntegerField: {'widget': forms.NumberInput(attrs={'style': 'width: 190px;'})},  
+  }
 
 @admin.register(Hhlivelihoods)
 class HlivelihoodsAdmin(admin.ModelAdmin):
@@ -392,12 +379,23 @@ class HlivelihoodsAdmin(admin.ModelAdmin):
     return queryset
   list_display = ('controlnumber','products','market_value','area','livelihood_tenural_status','with_insurance','livelihood','created_at','updated_at','owner')
   search_fields = ('controlnumber',)
+  list_filter = ['livelihood_tenural_status']
   list_per_page = 20
-
-  formfield_overrides = {
-        models.CharField: {'widget': forms.TextInput(attrs={'size': '18'})},
-        models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 200px;'})}
-    }
+  def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    if db_field.name in ['controlnumber']:
+      kwargs['widget'] = ForeignKeyRawIdWidget(
+              rel=db_field.remote_field,
+              admin_site=admin.site,
+              attrs={'size': '25', 'style': 'width: auto;', 'autocomplete_limit': 10},
+      )
+    return super().formfield_for_foreignkey(db_field, request, **kwargs)
   
+  formfield_overrides = {
+    models.CharField: {'widget': forms.TextInput(attrs={'size': '25'})},
+    models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 190px;'})},
+    models.FloatField: {'widget': forms.NumberInput(attrs={'style': 'width: 190px;'})},  
+    models.IntegerField: {'widget': forms.NumberInput(attrs={'style': 'width: 190px;'})},  
+  }
+
   class Meta:
     verbose_name_plural = "Household livelihoods"

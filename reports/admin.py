@@ -4,8 +4,6 @@ from .views import ViewPDF
 from django.urls import path
 
 
-
-
 # Register your models here.
 @admin.register(FloodReport)
 class FloodReportAdmin(admin.ModelAdmin):
@@ -20,6 +18,7 @@ class FloodReportAdmin(admin.ModelAdmin):
         extra_context = extra_context or {}
         extra_context['queryset'] = FloodReport.objects.all()
         return super().changelist_view(request, extra_context=extra_context)
+    
     def get_queryset(self, request):
       queryset = super().get_queryset(request)
       if hasattr(request, 'flood'):
@@ -50,7 +49,7 @@ class FloodReportAdmin(admin.ModelAdmin):
     search_fields = ('flood_id','municipality_name','barangay_name',)
     list_filter = ('flood_id',)
     ordering = ('flood_id','municipality_name','barangay_name',)
-    list_per_page = 10
+    list_per_page = 7
 
 
 @admin.register(LandslideReport)
@@ -96,7 +95,7 @@ class LandslideReportAdmin(admin.ModelAdmin):
     search_fields = ('ril_id','municipality_name','barangay_name',)
     list_filter = ('ril_id',)
     ordering = ('ril_id','municipality_name','barangay_name',)
-    list_per_page = 10
+    list_per_page = 7
 
     
 
@@ -119,13 +118,14 @@ class StormSurgeReporAdmin(admin.ModelAdmin):
       if hasattr(request, 'storm_surge'):
         return request.storm_surge
       return queryset
-    
-    change_list_template = 'reports/change_list.html'
+
     def has_delete_permission(self, request, obj=None):
         return False
+    
     def has_add_permission(self, request):
         return False
     
+    change_list_template = 'reports/change_list.html'
     list_display = ('ss_id','municipality_name','barangay_name','purok_name','household','families','person','num_male','num_female','num_male_infant','num_female_infant',
                     'num_male_children','num_female_children','num_male_adult','num_female_adult','num_male_elderly','num_female_elderly','num_pwd_male','num_pwd_female',
                     'num_ip_male','num_ip_female')
@@ -143,4 +143,4 @@ class StormSurgeReporAdmin(admin.ModelAdmin):
     search_fields = ('municipality_name','barangay_name',)
     ordering = ('municipality_name','barangay_name',)
     list_filter = ('ss_id',)
-    list_per_page = 10
+    list_per_page = 7

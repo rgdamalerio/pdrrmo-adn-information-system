@@ -78,11 +78,11 @@
                         {% if cl.has_filters %}
                         <span class="float-sm-right">
                             <a href="{% url 'aggregate:export_aggregate'%}" 
-                            class="btn btn-info btn-sm text-sm">
+                            class="btn btn-primary btn-sm text-sm">
                                 <i class="fa fa-download"></i> Download
                             </a>
                             <a href="#"
-                            class="btn btn-success btn-sm text-light ml-1" data-toggle="collapse" data-target="#changelist-filter" aria-expanded="false" aria-controls="changelist-filter">
+                            class="btn btn-dark btn-sm text-light ml-1" data-toggle="collapse" data-target="#changelist-filter" aria-expanded="false" aria-controls="changelist-filter">
                                 <i class="fas fa-filter"></i>
                                 {% trans 'Filter' %}
                             </a>
@@ -131,10 +131,9 @@
                 {% endblock %}
                  {% block pagination %}{% pagination cl %}{% endblock %}
             </form>
-        {% include 'aggregate/chart.html' %}
         </div>
     </div>
-  
+    {% include 'aggregate/chart.html' %}
 {% endblock %}
 
 

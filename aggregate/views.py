@@ -35,7 +35,7 @@ def exportFamilyandPopulation(request):
                 'Municipality', 'Barangay', 'No. of Households', 'No. of Families', 'Individuals (M)', 'Individuals (F)',
                 'Infant 0-11months (M)', 'Infant 0-11months (F)', 'Children 1-17y/o (M)', 'Children 1-17y/o (F)',
                 'Adult 18-59y/o (M)', 'Adult 18-59y/o (F)', 'Elderly 60y/o above (M)', 'Elderly 60y/o above (F)',
-                'IP (M)', 'IP (F)'
+                'PWD (M)', 'PWD (F)','IP (M)', 'IP (F)'
             ]
 
             for col_num, header_title in enumerate(headers, 1):
@@ -49,7 +49,7 @@ def exportFamilyandPopulation(request):
                 worksheet.append([
                     data.munname, data.brgyname, data.households, data.families, data.male, data.female, data.male_infant,
                     data.female_infant, data.male_children, data.female_children, data.male_adult,
-                    data.female_adult, data.male_elderly, data.female_elderly, data.ip_male, data.ip_female
+                    data.female_adult, data.male_elderly, data.female_elderly, data.pwd_male, data.pwd_female, data.ip_male, data.ip_female
                 ])
 
             response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

@@ -1,5 +1,4 @@
 from django.urls import path
-
 from .views import household_datasets, household_search_form, household_info, chart_view
 
 urlpatterns = [
