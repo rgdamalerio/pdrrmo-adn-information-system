@@ -100,7 +100,7 @@ class HouseholdsAdmin(LeafletGeoAdmin):
         models.PointField: {"widget": GooglePointFieldWidget}
     }'''
     readonly_fields = ('enumerator','editor',)
-    fields = ['respondent','date_interview','municipality', 'barangay','purok_fk','location','householdbuildingtypes',
+    fields = ['respondent','date_interview','municipality', 'barangay','purok_fk','location','longitude','latitude','householdbuildingtypes',
               'householdtenuralstatus','year_construct','estimated_cost', 'number_bedrooms', 'number_storey',
               'access_electricity', 'householdroofmaterials','householdwallmaterials','medical_treatment',
               'access_water_supply','potable','householdwatertenuralstatus','waterlevelsystems','floods_occur',

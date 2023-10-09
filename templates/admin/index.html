@@ -47,8 +47,8 @@
     
 </style>
 <link rel="stylsheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css'%}">
-<link rel="stylsheet" type="text/css" href="{% static 'leaflet-coord-projection/coord-projection.css'%}">
-<script type="text/javascript" src="{% static 'leaflet-coord-projection/coord-projection.js'%}"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mwasil/Leaflet.Rainviewer/leaflet.rainviewer.css"/>
+<script src="https://cdn.jsdelivr.net/gh/mwasil/Leaflet.Rainviewer/leaflet.rainviewer.js"></script>
 <script type="text/javascript" src="{% static 'js/leaflet.markercluster-src.js'%}"></script>
 <script type="text/javascript" src="{% static 'js/MarkerCluster.js'%}"></script> 
 <script type="text/javascript" src="{% static 'leaflet_dist/leaflet.browser.print.min.js'%}"></script> 
@@ -67,24 +67,37 @@
 {% block breadcrumbs %}
 <div class="row mb-2">
     <div class="col-sm-4">
-        <!-- <h2>{{title}}</h2>  -->
+        <!-- <h2>{{title}}</h2> -->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchModal">
             <i class="fa fa-search"></i> Advance Search
         </button>
         <button type="button" class="btn btn-info" id="btnChart">
             <i class="fas fa-chart-bar"></i> Chart
         </button>
-
     </div>
     <div class="col-sm-8">
         <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="{% url 'admin:index' %}"><i class="fas fa-tachometer-alt"></i> {% trans 'Home' %}</a></li>
             {% for app in app_list %}
-            <li class="breadcrumb-item active">{{ app.name }}</li>
+                <li class="breadcrumb-item active">{{ app.name }}</li>
             {% endfor %}
         </ol>
     </div>
 </div>
+<div class="row mb-2">
+    <div class="col-sm-4 offset-sm-8">
+        <div class="row">
+            <div class="col-6">
+                <input type="text" id="searchInput" class="form-control ml-auto" placeholder="Enter Area Name">
+            </div>
+            <div class="col-6">
+                <button id="searchButton" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {% endblock %}
 {% endif %}
 
@@ -93,10 +106,10 @@
 <!-- INCLUDE -->
 {% include 'admin/advance_search.html' %}
 {% include 'admin/chart_view.html' %}
+<div id="attributeData"></div>
 
 
 <script type="text/javascript">
-
     window.addEventListener("map:init", function (e) {
 
         mymap = event.detail.map;
@@ -488,11 +501,10 @@
             //zoomToBoundsOnClick: true, // Enable zoom to bounds on click
             disableClusteringAtZoom: 18// Set the max zoom level to disable clustering
         });
+       
       
         markers.addLayer(households);
         mymap.addLayer(markers);
-        
-        //Shapefiles
         var Major_Rivers = L.geoJson(major_rivers)
         var Landslide = L.geoJson(landslide, {
             style: {
@@ -522,9 +534,8 @@
             maxZoom: 20
         });
 
-        var CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
+        var CartoDB_DarkMatter =  L.tileLayer('https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=kEDERnHNlZLDljPBkGDv', {
+            attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> contributors',
             maxZoom: 20
         });
             
@@ -585,6 +596,94 @@
             mymap.removeLayer(markers);
             mymap.addLayer(markers);
         });
+            // Change default options
+        L.control.rainviewer({ 
+            position: 'bottomleft',
+            nextButtonText: '>',
+            playStopButtonText: 'Play/Stop',
+            prevButtonText: '<',
+            positionSliderLabelText: "Hour:",
+            opacitySliderLabelText: "Opacity:",
+            animationInterval: 500,
+            opacity: 0.5
+        }).addTo(mymap);
+
+
+        // Create an empty GeoJSON layer
+        var geoJSONLayer = L.geoJSON().addTo(mymap);
+
+        // Function to add a GeoJSON feature to the layer
+        function addGeoJSONFeature(feature) {
+            geoJSONLayer.addData(feature);
+        }
+
+        $(document).ready(function () {
+            $('#searchButton').click(function () {
+                var placeName = $('#searchInput').val().trim().toLowerCase();
+        
+                // Clear layers
+                markers.clearLayers();
+                geoJSONLayer.clearLayers();
+        
+                // Collect matching features
+                var matchingFeatures = [];
+                barangay.features.forEach(function (feature) {
+                    var featurePlaceName = feature.properties.BarangayNa.toLowerCase();
+                    if (featurePlaceName === placeName) {
+                        matchingFeatures.push(feature);
+                    }
+                });
+        
+                // Add matching features to the layer
+                if (matchingFeatures.length > 0) {
+                    geoJSONLayer.addData(matchingFeatures);
+                    mymap.fitBounds(geoJSONLayer.getBounds());
+        
+                    // Perform AJAX request
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'search_view' %}",  // Replace with the actual URL of your Django view
+                        data: {
+                            'search_input': placeName,
+                            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            var matchingFeature = geoJSONLayer.getLayers()[0];
+        
+                            if (matchingFeature) {
+                                if ('matching_reports' in data && data.matching_reports.length > 0) {
+                                    var report = data.matching_reports[0];
+                                    var popupContent =
+                                    '<div class="custom-popup" style="line-height: 1.2;">' +
+                                    '<h2 style="margin-bottom: 8px;">Household Affected by Storm Surge</h2>' +
+                                    '<p style="margin-bottom: 4px;"><strong>Municipality Name:</strong> ' + report.municipality_name + '</p>' +
+                                    '<p style="margin-bottom: 4px;"><strong>Barangay Name:</strong> ' + report.barangay_name + '</p>' +
+                                    '<p style="margin-bottom: 4px;"><strong>Total:</strong> ' + data.total_households + '</p>' +
+                                    '</div>';
+                                
+        
+                                    matchingFeature.bindPopup(popupContent,{
+                                        maxWidth: 200,
+                                    }).openPopup();
+                                } else if ('message' in data) {
+                                    var popupContent =
+                                        '<div class="custom-popup">' +
+                                        '<h2>' + data.message + '</h2>' +
+                                        '</div>';
+                                    matchingFeature.bindPopup(popupContent).openPopup();
+                                }
+                            }
+                        },
+                        error: function (error) {
+                            console.log('Error:', error);
+                        }
+                    });
+                }
+            });
+        });
+        
+        
 
         $( "#advance_search" ).click(function() {          
             /* Get from elements values */
