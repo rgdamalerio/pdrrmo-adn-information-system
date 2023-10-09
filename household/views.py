@@ -10,6 +10,9 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.core.serializers import serialize
 from .models import Households
+from django.contrib.gis.geos import Point
+from reports.models import FloodReport, StormSurgeReport
+from django.http import JsonResponse
 
 
 def is_valid_queryparam(param):
@@ -104,16 +107,6 @@ def chart_view(request):
                 total_households=Sum('households'),
                 total_male=Sum('male'),
                 total_female=Sum('female'),
-                total_male_infant=Sum('male_infant'),
-                total_female_infant=Sum('female_infant'),
-                total_male_children=Sum('male_children'),
-                total_female_children=Sum('female_children'),
-                total_male_adult=Sum('male_adult'),
-                total_female_adult=Sum('female_adult'),
-                total_male_elderly=Sum('male_elderly'),
-                total_female_elderly=Sum('female_elderly'),
-                total_ip_male=Sum('ip_male'),
-                total_ip_female=Sum('ip_female')
             )
         else:
             municipality = request.user.userlocation.psgccode_mun
@@ -121,16 +114,6 @@ def chart_view(request):
                 total_households=Sum('households'),
                 total_male=Sum('male'),
                 total_female=Sum('female'),
-                total_male_infant=Sum('male_infant'),
-                total_female_infant=Sum('female_infant'),
-                total_male_children=Sum('male_children'),
-                total_female_children=Sum('female_children'),
-                total_male_adult=Sum('male_adult'),
-                total_female_adult=Sum('female_adult'),
-                total_male_elderly=Sum('male_elderly'),
-                total_female_elderly=Sum('female_elderly'),
-                total_ip_male=Sum('ip_male'),
-                total_ip_female=Sum('ip_female')
             )
 
         labels = []
@@ -141,16 +124,6 @@ def chart_view(request):
                 item['total_households'],
                 item['total_male'],
                 item['total_female'],
-                item['total_male_infant'],
-                item['total_female_infant'],
-                item['total_male_children'],
-                item['total_female_children'],
-                item['total_male_adult'],
-                item['total_female_adult'],
-                item['total_male_elderly'],
-                item['total_female_elderly'],
-                item['total_ip_male'],
-                item['total_ip_female'],
             ])
 
         context = {'labels': labels, 'data': data}
@@ -158,5 +131,30 @@ def chart_view(request):
     else:
         # Do something for anonymous users.
         raise PermissionDenied()
+    
+def search_view(request):
+    if request.method == 'POST':
+        place_name = request.POST.get('search_input').strip().lower()
+
+        # Query the database to get StormSurgeReport objects where barangay_name matches the search input
+        matching_reports = StormSurgeReport.objects.filter(barangay_name__iexact=place_name)
+
+        if matching_reports.exists():
+            # Sum the 'household' values for all matching records
+            total_households = matching_reports.aggregate(Sum('household'))['household__sum']
+
+            # Serialize the matching records and the total households into JSON
+            data = [{'ss_id': report.ss_id, 'municipality_name': report.municipality_name, 
+                     'barangay_name': report.barangay_name} for report in matching_reports]
+            
+            response_data = {
+                'matching_reports': data,
+                'total_households': total_households
+            }
+            return JsonResponse(response_data)
+        else:
+            # Handle the case when no matching records are found
+            return JsonResponse({'message': 'No matching records found'})
 
 
+    return JsonResponse({'message': 'Invalid request method'})
