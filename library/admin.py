@@ -132,7 +132,7 @@ class FamilystatusAdmin(admin.ModelAdmin):
 
 class FamilyrelationshipAdmin(admin.ModelAdmin):
   list_display = ("id","type","created_at","updated_at","owner")
-  ordering = ['type']
+  ordering = ['id']
 
 
 

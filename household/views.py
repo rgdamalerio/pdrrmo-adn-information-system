@@ -134,27 +134,12 @@ def chart_view(request):
     
 def search_view(request):
     if request.method == 'POST':
-        place_name = request.POST.get('search_input').strip().lower()
-
-        # Query the database to get StormSurgeReport objects where barangay_name matches the search input
-        matching_reports = StormSurgeReport.objects.filter(barangay_name__iexact=place_name)
-
-        if matching_reports.exists():
-            # Sum the 'household' values for all matching records
-            total_households = matching_reports.aggregate(Sum('household'))['household__sum']
-
-            # Serialize the matching records and the total households into JSON
-            data = [{'ss_id': report.ss_id, 'municipality_name': report.municipality_name, 
-                     'barangay_name': report.barangay_name} for report in matching_reports]
+        place_name = request.POST.get('search_input').strip().lower().capitalize()
+        match_households = Households.objects.filter(barangay__brgyname__icontains=place_name)
+        
+        if match_households.exists():
             
-            response_data = {
-                'matching_reports': data,
-                'total_households': total_households
-            }
-            return JsonResponse(response_data)
+            households = serialize('geojson', match_households, use_natural_foreign_keys=True, fields=('pk', 'location', 'latitude', 'longitude'))
+            return HttpResponse(households, content_type='application/json')
         else:
-            # Handle the case when no matching records are found
-            return JsonResponse({'message': 'No matching records found'})
-
-
-    return JsonResponse({'message': 'Invalid request method'})
+            return JsonResponse({'message': 'Invalid request method'})
