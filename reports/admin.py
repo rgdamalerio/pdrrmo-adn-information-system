@@ -50,6 +50,8 @@ class FloodReportAdmin(admin.ModelAdmin):
     list_filter = ('flood_id',)
     ordering = ('flood_id','municipality_name','barangay_name',)
     list_per_page = 7
+    
+    
 
 
 @admin.register(LandslideReport)

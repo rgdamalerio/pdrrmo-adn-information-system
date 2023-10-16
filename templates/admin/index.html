@@ -47,8 +47,6 @@
     
 </style>
 <link rel="stylsheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css'%}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mwasil/Leaflet.Rainviewer/leaflet.rainviewer.css"/>
-<script src="https://cdn.jsdelivr.net/gh/mwasil/Leaflet.Rainviewer/leaflet.rainviewer.js"></script>
 <script type="text/javascript" src="{% static 'js/leaflet.markercluster-src.js'%}"></script>
 <script type="text/javascript" src="{% static 'js/MarkerCluster.js'%}"></script> 
 <script type="text/javascript" src="{% static 'leaflet_dist/leaflet.browser.print.min.js'%}"></script> 
@@ -84,14 +82,14 @@
         </ol>
     </div>
 </div>
-<div class="row mb-2">
-    <div class="col-sm-4 offset-sm-8">
+<div class="row">
+    <div class="col-sm-4 offset-sm-9">
         <div class="row">
             <div class="col-6">
-                <input type="text" id="searchInput" class="form-control ml-auto" placeholder="Enter Area Name">
+                <input type="text" id="searchInput" class="form-control ml-auto text-sm" placeholder="Enter Area Name">
             </div>
             <div class="col-6">
-                <button id="searchButton" class="btn btn-primary">Search</button>
+                <button id="searchButton" class="btn btn-dark text-sm">Search</button>
             </div>
         </div>
     </div>
@@ -501,17 +499,31 @@
             //zoomToBoundsOnClick: true, // Enable zoom to bounds on click
             disableClusteringAtZoom: 18// Set the max zoom level to disable clustering
         });
-       
+        function customStyle(feature) {
+            return {
+                fillColor: '#FED976',  
+                color: 'white',     
+                weight: 3,         
+                opacity: 1,
+                dashArray: '3',        
+                fillOpacity: 0.7   
+            };
+        }
       
         markers.addLayer(households);
         mymap.addLayer(markers);
         var Major_Rivers = L.geoJson(major_rivers)
         var Landslide = L.geoJson(landslide, {
             style: {
-                color: '#e60000'
+                fillColor: 'white',  
+                color: '#F62C01',     
+                weight: 3,         
+                opacity: 1,
+                dashArray: '3',        
+                fillOpacity: 0
             }
         })
-        var Barangay = L.geoJson(barangay)
+        var Barangay = L.geoJson(barangay, {style: customStyle})
 
 
         //BaseMaps
@@ -519,14 +531,14 @@
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
             accessToken: 'pk.eyJ1IjoiaWFtdGVrc29uIiwiYSI6ImNqdjV4YzI4YjB0aXk0ZHBtNnVnNWxlM20ifQ.FjQJyCTodXASYtOK8IrLQA',
             maxZoom: 20
-          }).addTo(mymap);
+          });
 
         var mapbox = L.tileLayer('https://api.tiles.mapbox.com/styles/v1/{username}/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
             username: 'iamtekson',
             id: 'cjwhym7s70tae1co8zf17a3r5',
             accessToken: 'pk.eyJ1IjoiaWFtdGVrc29uIiwiYSI6ImNqdjV4YzI4YjB0aXk0ZHBtNnVnNWxlM20ifQ.FjQJyCTodXASYtOK8IrLQA'
-        });
+        }).addTo(mymap);
 
         var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -534,8 +546,9 @@
             maxZoom: 20
         });
 
-        var CartoDB_DarkMatter =  L.tileLayer('https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=kEDERnHNlZLDljPBkGDv', {
-            attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> contributors',
+        var CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
             maxZoom: 20
         });
             
@@ -546,10 +559,10 @@
         });
 
         var baseMaps = {
-            "MapboxSatellite": mapboxSatellite,
             "Mapbox V1": mapbox,
+            "MapboxSatellite": mapboxSatellite,
             "CartoDB Voyager":CartoDB_Voyager,
-            "CartoDB_DarkMatter": CartoDB_DarkMatter,  
+            "CartoDB DarkMatter": CartoDB_DarkMatter,  
         };
 
         var groupedOverlays = {
@@ -596,35 +609,30 @@
             mymap.removeLayer(markers);
             mymap.addLayer(markers);
         });
-            // Change default options
-        L.control.rainviewer({ 
-            position: 'bottomleft',
-            nextButtonText: '>',
-            playStopButtonText: 'Play/Stop',
-            prevButtonText: '<',
-            positionSliderLabelText: "Hour:",
-            opacitySliderLabelText: "Opacity:",
-            animationInterval: 500,
-            opacity: 0.5
-        }).addTo(mymap);
-
-
-        // Create an empty GeoJSON layer
-        var geoJSONLayer = L.geoJSON().addTo(mymap);
-
-        // Function to add a GeoJSON feature to the layer
+       
+        
+        var geoJSONLayer = L.geoJSON(null, {style: customStyle}).addTo(mymap);
+        
+        // Function to add a feature to the geoJSONLayer
         function addGeoJSONFeature(feature) {
             geoJSONLayer.addData(feature);
         }
-
+        
+        
         $(document).ready(function () {
             $('#searchButton').click(function () {
                 var placeName = $('#searchInput').val().trim().toLowerCase();
+                function clearMap() {
+                    mymap.eachLayer(function (layer) {
+                        if (layer instanceof L.Marker) {
+                            mymap.removeLayer(layer);
+                        }
+                    });
+                    markers.clearLayers();
+                    geoJSONLayer.clearLayers();
+                }
         
-                // Clear layers
-                markers.clearLayers();
-                geoJSONLayer.clearLayers();
-        
+                clearMap();
                 // Collect matching features
                 var matchingFeatures = [];
                 barangay.features.forEach(function (feature) {
@@ -642,7 +650,7 @@
                     // Perform AJAX request
                     $.ajax({
                         type: 'POST',
-                        url: "{% url 'search_view' %}",  // Replace with the actual URL of your Django view
+                        url: "{% url 'search_view' %}",  
                         data: {
                             'search_input': placeName,
                             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
@@ -650,30 +658,21 @@
                         dataType: 'json',
                         success: function (data) {
                             var matchingFeature = geoJSONLayer.getLayers()[0];
+                            var households = new L.GeoJSON(data,{
+                                pointToLayer: function(feature, latlng) {
+                                    var greenIcon = L.icon({
+                                        iconUrl: '{% static "image/icons8-green-circle-48.png"%}',
+                                        iconSize:     [16, 16],
+                                        iconAnchor:   [-3,9], // point of the icon which will correspond to marker's location
+                                        popupAnchor: [0,0],
+                                        tooltipAnchor: [0,0]
+                                    });
+                                    return L.marker(latlng, {icon: greenIcon}).addTo(mymap);
+                                },
+                            }).on('click',function(e){
+                                whenClicked(e)
+                            });
         
-                            if (matchingFeature) {
-                                if ('matching_reports' in data && data.matching_reports.length > 0) {
-                                    var report = data.matching_reports[0];
-                                    var popupContent =
-                                    '<div class="custom-popup" style="line-height: 1.2;">' +
-                                    '<h2 style="margin-bottom: 8px;">Household Affected by Storm Surge</h2>' +
-                                    '<p style="margin-bottom: 4px;"><strong>Municipality Name:</strong> ' + report.municipality_name + '</p>' +
-                                    '<p style="margin-bottom: 4px;"><strong>Barangay Name:</strong> ' + report.barangay_name + '</p>' +
-                                    '<p style="margin-bottom: 4px;"><strong>Total:</strong> ' + data.total_households + '</p>' +
-                                    '</div>';
-                                
-        
-                                    matchingFeature.bindPopup(popupContent,{
-                                        maxWidth: 200,
-                                    }).openPopup();
-                                } else if ('message' in data) {
-                                    var popupContent =
-                                        '<div class="custom-popup">' +
-                                        '<h2>' + data.message + '</h2>' +
-                                        '</div>';
-                                    matchingFeature.bindPopup(popupContent).openPopup();
-                                }
-                            }
                         },
                         error: function (error) {
                             console.log('Error:', error);
@@ -682,8 +681,6 @@
                 }
             });
         });
-        
-        
 
         $( "#advance_search" ).click(function() {          
             /* Get from elements values */
@@ -727,7 +724,6 @@
             
         });     
 
-       
         $( "#btnChart" ).click(function() {
             $('#graphsModal').modal('toggle');
             var values = $('#advance_search_form').serialize();
