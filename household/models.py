@@ -37,7 +37,7 @@ class Households(models.Model):
   purok_fk = models.ForeignKey(Purok,null=True,on_delete=models.SET_NULL,verbose_name='Purok')
   longitude = models.CharField(max_length=50,null=True)
   latitude = models.CharField(max_length=50,null=True)
-  location = models.PointField(srid=4326,null=True,)
+  location = models.PointField(srid=4326,null=True)
   respondent = models.CharField(max_length=50,null=True)
   date_interview = models.DateField(_('Date interviewed'))
   enumerator = models.CharField(max_length=50,null=True)
@@ -58,7 +58,7 @@ class Households(models.Model):
   access_health_medical_facility = models.BooleanField(_('Access to health and medical facility'),null=True)
   access_telecommuniciation = models.BooleanField(_('Access to telecommunication'),null=True)
   access_drill_simulation = models.BooleanField(_('Access/Join drill and simulation'),null=True)
-  image = models.ImageField(upload_to ='uploads/',null=True)
+  image = models.ImageField(upload_to ='uploads/',null=True,blank=True)
   created_at = models.DateField(auto_now_add=True)
   updated_at = models.DateField(auto_now=True)
   owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,default=1)
@@ -126,8 +126,8 @@ class Demographies(models.Model):
   def __str__(self):
     return f"{str(self.firstname)} {str(self.middlename)} {str(self.lastname)}"
   
-  '''def format_birthdate(self):
-      return self.birthdate.strftime("%m-%d-%Y")'''
+  def format_birthdate(self):
+      return self.birthdate.strftime("%m-%d-%Y")
   
   class Meta:
     verbose_name = "Individual"
@@ -186,7 +186,7 @@ class Availprograms(models.Model):
   upper_progimplementor.short_description = 'Program Implementor'
   
   class Meta:
-    verbose_name_plural = "Avail Programs"
+    verbose_name_plural = "Availed Programs"
 
 class Hhlivelihoods(models.Model):
   controlnumber = models.ForeignKey(Households,null=True,on_delete=models.SET_NULL,verbose_name='Livelihood belong')
