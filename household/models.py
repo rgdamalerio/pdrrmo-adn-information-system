@@ -126,8 +126,8 @@ class Demographies(models.Model):
   def __str__(self):
     return f"{str(self.firstname)} {str(self.middlename)} {str(self.lastname)}"
   
-  '''def format_birthdate(self):
-      return self.birthdate.strftime("%m-%d-%Y")'''
+  def format_birthdate(self):
+      return self.birthdate.strftime("%m-%d-%Y")
   
   class Meta:
     verbose_name = "Individual"
@@ -186,7 +186,7 @@ class Availprograms(models.Model):
   upper_progimplementor.short_description = 'Program Implementor'
   
   class Meta:
-    verbose_name_plural = "Avail Programs"
+    verbose_name_plural = "Availed Programs"
 
 class Hhlivelihoods(models.Model):
   controlnumber = models.ForeignKey(Households,null=True,on_delete=models.SET_NULL,verbose_name='Livelihood belong')
