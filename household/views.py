@@ -129,17 +129,17 @@ def chart_view(request):
         context = {'labels': labels, 'data': data}
         return render(request, 'household/chart_view_content.html', context)
     else:
-        # Do something for anonymous users.
         raise PermissionDenied()
     
 def search_view(request):
     if request.method == 'POST':
-        place_name = request.POST.get('search_input').strip().lower().capitalize()
-        match_households = Households.objects.filter(barangay__brgyname__icontains=place_name)
-        
+        place_name = request.POST.get('search_input').strip()
+        match_households = Households.objects.filter(barangay__psgccode__icontains=place_name)
+
         if match_households.exists():
-            
             households = serialize('geojson', match_households, use_natural_foreign_keys=True, fields=('pk', 'location', 'latitude', 'longitude'))
             return HttpResponse(households, content_type='application/json')
         else:
-            return JsonResponse({'message': 'Invalid request method'})
+            return JsonResponse({'message': f'No households found for search input: {place_name}'})
+    else:
+        return JsonResponse({'message': 'Invalid request method'})
