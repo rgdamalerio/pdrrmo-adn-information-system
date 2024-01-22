@@ -71,7 +71,22 @@ class DemographiesInline(admin.StackedInline):
 class LivelihoodsInline(admin.StackedInline):
   model = Hhlivelihoods
   extra = 0
-  readonly_fields = ['owner','created_at','updated_at',]
+  exclude = ['owner','created_at','updated_at',]
+  
+  formfield_overrides = {
+      models.CharField: {'widget': forms.TextInput(attrs={'size': '30'})},  
+      models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 215px;'})},  
+  }
+  
+class AvaildProgramsInline(admin.StackedInline):
+  model = Availprograms
+  extra = 0
+  exclude = ['owner','created_at','updated_at',]
+  
+  formfield_overrides = {
+      models.CharField: {'widget': forms.TextInput(attrs={'size': '30'})},  
+      models.ForeignKey: {'widget': forms.Select(attrs={'style': 'width: 215px;'})},  
+  }
 
 
 # Register your models here.
@@ -172,6 +187,8 @@ class HouseholdsAdmin(LeafletGeoAdmin):
     views_hhlivelihoods_link.short_description = "Livelihoods"
   
     inlines = [
+      LivelihoodsInline,
+      AvaildProgramsInline,
       FamiliesInline,
     ]
     formfield_overrides = {
@@ -192,7 +209,7 @@ class DemographiesAdmin(admin.ModelAdmin):
         return request.demographies
       return queryset
     form = DemographiesForm
-    list_display  = ['controlnumber_id','relationshiptohead','lastname','firstname','middlename','extension','age',
+    list_display  = ['controlnumber_id','lastname','firstname','middlename','extension','age',
               'gender','birthdate', 'marital_status','primary_occupation', 'religion',
               'can_read_and_write','person_with_special_needs','type_of_disability','created_at','updated_at']
       
@@ -205,7 +222,7 @@ class DemographiesAdmin(admin.ModelAdmin):
     list_filter = ['marital_status']
     list_select_related = ('controlnumber',)
     list_per_page = 20
-    ordering = ('-id',)
+    ordering = ['lastname','firstname','primary_occupation', 'religion']
 
     readonly_fields = ['owner','created_at','updated_at','age',]
     list_editable = ['lastname','firstname','middlename','extension','birthdate','marital_status','primary_occupation','gender',
