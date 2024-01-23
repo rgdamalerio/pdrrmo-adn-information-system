@@ -210,7 +210,7 @@ class DemographiesAdmin(admin.ModelAdmin):
       return queryset
     form = DemographiesForm
     list_display  = ['controlnumber_id','lastname','firstname','middlename','extension','age',
-              'gender','birthdate', 'marital_status','primary_occupation', 'religion',
+              'gender','birthdate', 'marital_status','primary_occupation', 'religion','member_ip',
               'can_read_and_write','person_with_special_needs','type_of_disability','created_at','updated_at']
       
     fields = ['controlnumber','lastname','firstname','middlename','extension',
@@ -225,8 +225,8 @@ class DemographiesAdmin(admin.ModelAdmin):
     ordering = ['lastname','firstname','primary_occupation', 'religion']
 
     readonly_fields = ['owner','created_at','updated_at','age',]
-    #list_editable = ['lastname','firstname','middlename','extension','birthdate','marital_status','primary_occupation','gender',
-                    #'religion','can_read_and_write','person_with_special_needs','type_of_disability']
+    list_editable = ['lastname','firstname','middlename','extension','birthdate','marital_status','primary_occupation','gender',
+                    'religion','member_ip','can_read_and_write','person_with_special_needs','type_of_disability']
     search_fields = ('controlnumber_id__controlnumber','lastname','firstname','middlename',)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
