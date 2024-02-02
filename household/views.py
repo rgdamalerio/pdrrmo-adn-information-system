@@ -10,8 +10,6 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.core.serializers import serialize
 from .models import Households
-from django.contrib.gis.geos import Point
-from reports.models import FloodReport, StormSurgeReport
 from django.http import JsonResponse
 
 
@@ -22,10 +20,8 @@ def is_valid_queryparam(param):
 def household_datasets(request):
     if request.user.is_authenticated:
         if request.user.is_superuser or request.user.groups.filter(name='admin').exists():
-            # Return all households for superusers and admin group
             qs = Households.objects.all()
         else:
-            # Filter households based on the user's municipality
             municipality = request.user.userlocation.psgccode_mun
             qs = Households.objects.filter(municipality=municipality)
         

@@ -367,7 +367,7 @@ class AvailprogramsAdmin(admin.ModelAdmin):
       return request.availprograms
     return queryset
   list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','upper_progimplementor','created_at','updated_at','owner')
-  search_fields = ('controlnumber',)
+  search_fields = ('controlnumber__respondent',)
   list_filter = ['type_of_program']
   list_per_page = 20
 
@@ -395,7 +395,7 @@ class HlivelihoodsAdmin(admin.ModelAdmin):
       return request.livelihoods
     return queryset
   list_display = ('controlnumber','products','market_value','area','livelihood_tenural_status','with_insurance','livelihood','created_at','updated_at','owner')
-  search_fields = ('controlnumber',)
+  search_fields = ('controlnumber__respondent',)
   list_filter = ['livelihood_tenural_status']
   list_per_page = 20
   def formfield_for_foreignkey(self, db_field, request, **kwargs):

@@ -1,5 +1,6 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static %}
+{% load static %}
 {% load admin_menu %}
 {% load leaflet_tags %}
 
@@ -46,16 +47,16 @@
     }
     
 </style>
-<link rel="stylsheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css'%}">
-<script type="text/javascript" src="{% static 'js/leaflet.markercluster-src.js'%}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css' %}">
+<script type="text/javascript" src="{% static 'js/leaflet.markercluster-src.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/MarkerCluster.js'%}"></script> 
 <script type="text/javascript" src="{% static 'leaflet_dist/leaflet.browser.print.min.js'%}"></script> 
 <script type="text/javascript" src="{% static 'leaflet_dist/leaflet.ajax.js'%}"></script>
 <script type="text/javascript" src="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.js'%}"></script>
-<script type="text/javascript" src="{% static 'js/caraga.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/major_rivers.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/landslide.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/barangay.js' %}"></script>
+
 {% endblock %}
 
 {% block coltype %}colMS{% endblock %}
@@ -66,10 +67,10 @@
 <div class="row mb-2">
     <div class="col-sm-4">
         <!-- <h2>{{title}}</h2> -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchModal">
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#searchModal">
             <i class="fa fa-search"></i> Advance Search
         </button>
-        <button type="button" class="btn btn-info" id="btnChart">
+        <button type="button" class="btn btn-info btn-sm" id="btnChart">
             <i class="fas fa-chart-bar"></i> Chart
         </button>
     </div>
@@ -83,14 +84,12 @@
     </div>
 </div>
 
-<div class="container container-sm mb-2" style="float: right; width: 150px; margin-right: 10px;">
-    <label for="barangaySelect" style="font-size: 14px;">Select barangay:</label>
-    <select class="form-control form-control-sm" id="barangaySelect" style="font-size: 12px;"></select>
+<div class="container container-sm mb-2 " style="float: right; width: 130px;">
+    <select class="form-control form-control-sm border border-dark" id="barangaySelect" style="font-size: 13px;"></select>
 </div>
 
-<div class="container container-sm" style="float: right; width: 150px; margin-right: 10px;">
-    <label for="municipalitySelect" style="font-size: 14px;">Select municipality:</label>
-    <select class="form-control form-control-sm" id="municipalitySelect" style="font-size: 12px;"></select>
+<div class="container container-sm" style="float: right; width: 150px;">
+    <select class="form-control form-control-sm border border-dark" id="municipalitySelect" style="font-size: 13px;"></select>
 </div>
 
 
@@ -107,18 +106,18 @@
     window.addEventListener("map:init", function (e) {
 
         mymap = event.detail.map;
-        
+
         var households = new L.GeoJSON.AJAX("{% url 'household'%}",{
             pointToLayer: function(feature, latlng) {
                 var greenIcon = L.icon({
                     iconUrl: '{% static "image/icons8-green-circle-48.png"%}',
 
                     iconSize:[16, 16],
-                    iconAnchor:[-3,9], // point of the icon which will correspond to marker's location
+                    iconAnchor:[-3,9], 
                     popupAnchor:[0,0],
                     tooltipAnchor:[0,0]
                 });
-                return L.marker(latlng, {icon: greenIcon}).addTo(markers);
+                return L.marker(latlng, {icon: greenIcon}).addTo(hh_markers);
             },
             onEachFeature: function(feature,layer){
                 households.on({
@@ -484,35 +483,37 @@
         }
 
         //Cluster Markers
-        var markers = L.markerClusterGroup({
-            maxClusterRadius: 35,
+        var hh_markers = L.markerClusterGroup({
+            maxClusterRadius: 50,
             spiderfyOnMaxZoom: false, // Disable spiderfy on max zoom
             showCoverageOnHover: false, // Disable showing coverage on hover
             //zoomToBoundsOnClick: true, // Enable zoom to bounds on click
             disableClusteringAtZoom: 18// Set the max zoom level to disable clustering
         });
+
+        var markers = new L.LayerGroup().addTo(mymap);
         function customStyle(feature) {
             return {
                 fillColor: '#3F4D71',  
-                color: 'white',     
+                color: '#E3F4F4',     
                 weight: 4,         
                 opacity: 1,
-                dashArray: '3',        
-                fillOpacity: 0.8   
+                dashArray: '4',        
+                fillOpacity: 0.2  
             };
         }
       
-        markers.addLayer(households);
+        hh_markers.addLayer(households);
         //mymap.addLayer(markers);
         var Major_Rivers = L.geoJson(major_rivers)
         var Landslide = L.geoJson(landslide, {
             style: {
-                fillColor: 'white',  
-                color: '#F62C01',     
+                fillColor: null,  
+                color: '#A87C7C',     
                 weight: 3,         
                 opacity: 1,
-                dashArray: '3',        
-                fillOpacity: 0
+                dashArray: '3',
+                fillOpacity: 0    
             }
         })
         var Barangay = L.geoJson(barangay, {style: customStyle})
@@ -544,22 +545,21 @@
             maxZoom: 20
         });
             
-        
         households.on('data:loaded', function() {
             if(households.getBounds().isValid())
                 mymap.fitBounds(households.getBounds());
         });
 
         var baseMaps = {
-            "Mapbox V1": mapbox,
             "MapboxSatellite": mapboxSatellite,
+            "Mapbox V1": mapbox,
             "CartoDB Voyager":CartoDB_Voyager,
             "CartoDB DarkMatter": CartoDB_DarkMatter,  
         };
 
         var groupedOverlays = {
             "Overlays": {
-                "Households": markers,
+                "Households": hh_markers,
                 "Barangay": Barangay,
                 "Major Rivers": Major_Rivers,
                 "Landslide": Landslide
@@ -598,8 +598,8 @@
 
         // On print end we invalidate markercluster to update markers;
         mymap.on(L.BrowserPrint.Event.PrintEnd, function (e) {
-            mymap.removeLayer(markers);
-            mymap.addLayer(markers);
+            mymap.removeLayer(hh_markerss);
+            mymap.addLayer(hh_markers);
         });
        
         
@@ -609,7 +609,7 @@
         function addGeoJSONFeature(feature) {
             geoJSONLayer.addData(feature);
         }
-        
+
         $(document).ready(function () {
             // Function to populate the barangay dropdown based on the selected municipality
             function populateBarangays(selectedMunicipalityId) {
@@ -622,9 +622,9 @@
                         selectBarangay.empty();  
 
                         selectBarangay.append($('<option>', {
-                            value: '',
-                            text: '-------------------',
-                            disabled: true,
+                            value: null,
+                            text: 'Select Barangay',
+                            disabled: false,
                             selected: true
                         }));
         
@@ -650,9 +650,9 @@
                     selectMunicipality.empty();  
 
                     selectMunicipality.append($('<option>', {
-                        value: '',
-                        text: '-------------------',
-                        disabled: true,
+                        value: null,
+                        text: 'Select Municipality',
+                        disabled: false,
                         selected: true
                     }));
         
@@ -675,7 +675,7 @@
                 populateBarangays(selectedMunicipalityId);
             });
         
-            // Event handler for the change event of the barangay dropdown
+
             $('#barangaySelect').on('change', function () {
                 var selectedBarangay = $(this).val();
                 performSearch(selectedBarangay);
@@ -689,7 +689,6 @@
                 var filteredLayer = L.geoJson(filteredFeatures, {
                     style: customStyle,  // Replace with your custom style
                     onEachFeature: function (feature, layer) {
-                        // Add any additional information or popups for each feature
                     }
                 });
 
@@ -698,7 +697,7 @@
 
                 filteredLayersGroup.addTo(mymap);
             });
-        
+ 
             function performSearch(barangay) {
                 var searchInput = $('#barangaySelect');
 
@@ -708,7 +707,7 @@
                     console.error('Error: searchInput is undefined or null');
                     return;
                 }
-        
+                markers.clearLayers();
                 $.ajax({
                     type: 'POST',
                     url: "{% url 'search_view' %}",
@@ -720,8 +719,7 @@
                     dataType: 'json',
                     success: function (data) {
                         console.log('Received data from server:', data);
-        
-                        markers.clearLayers();
+    
                         var households = new L.GeoJSON(data, {
                             pointToLayer: function (feature, latlng) {
                                 var greenIcon = L.icon({
@@ -738,11 +736,13 @@
                         households.on('click', function (e) {
                             whenClicked(e);
                         });
-                        if(households.getBounds().isValid())
-                        mymap.fitBounds(households.getBounds()); 
-                        
+                        if (households.getBounds().isValid()) {
+                            mymap.fitBounds(households.getBounds());
+                        }
+            
+                        // Add the new households to the map
                         markers.addLayer(households);
-                        mymap.addLayer(markers);
+                      
                     },
                     error: function (error) {
                         console.log('Error:', error);
@@ -765,7 +765,6 @@
                         //Clear old layer
                         markers.clearLayers();
 
-                       //Load The GeoJSON layer using Leaflet GeoJSON method 
                         var households = new L.GeoJSON(response,{
                             pointToLayer: function(feature, latlng) {
                                 var greenIcon = L.icon({
