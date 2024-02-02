@@ -4,8 +4,14 @@ from library.models import Municipalities, Barangays, Purok
 
 @login_required
 def municipality_list(request):
-  municipality = Municipalities.objects.all()
-  return JsonResponse({'data': [{'psgccode': m.psgccode, 'munname': m.munname} for m in municipality]})
+  if request.user.is_authenticated:
+      if request.user.is_superuser or request.user.groups.filter(name='admin').exists():
+        municipality = Municipalities.objects.all()
+        return JsonResponse({'data': [{'psgccode': m.psgccode, 'munname': m.munname} for m in municipality]})
+      else:
+        user_mun = request.user.userlocation.psgccode_mun
+        municipality = Municipalities.objects.filter(munname=user_mun)
+        return JsonResponse({'data': [{'psgccode': m.psgccode, 'munname': m.munname} for m in municipality]})
 
 
 @login_required
