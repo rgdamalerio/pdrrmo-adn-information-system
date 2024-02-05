@@ -13,10 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import include, path
+from django.urls import include, path,reverse_lazy
 from django.contrib import admin
-from django.urls import path, reverse_lazy
 from django.views.generic.base import RedirectView
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 ## Set this if using django rest framework
 # from django.urls import path, include
@@ -39,6 +41,7 @@ urlpatterns = [
     path('address/',include('library.urls')),
     path('aggregate/',include("aggregate.urls")),
     path('reports/',include('reports.urls')),
+    path('api/',include('base.urls')),
     ## URL for api rest framework
     #path('api-auth/', include('rest_framework.urls')),
     #path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -49,3 +52,5 @@ urlpatterns = [
 #router.register('user',UserViewSet,basename='user')
 
 #urlpatterns += router.urls
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
