@@ -12,8 +12,6 @@ from django.urls import reverse
 from django.utils.http import urlencode
 from django.utils.html import format_html
 
-
-
 class FamiliesInline(admin.StackedInline):
   model = Families
   exclude = ('owner',)
@@ -218,7 +216,7 @@ class DemographiesAdmin(admin.ModelAdmin):
               'person_with_special_needs', 'type_of_disability', 'is_ofw', 'residence', 'nutritional_status', 'nutritional_status_recorded',
               'currently_attending_school', 'current_grade_level_attending', 'highest_eductional_attainment', 'course_completed_vocational',
               'can_read_and_write', 'primary_occupation', 'monthly_income', 'sss_member', 'gsis_member', 'philhealth_member', 
-              'dependent_of_philhealth_member', 'owner']
+              'dependent_of_philhealth_member', 'relationshiptohead', 'owner']
     list_filter = ['marital_status']
     list_select_related = ('controlnumber',)
     list_per_page = 20
@@ -273,9 +271,9 @@ class FamiliesAdmin(admin.ModelAdmin):
   household_controlnumber.short_description = 'Family belong'
 
   def save_model(self, request, obj, form, change):
-    if not obj.pk:  
+    if obj.pk:  
       if request.user.is_authenticated:
-          obj.owner = request.user
+        obj.owner = request.user
       else:
         obj.owner = 1  
     super().save_model(request, obj, form, change)
@@ -328,9 +326,9 @@ class FamilydetailsAdmin(admin.ModelAdmin):
   list_per_page = 20
   
   def save_model(self, request, obj, form, change):
-    if not obj.pk: 
+    if obj.pk: 
       if request.user.is_authenticated:
-          obj.owner = request.user
+        obj.owner = request.user
       else:
         obj.owner = 1  
     super().save_model(request, obj, form, change)
@@ -367,7 +365,7 @@ class AvailprogramsAdmin(admin.ModelAdmin):
       return request.availprograms
     return queryset
   list_display = ('controlnumber','type_of_program','name_of_program','number_of_beneficiaries','upper_progimplementor','created_at','updated_at','owner')
-  search_fields = ('controlnumber__respondent',)
+  search_fields = ('controlnumber__respondent','type_of_program',)
   list_filter = ['type_of_program']
   list_per_page = 20
 
@@ -395,7 +393,7 @@ class HlivelihoodsAdmin(admin.ModelAdmin):
       return request.livelihoods
     return queryset
   list_display = ('controlnumber','products','market_value','area','livelihood_tenural_status','with_insurance','livelihood','created_at','updated_at','owner')
-  search_fields = ('controlnumber__respondent',)
+  search_fields = ('controlnumber__respondent','products',)
   list_filter = ['livelihood_tenural_status']
   list_per_page = 20
   def formfield_for_foreignkey(self, db_field, request, **kwargs):
