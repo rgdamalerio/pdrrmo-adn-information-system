@@ -71,6 +71,8 @@ class Households(models.Model):
   householdwatertenuralstatus = models.ForeignKey(Householdwatertenuralstatus,null=True,on_delete=models.SET_NULL,verbose_name='Water tenural status')
   waterlevelsystems = models.ForeignKey(Waterlevelsystems,null=True,on_delete=models.SET_NULL,verbose_name='Level of water system')
   evacuationareas = models.ForeignKey(Evacuationareas,null=True,on_delete=models.SET_NULL,verbose_name='Nearest evacuation center')
+  updated_at = models.DateField(auto_now=True)
+  updated_by = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True,verbose_name='Updated by')
 
   def __str__(self):
     return str(self.respondent)
